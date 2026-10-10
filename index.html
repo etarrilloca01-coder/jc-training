@@ -89,6 +89,7 @@
     .avatar{overflow:hidden}.avatar img,.profilePic img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}.profilePic{overflow:hidden}
     .accessBlock{position:fixed;inset:0;z-index:9999;background:#070b0b;display:none;place-items:center;padding:24px;text-align:center}.accessBlock div{max-width:340px}.accessBlock h2{color:var(--green);margin:0 0 10px}.accessBlock p{color:var(--muted);line-height:1.5}
     .mem{background:#0b1111;border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:8px}.mem b{font-size:14px}.mem small{display:block;color:var(--muted);margin-top:3px}.mem .row{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center}.mem select{background:#17201c;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:8px}.dotOn{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green);margin-right:6px}.dotOff{display:inline-block;width:9px;height:9px;border-radius:50%;background:#44504a;margin-right:6px}.tagRed{color:#ff6b6b}.tagGreen{color:var(--green)}
+    .exh{margin-top:8px}.exchips{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px;align-items:center}.chip{background:#17201c;border:1px solid var(--green);color:var(--green);border-radius:999px;padding:6px 11px;font-size:12px;font-weight:700}.eximgs{display:flex;gap:6px;margin-top:8px}.eximgs img{width:calc(50% - 3px);max-height:160px;object-fit:cover;border-radius:10px;background:#fff}.exname{display:block;margin-top:4px;color:var(--muted);font-size:11px}
   </style>
 </head>
 <body>
@@ -107,15 +108,15 @@
     <div class="eyebrow" style="margin-top:8px">TU PROGRESO, TU MEJOR VERSIÓN</div>
     <h1 id="authTitle">Inicia sesión</h1>
     <p id="authDescription">Accede para guardar tus rutinas, medidas y evolución en tu cuenta personal.</p>
-    <form id="authForm">
+    <form id="authForm" autocomplete="off">
       <div class="field" id="authNameField" style="display:none"><label for="authName">Tu nombre</label><input id="authName" type="text" autocomplete="given-name" maxlength="40" placeholder="Ej: Juan"></div>
-      <div class="field"><label for="authEmail">Correo electrónico</label><input id="authEmail" type="email" autocomplete="email" required placeholder="tu@correo.com"></div>
-      <div class="field"><label for="authPassword">Contraseña (mínimo 6 caracteres)</label><div class="pwWrap"><input id="authPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="••••••••"><button type="button" class="pwEye" id="pwEye" aria-label="Mostrar u ocultar contraseña" title="Mostrar contraseña">👁️</button></div></div>
+      <div class="field"><label for="authEmail">Correo electrónico</label><input id="authEmail" type="email" autocomplete="off" autocapitalize="off" spellcheck="false" required placeholder="tu@correo.com"></div>
+      <div class="field"><label for="authPassword">Contraseña (mínimo 6 caracteres)</label><div class="pwWrap"><input id="authPassword" type="password" autocomplete="new-password" minlength="6" required placeholder="••••••••"><button type="button" class="pwEye" id="pwEye" aria-label="Mostrar u ocultar contraseña" title="Mostrar contraseña">👁️</button></div></div>
       <div class="actions"><button class="btn" id="authSubmit" type="submit">INICIAR SESIÓN</button><button class="btn secondary" type="button" id="authToggle">CREAR CUENTA</button></div>
     </form>
     <button class="btn secondary smallbtn" type="button" id="resetPassword" style="margin-top:10px;width:100%">Olvidé mi contraseña</button>
     <div class="authMessage" id="authMessage" role="status"></div>
-    <div class="authFoot">Tus datos se guardan en tu cuenta. No compartas tu contraseña. · Versión 19</div>
+    <div class="authFoot">Tus datos se guardan en tu cuenta. No compartas tu contraseña. · Versión 21</div>
   </div>
 </section>
 <div class="accessBlock" id="accessBlock"><div><h2>Acceso no disponible</h2><p id="accessMsg"></p><button class="btn secondary" type="button" onclick="jcAuth.signOut()">CERRAR SESIÓN</button></div></div>
@@ -300,6 +301,27 @@ async function jcOnLogin(user){
   }catch(e){console.warn('members:',e&&e.code||e)}
 }
 let jcMembers=[];
+const EXDICT=[["Press banca", "barbell bench press", ["press de banca", "banca plana", "bench press", "press plano"]], ["Press inclinado", "barbell incline bench press", ["banca inclinada", "press de banca inclinado"]], ["Press con mancuernas", "dumbbell bench press", ["press mancuernas", "banca con mancuernas"]], ["Aperturas con mancuernas", "dumbbell flyes", ["aperturas", "fly", "flyes"]], ["Cruce de poleas", "cable crossover", ["cruces en polea", "crossover"]], ["Mariposa (pec deck)", "butterfly", ["pec deck", "contractor", "peck deck"]], ["Fondos en paralelas", "dips chest", ["fondos", "dips", "paralelas"]], ["Flexiones", "pushups", ["lagartijas", "push ups", "pushups", "planchas de pecho"]], ["Dominadas", "pullups", ["pull ups", "dominada", "barra fija"]], ["Jalón al pecho", "wide grip lat pulldown", ["jalon", "lat pulldown", "jalones"]], ["Remo con barra", "bent over barbell row", ["remo barra", "remo inclinado"]], ["Remo con mancuerna", "one arm dumbbell row", ["remo unilateral", "remo a una mano"]], ["Remo en polea baja", "seated cable rows", ["remo sentado", "remo polea"]], ["Peso muerto", "barbell deadlift", ["deadlift", "peso muerto convencional"]], ["Peso muerto rumano", "romanian deadlift", ["rumano", "rdl"]], ["Face pull", "face pull", ["facepull", "jalon a la cara"]], ["Encogimientos", "barbell shrug", ["trapecios", "shrugs", "encogimiento de hombros"]], ["Press militar", "standing military press", ["press de hombro", "press hombros", "overhead press"]], ["Press Arnold", "arnold dumbbell press", ["arnold press"]], ["Elevaciones laterales", "side lateral raise", ["laterales", "vuelos laterales"]], ["Elevaciones frontales", "front dumbbell raise", ["frontales", "vuelos frontales"]], ["Pájaros", "reverse flyes", ["vuelos posteriores", "pajaros", "deltoides posterior"]], ["Curl con barra", "barbell curl", ["curl de biceps con barra", "biceps barra"]], ["Curl con mancuernas", "dumbbell bicep curl", ["curl biceps", "biceps mancuernas", "curl alterno"]], ["Curl martillo", "hammer curls", ["martillo", "hammer"]], ["Curl predicador", "preacher curl", ["predicador", "banco scott", "scott"]], ["Extensión de tríceps en polea", "triceps pushdown", ["jalon de triceps", "triceps polea", "pushdown"]], ["Press francés", "ez bar skullcrusher", ["skullcrusher", "rompecraneos", "press frances"]], ["Patada de tríceps", "tricep dumbbell kickback", ["kickback", "patada de triceps"]], ["Fondos en banco", "bench dips", ["fondos de triceps", "dips en banco"]], ["Sentadilla", "barbell squat", ["sentadillas", "squat", "sentadilla libre"]], ["Sentadilla frontal", "front barbell squat", ["front squat"]], ["Sentadilla búlgara", "split squat", ["bulgara", "bulgarian split squat", "sentadilla bulgara"]], ["Prensa de piernas", "leg press", ["prensa", "prensa 45"]], ["Zancadas", "dumbbell lunges", ["estocadas", "lunges", "desplantes"]], ["Extensión de cuádriceps", "leg extensions", ["extension de piernas", "cuadriceps", "silla de cuadriceps"]], ["Curl femoral", "lying leg curls", ["femoral", "curl de piernas", "isquios"]], ["Hip thrust", "barbell hip thrust", ["puente de gluteos", "empuje de cadera", "hipthrust"]], ["Elevación de talones", "standing calf raises", ["gemelos", "pantorrillas", "calf raise"]], ["Abductores", "thigh abductor", ["abduccion de cadera", "maquina abductores"]], ["Aductores", "thigh adductor", ["aduccion de cadera", "maquina aductores"]], ["Buenos días", "good morning", ["good morning"]], ["Plancha", "plank", ["plank", "plancha abdominal"]], ["Abdominales", "crunches", ["crunch", "abdominales crunch"]], ["Elevación de piernas colgado", "hanging leg raise", ["elevacion de piernas", "leg raise"]], ["Rueda abdominal", "ab roller", ["rueda", "ab wheel"]], ["Giro ruso", "russian twist", ["russian twist", "giros rusos"]], ["Bicicleta abdominal", "air bike", ["bicicleta", "bicycle crunch"]]];
+function exNorm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim()}
+function exLev(a,b){const m=a.length,n=b.length;let p=Array.from({length:n+1},(_,j)=>j);for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c}return p[n]}
+function exCands(q){const out=[];EXDICT.forEach((e,idx)=>{let best=99,kind='';[e[0],...e[2]].map(exNorm).forEach(n=>{if(n===q){best=0;kind='exact'}else if(q.length>=3&&(n.includes(q)||q.includes(n))){if(best>1){best=1;kind='part'}}else{const d=exLev(n,q),lim=Math.max(2,Math.floor(n.length*.3));if(d<=lim&&d<best){best=d;kind='fuzzy'}}});if(kind)out.push({idx,e,best,kind})});out.sort((a,b)=>a.best-b.best);return out.slice(0,3)}
+let exDBp=null;
+function exDB(){if(exDBp)return exDBp;exDBp=(async()=>{try{const c=JSON.parse(localStorage.getItem('jc_exdb')||'null');if(c&&c.length>100)return c}catch(e){}
+ for(const u of ['https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/dist/exercises.json','https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/dist/exercises.json']){try{const r=await fetch(u);if(!r.ok)continue;const j=await r.json();const db=j.filter(x=>x.images&&x.images.length).map(x=>({n:exNorm(x.name),name:x.name,im:x.images.slice(0,2)}));try{localStorage.setItem('jc_exdb',JSON.stringify(db))}catch(e){}return db}catch(e){}}
+ exDBp=null;return []})();return exDBp}
+async function exFind(enq){const db=await exDB();const toks=exNorm(enq).split(' ').filter(Boolean);if(!toks.length)return null;let best=null,bs=0;db.forEach(x=>{let sc=0;toks.forEach(t=>{const st=t.length>3?t.replace(/s$/,''):t;if(x.n.includes(st))sc++});if(sc>bs||(sc===bs&&best&&x.n.length<best.n.length)){bs=sc;best=x}});return bs>=Math.max(1,toks.length-(toks.length>2?1:0))?best:null}
+let exTimer=null;
+function exHelpDeb(i,t){clearTimeout(exTimer);exTimer=setTimeout(()=>exHelp(i,t),300)}
+function exPick(i,idx){const nm=EXDICT[idx][0];if(!draft.ex[i])return;draft.ex[i].n=nm;const el=document.getElementById('exin'+i);if(el)el.value=nm;exHelp(i,nm)}
+async function exHelp(i,txt){const box=document.getElementById('exh'+i);if(!box)return;const q=exNorm(txt);if(q.length<3){box.innerHTML='';return}
+ const c=exCands(q),top=c[0];let html='';const alt=c.filter(x=>x.kind!=='exact');
+ if(alt.length&&!(top&&top.kind==='exact'))html+='<div class="exchips">¿Quisiste decir? '+alt.map(x=>'<button type="button" class="chip" onclick="exPick('+i+','+x.idx+')">'+escapeHtml(x.e[0])+'</button>').join('')+'</div>';
+ box.innerHTML=html;
+ const hit=await exFind(top?top.e[1]:txt);const cur=draft.ex[i];if(!cur||exNorm(cur.n)!==q||!document.getElementById('exh'+i))return;
+ const base='https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/';
+ if(hit)html+='<div class="eximgs">'+hit.im.map(p=>'<img loading="lazy" alt="" src="'+base+p+'" onerror="this.style.display=\'none\'">').join('')+'</div><span class="exname">'+escapeHtml(hit.name)+'</span>';
+ document.getElementById('exh'+i).innerHTML=html}
+
 function memStatus(m){const u=m.accessUntil&&m.accessUntil.toDate?m.accessUntil.toDate():null;if(m.active===false)return '<span class="tagRed">Desactivada</span>';if(u&&u<new Date())return '<span class="tagRed">Prueba vencida</span>';if(u)return '<span class="tagGreen">Prueba hasta '+u.toLocaleDateString('es')+'</span>';return '<span class="tagGreen">Activa</span>'}
 async function loadAdminUsers(){
   if(!isAdmin(currentUser))return;const box=document.getElementById('adminList');
@@ -373,7 +395,7 @@ function initFirebase(){
         if (lastUid && lastUid !== user.uid) {
           workouts=[]; measurements=[]; doneDays={};
           profile={name:user.displayName||'',sex:'Hombre',goal:'Definición',level:'Intermedio'};
-          ['jc_workouts','jc_measurements','jc_done_days'].forEach(k=>localStorage.removeItem(k));
+          plan={};planLog={};water={};runs=[];playlists=[];routineLog={};doneWeek='';remind={on:false,every:60,from:'07:00',to:'22:00',train:'',last:0,trainDay:''};['jc_workouts','jc_measurements','jc_done_days','jc_plan','jc_plan_log','jc_water','jc_runs','jc_remind','jc_playlists','jc_routine_log','jc_done_week','jc_draft_workout'].forEach(k=>localStorage.removeItem(k));
           localStorage.setItem('jc_profile',JSON.stringify(profile));
           ['pName','pAge','pSex','pHeight','pWeight','pFat','pGoal','pLevel'].forEach(id=>{const el=document.getElementById(id); if(el) el.value = id==='pName'?profile.name:(id==='pSex'?'Hombre':(id==='pGoal'?'Definición':(id==='pLevel'?'Intermedio':'')));});
           renderAll(); renderRoutine(); updateProfile();
@@ -421,7 +443,7 @@ document.getElementById('authToggle').addEventListener('click',()=>{
   document.getElementById('resetPassword').style.display=authMode==='login'?'block':'none';
   document.getElementById('authNameField').style.display=authMode==='register'?'block':'none';
   document.getElementById('authName').required=authMode==='register';
-  document.getElementById('authPassword').autocomplete=authMode==='register'?'new-password':'current-password';
+  document.getElementById('authPassword').autocomplete='new-password';
   setAuthMessage('');
 });
 document.getElementById('authForm').addEventListener('submit',async e=>{
@@ -445,6 +467,8 @@ document.getElementById('authForm').addEventListener('submit',async e=>{
     }
     else await jcAuth.signInWithEmailAndPassword(email,password);
     setAuthMessage('');
+    ['authEmail','authPassword','authName'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});
+    if(authMode==='register'){showToast('Cuenta creada. ¡Bienvenido, '+name+'!');authMode='login'}
   } catch(err){console.error(err);setAuthMessage(firebaseErrorMessage(err)+' ['+((err&&err.code)||'sin-codigo')+']',true);}
   finally{document.getElementById('authSubmit').disabled=false;}
 });
@@ -454,7 +478,7 @@ document.getElementById('resetPassword').addEventListener('click',async()=>{
   try{await jcAuth.sendPasswordResetEmail(email);setAuthMessage('Te enviamos un enlace para restablecer la contraseña.');}
   catch(err){setAuthMessage(firebaseErrorMessage(err));}
 });
-document.getElementById('signOutBtn').addEventListener('click',()=>{if(firebaseReady)jcAuth.signOut();});
+document.getElementById('signOutBtn').addEventListener('click',()=>{if(firebaseReady)jcAuth.signOut();['authEmail','authPassword'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});});
 document.getElementById('signOutBtn2').addEventListener('click',()=>{if(firebaseReady)jcAuth.signOut();});
 
 function userCollection(name){ if(!currentUser) throw new Error('Inicia sesión para guardar datos.'); return jcDb.collection('users').doc(currentUser.uid).collection(name); }
@@ -670,8 +694,8 @@ function copyLast(){const p=lastWeekDay(modalDay);if(p){draft=JSON.parse(JSON.st
 function editDay(){draft=JSON.parse(JSON.stringify(plan[modalDay]));normDraft();if(!draft.ex.length&&!draft.run)draft.ex.push(defRow());renderModal()}
 function renderModal(){const m=document.getElementById('dayModal');m.style.display='flex';const d=DAYS[modalDay];let h=`<div class="mhead"><h2 style="color:${DAYCOL[modalDay]}">${d}</h2><button class="btn secondary smallbtn" onclick="closeDay()">✕</button></div>`;
  if(!modalEdit){const p=plan[modalDay];if(justSaved)h+='<p class="notice" style="margin:0 0 10px;color:var(--green);font-weight:800">✓ Guardado exitoso</p>';h+='<div class="list">'+(p.ex||[]).filter(e=>e.n).map(e=>`<div class="rowitem"><div><strong>${escapeHtml(e.n)} <span class="muted small">· ${SHORT_T[e.t||'normal']}</span></strong><small>${exSum(e)}${+e.w?' · '+escapeHtml(e.w)+' kg':''}</small></div></div>`).join('')+'</div>';if(runHas(p.run))h+=runView(p.run);if(p.note)h+=`<p class="notice">${escapeHtml(p.note)}</p>`;h+=`<div class="actions"></div>`}
- else{const lw=!draft.ex.some(e=>String(e.n).trim())&&!draft.run&&lastWeekDay(modalDay);h+=(lw?'<div class="actions" style="margin:0 0 10px"><button class="btn secondary" onclick="copyLast()">COPIAR DE LA SEMANA PASADA</button></div>':'')+draft.ex.map((e,i)=>{const t=e.t||'normal';const f=t==='cluster'?[['Series','s'],['Clusters','c'],['Reps/cluster','r'],['Pausa (s)','rest'],['Kg','w']]:[['Series','s'],['Reps','r'],['Kg','w']];return `<div class="exb"><div class="exn"><input value="${escapeHtml(e.n)}" placeholder="Press banca" oninput="draft.ex[${i}].n=this.value"><select onchange="setExType(${i},this.value)">${Object.entries(SHORT_T).map(([k,l])=>`<option value="${k}" ${t===k?'selected':''}>${l}</option>`).join('')}</select><button class="btn secondary smallbtn" onclick="delEx(${i})" aria-label="Quitar">×</button></div><div class="exf" style="--n:${f.length}">${f.map(([l,k])=>`<label>${l}<input type="number" min="0" step="${k==='w'?'0.5':'1'}" value="${escapeHtml(e[k])}" oninput="exSet(${i},'${k}',this.value)"></label>`).join('')}</div><small class="muted" id="exs${i}">${exSum(e)}</small></div>`}).join('')+`<div class="actions"><button class="btn secondary" onclick="addEx()">＋ AGREGAR EJERCICIO</button></div>`+runEdit()+`<div class="field" style="margin-top:12px"><label>Nota del día (opcional)</label><input value="${escapeHtml(draft.note)}" oninput="draft.note=this.value"></div><div class="actions"><button class="btn" onclick="savePlanDay()">GUARDAR ENTRENAMIENTO</button><button class="btn secondary" onclick="cancelEdit()">CANCELAR</button></div>`}
- document.getElementById('dayCard').innerHTML=h;justSaved=false}
+ else{const lw=!draft.ex.some(e=>String(e.n).trim())&&!draft.run&&lastWeekDay(modalDay);h+=(lw?'<div class="actions" style="margin:0 0 10px"><button class="btn secondary" onclick="copyLast()">COPIAR DE LA SEMANA PASADA</button></div>':'')+draft.ex.map((e,i)=>{const t=e.t||'normal';const f=t==='cluster'?[['Series','s'],['Clusters','c'],['Reps/cluster','r'],['Pausa (s)','rest'],['Kg','w']]:[['Series','s'],['Reps','r'],['Kg','w']];return `<div class="exb"><div class="exn"><input value="${escapeHtml(e.n)}" placeholder="Press banca" id="exin${i}" autocomplete="off" oninput="draft.ex[${i}].n=this.value;exHelpDeb(${i},this.value)"><select onchange="setExType(${i},this.value)">${Object.entries(SHORT_T).map(([k,l])=>`<option value="${k}" ${t===k?'selected':''}>${l}</option>`).join('')}</select><button class="btn secondary smallbtn" onclick="delEx(${i})" aria-label="Quitar">×</button></div><div class="exh" id="exh${i}"></div><div class="exf" style="--n:${f.length}">${f.map(([l,k])=>`<label>${l}<input type="number" min="0" step="${k==='w'?'0.5':'1'}" value="${escapeHtml(e[k])}" oninput="exSet(${i},'${k}',this.value)"></label>`).join('')}</div><small class="muted" id="exs${i}">${exSum(e)}</small></div>`}).join('')+`<div class="actions"><button class="btn secondary" onclick="addEx()">＋ AGREGAR EJERCICIO</button></div>`+runEdit()+`<div class="field" style="margin-top:12px"><label>Nota del día (opcional)</label><input value="${escapeHtml(draft.note)}" oninput="draft.note=this.value"></div><div class="actions"><button class="btn" onclick="savePlanDay()">GUARDAR ENTRENAMIENTO</button><button class="btn secondary" onclick="cancelEdit()">CANCELAR</button></div>`}
+ document.getElementById('dayCard').innerHTML=h;justSaved=false;if(modalEdit)draft.ex.forEach((e,i)=>{if(e.n)exHelp(i,e.n)})}
 function addEx(){draft.ex.push(defRow());renderModal()}
 function syncRuns(i,run){const src=doneWeek+':'+i;runs=runs.filter(r=>r.src!==src);if(run){const d=new Date(doneWeek+'T12:00:00');d.setDate(d.getDate()+i);const min=parseTime(run.time),km=+run.km||0,wt=+profile.weight||70;runs.unshift({id:Date.now(),src,date:isoDate(d),type:run.type,km,min,hr:+run.hr||0,elev:+run.elev||0,feel:run.feel,note:run.note,kcal:km?Math.round(wt*km):Math.round(min*wt*0.14)})}persistHealth()}
 function savePlanDay(){draft.ex=draft.ex.filter(e=>String(e.n).trim());if(draft.run&&!runHas(draft.run))draft.run=null;if(!draft.ex.length&&!draft.run){delete plan[modalDay];syncRuns(modalDay,null);localStorage.setItem('jc_plan',JSON.stringify(plan));cloudSavePlan();renderRoutine();closeDay();showToast('Día vacío.');return}delete draft.type;plan[modalDay]=draft;syncRuns(modalDay,draft.run);localStorage.setItem('jc_plan',JSON.stringify(plan));cloudSavePlan();modalEdit=false;justSaved=true;renderModal();renderRoutine();showToast('Guardado exitoso ✓')}
