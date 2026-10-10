@@ -46,6 +46,8 @@
     .coverTag{font-size:20px;font-weight:700;color:#fff;letter-spacing:.5px}.coverTag b{display:block;color:var(--green);font-size:22px;letter-spacing:.5px}
     .coverBtn{width:100%;margin-top:22px;border:0;border-radius:12px;padding:17px 16px;background:var(--green);color:#101500;font-weight:900;font-size:16px;letter-spacing:1px;box-shadow:0 8px 30px #a8ff0040}
     .app.onHome header{display:none}
+    .saveStatus{position:fixed;top:max(10px,env(safe-area-inset-top));right:12px;z-index:60;font-size:11px;padding:6px 11px;border-radius:20px;background:#0d1314;border:1px solid var(--line);color:var(--green);opacity:0;transform:translateY(-6px);transition:.25s;pointer-events:none}
+    .saveStatus.show{opacity:1;transform:none}
     #inicio{max-width:560px;margin:0 auto}
     .homeTop{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-top:6px}
     .homeTop h1{font-size:22px;margin:0 0 4px}.homeTop p{margin:0;font-size:13px;color:var(--muted)}
@@ -100,10 +102,11 @@
     </form>
     <button class="btn secondary smallbtn" type="button" id="resetPassword" style="margin-top:10px;width:100%">Olvidé mi contraseña</button>
     <div class="authMessage" id="authMessage" role="status"></div>
-    <div class="authFoot">Tus datos se guardan en tu cuenta. No compartas tu contraseña. · Versión 4</div>
+    <div class="authFoot">Tus datos se guardan en tu cuenta. No compartas tu contraseña. · Versión 6</div>
   </div>
 </section>
 <div class="toast" id="toast"></div>
+<div class="saveStatus" id="saveStatus" role="status"></div>
 <div class="app onHome" id="mainApp" style="display:none">
   <header>
     <div class="brand"><div class="logo">JC<span> TRAINING</span><div class="sub">REGISTRO DE ENTRENAMIENTO</div></div></div>
@@ -227,7 +230,16 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
+<script>
+window.JC_FIREBASE_CONFIG = {
+  apiKey: 'AIzaSyBsctANTfu1OPKZfxo8g0J2xPoWtDgZqCA',
+  authDomain: 'jc-training-9336e.firebaseapp.com',
+  projectId: 'jc-training-9336e',
+  storageBucket: 'jc-training-9336e.firebasestorage.app',
+  messagingSenderId: '111584991536',
+  appId: '1:111584991536:web:5a0f15160c348eb5a190f5'
+};
+</script>
 <script>
 const DAYS = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
 const SHORT = ['LUN','MAR','MIÉ','JUE','VIE','SÁB','DOM'];
@@ -264,6 +276,7 @@ function initFirebase(){
     firebase.initializeApp(window.JC_FIREBASE_CONFIG);
     window.jcAuth = firebase.auth();
     window.jcDb = firebase.firestore();
+    try{ jcDb.enablePersistence({synchronizeTabs:true}).catch(e=>console.warn('Sin persistencia offline:',e&&e.code)); }catch(e){}
     firebaseReady = true;
     jcAuth.onAuthStateChanged(async user => {
       currentUser = user || null;
@@ -377,7 +390,7 @@ async function loadCloudData(){
     localStorage.setItem('jc_profile',JSON.stringify(profile));
     localStorage.setItem('jc_done_days',JSON.stringify(doneDays));
     ['pName','pAge','pSex','pHeight','pWeight','pFat','pGoal','pLevel'].forEach(id=>{const key={pName:'name',pAge:'age',pSex:'sex',pHeight:'height',pWeight:'weight',pFat:'bodyFat',pGoal:'goal',pLevel:'level'}[id];if(profile[key]!==undefined)document.getElementById(id).value=profile[key]});
-    updateProfile();renderAll();renderRoutine();
+    updateProfile();renderAll();renderRoutine();loadMeasureForm();
   } finally {cloudLoadInProgress=false;}
 }
 function cloudSaveWorkout(w){if(!currentUser)return;const id=w.id||('w_'+Date.now()+'_'+Math.random().toString(36).slice(2,8));w.id=id;saveCloudDoc('workouts',id,w).catch(e=>{console.error(e);showToast('Se guardó localmente, pero falló la nube.');});}
@@ -390,7 +403,7 @@ function init(){
   const today = new Date(); document.getElementById('workDate').value = isoDate(today); document.getElementById('measureDate').value = isoDate(today);
   document.getElementById('measureFields').innerHTML = MEASUREMENTS.map(([label,key])=>`<div class="measureRow"><label for="m_${key}">${label}</label><input id="m_${key}" type="number" min="0" step="0.1" placeholder="cm"></div>`).join('');
   ['pName','pAge','pSex','pHeight','pWeight','pFat','pGoal','pLevel'].forEach(id=>{const key={pName:'name',pAge:'age',pSex:'sex',pHeight:'height',pWeight:'weight',pFat:'bodyFat',pGoal:'goal',pLevel:'level'}[id];if(profile[key]!==undefined)document.getElementById(id).value=profile[key]});
-  buildWeek(); renderRoutine(); renderBody(); buildCompareSelectors(); updateProfile(); renderAll();
+  buildWeek(); renderRoutine(); renderBody(); buildCompareSelectors(); updateProfile(); renderAll(); loadMeasureForm(); restoreWorkoutDraft();
 }
 function isoDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function showSection(id){document.getElementById('mainApp').classList.toggle('onHome',id==='inicio');document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active',s.id===id));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.section===id));if(id==='volumen')renderVolume();if(id==='comparar')renderCompare();window.scrollTo({top:0,behavior:'smooth'})}
@@ -403,7 +416,7 @@ function selectDay(i){selectedDay=i;buildWeek();renderRoutine()}
 function setToday(){selectedDay=(new Date().getDay()+6)%7;buildWeek();renderRoutine()}
 function renderRoutine(){document.getElementById('selectedDayTitle').textContent=DAYS[selectedDay];document.getElementById('routineList').innerHTML=ROUTINES.map((r,i)=>`<div class="rowitem"><div><strong>${r[0]}</strong><small>${i===selectedDay?'Sugerido para hoy · ':''}${r[1]}</small></div><button class="btn smallbtn ${doneDays[selectedDay+'-'+i]?'':'secondary'}" onclick="toggleDone(${i})">${doneDays[selectedDay+'-'+i]?'✓ Completado':'Marcar'}</button></div>`).join('')}
 function toggleDone(i){const k=selectedDay+'-'+i;doneDays[k]=!doneDays[k];localStorage.setItem('jc_done_days',JSON.stringify(doneDays));cloudSaveRoutine();renderRoutine();renderStats()}
-function saveWorkoutUI(){const w={date:document.getElementById('workDate').value,group:document.getElementById('workGroup').value,exercise:document.getElementById('workExercise').value.trim(),sets:+document.getElementById('workSets').value,reps:+document.getElementById('workReps').value,weight:+document.getElementById('workWeight').value,notes:document.getElementById('workNotes').value};if(!w.date||!w.exercise){showToast('Completa fecha y ejercicio.');return}w.volume=Math.max(0,w.sets)*Math.max(0,w.reps)*Math.max(0,w.weight);workouts.unshift(w);localStorage.setItem('jc_workouts',JSON.stringify(workouts));cloudSaveWorkout(w);document.getElementById('workExercise').value='';document.getElementById('workNotes').value='';renderAll();showToast('Entrenamiento guardado.')}
+function saveWorkoutUI(){const w={date:document.getElementById('workDate').value,group:document.getElementById('workGroup').value,exercise:document.getElementById('workExercise').value.trim(),sets:+document.getElementById('workSets').value,reps:+document.getElementById('workReps').value,weight:+document.getElementById('workWeight').value,notes:document.getElementById('workNotes').value};if(!w.date||!w.exercise){showToast('Completa fecha y ejercicio.');return}w.volume=Math.max(0,w.sets)*Math.max(0,w.reps)*Math.max(0,w.weight);workouts.unshift(w);localStorage.setItem('jc_workouts',JSON.stringify(workouts));cloudSaveWorkout(w);document.getElementById('workExercise').value='';document.getElementById('workNotes').value='';localStorage.removeItem('jc_draft_workout');renderAll();showToast('Entrenamiento guardado.')}
 function saveProfileUI(){profile={name:v('pName')||(currentUser&&currentUser.displayName)||'Atleta',age:v('pAge'),sex:v('pSex'),height:v('pHeight'),weight:v('pWeight'),bodyFat:v('pFat'),goal:v('pGoal'),level:v('pLevel')};localStorage.setItem('jc_profile',JSON.stringify(profile));cloudSaveProfile(profile);updateProfile();renderStats();showToast('Perfil guardado.')}
 function updateProfile(){document.getElementById('helloName').textContent=profile.name||'Atleta';document.getElementById('avatar').textContent=(profile.name||'A').charAt(0).toUpperCase();document.getElementById('profileDisplayName').textContent=profile.name||'Atleta';document.getElementById('profileDisplayMeta').textContent=[profile.age?profile.age+' años':'',profile.sex||''].filter(Boolean).join(' · ')||'Completa tus datos personales';document.getElementById('statWeight').textContent=(profile.weight||'—')+' kg'}
 function saveMeasuresUI(){const data={week:v('measureWeek'),date:v('measureDate'),bodyView:v('bodyGender'),weight:v('mWeight'),bodyFat:v('mFat')};MEASUREMENTS.forEach(([label,key])=>data[key]=v('m_'+key));if(!data.week){showToast('Selecciona una semana.');return}const existing=measurements.findIndex(m=>m.week===data.week);if(existing>=0)measurements[existing]=data;else measurements.push(data);localStorage.setItem('jc_measurements',JSON.stringify(measurements));cloudSaveMeasurement(data);buildCompareSelectors();renderAll();showToast('Medidas guardadas.')}
@@ -416,6 +429,37 @@ function renderStats(){document.getElementById('statCompliance').textContent=Mat
 function renderAll(){renderVolume();renderCompare();renderStats()}
 function v(id){return document.getElementById(id)?.value ?? ''}
 function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+/* ===== GUARDADO AUTOMÁTICO ===== */
+const autoTimers={}, autoFns={};
+let statusTimer=null;
+function setSaveStatus(t){const el=document.getElementById('saveStatus'); if(!el)return; el.textContent=t; el.classList.add('show'); clearTimeout(statusTimer); if(t!=='Guardando…') statusTimer=setTimeout(()=>el.classList.remove('show'),1600);}
+function scheduleAuto(key,fn){ if(!currentUser)return; autoFns[key]=fn; clearTimeout(autoTimers[key]); setSaveStatus('Guardando…'); autoTimers[key]=setTimeout(()=>{delete autoTimers[key];fn();},900); }
+function flushAuto(){ Object.keys(autoTimers).forEach(k=>{clearTimeout(autoTimers[k]);delete autoTimers[k]; try{autoFns[k]&&autoFns[k]();}catch(e){console.error(e);} }); }
+function collectProfile(){return {name:v('pName')||(currentUser&&currentUser.displayName)||'Atleta',age:v('pAge'),sex:v('pSex'),height:v('pHeight'),weight:v('pWeight'),bodyFat:v('pFat'),goal:v('pGoal'),level:v('pLevel')};}
+function autoSaveProfile(){ if(!currentUser)return; profile=collectProfile(); localStorage.setItem('jc_profile',JSON.stringify(profile)); cloudSaveProfile(profile); updateProfile(); setSaveStatus('Guardado ✓'); }
+function collectMeasure(){const d={week:v('measureWeek'),date:v('measureDate'),bodyView:v('bodyGender'),weight:v('mWeight'),bodyFat:v('mFat')}; MEASUREMENTS.forEach(([l,k])=>d[k]=v('m_'+k)); return d;}
+function autoSaveMeasures(){ if(!currentUser)return; const d=collectMeasure(); if(!d.week)return;
+  const has=[d.weight,d.bodyFat,...MEASUREMENTS.map(([l,k])=>d[k])].some(x=>x!==''&&x!=null); if(!has)return;
+  const i=measurements.findIndex(m=>m.week===d.week); if(i>=0)measurements[i]=d; else measurements.push(d);
+  localStorage.setItem('jc_measurements',JSON.stringify(measurements)); cloudSaveMeasurement(d); renderStats(); setSaveStatus('Guardado ✓'); }
+function loadMeasureForm(){ const w=v('measureWeek'); const m=measurements.find(x=>x.week===w)||{};
+  const set=(id,val)=>{const el=document.getElementById(id); if(el) el.value=(val==null?'':val);};
+  set('mWeight',m.weight); set('mFat',m.bodyFat); MEASUREMENTS.forEach(([l,k])=>set('m_'+k,m[k])); set('measureDate',m.date||isoDate(new Date()));
+  if(m.bodyView){set('bodyGender',m.bodyView); renderBody();} }
+const DRAFT_IDS=['workGroup','workExercise','workSets','workReps','workWeight','workNotes'];
+function saveWorkoutDraft(){ const d={}; DRAFT_IDS.forEach(id=>d[id]=v(id)); localStorage.setItem('jc_draft_workout',JSON.stringify(d)); }
+function restoreWorkoutDraft(){ try{ const d=JSON.parse(localStorage.getItem('jc_draft_workout')||'null'); if(!d)return; DRAFT_IDS.forEach(id=>{const el=document.getElementById(id); if(el&&d[id]!==undefined) el.value=d[id];}); }catch(e){} }
+['input','change'].forEach(ev=>document.addEventListener(ev,e=>{
+  const t=e.target; if(!t||!t.id) { if(t&&t.closest&&t.closest('#measureFields')) scheduleAuto('measures',autoSaveMeasures); return; }
+  if(['pName','pAge','pSex','pHeight','pWeight','pFat','pGoal','pLevel'].includes(t.id)) scheduleAuto('profile',autoSaveProfile);
+  else if(['mWeight','mFat','measureDate','bodyGender'].includes(t.id) || (t.closest&&t.closest('#measureFields'))) scheduleAuto('measures',autoSaveMeasures);
+  else if(DRAFT_IDS.includes(t.id)) saveWorkoutDraft();
+}));
+(function(){ const sel=document.getElementById('measureWeek'); if(!sel)return;
+  ['pointerdown','focus'].forEach(ev=>sel.addEventListener(ev,flushAuto));
+  sel.addEventListener('change',loadMeasureForm); })();
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') flushAuto(); });
+window.addEventListener('pagehide',flushAuto);
 init();
 initFirebase();
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
