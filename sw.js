@@ -1,5 +1,5 @@
 // JC Training - service worker (siempre intenta la versión nueva primero)
-const CACHE = 'jc-training-v3';
+const CACHE = 'jc-training-v4';
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', e => {
   e.waitUntil(

@@ -35,7 +35,7 @@
     .profileTop{display:flex;align-items:center;gap:14px;margin-bottom:16px}.profilePic{width:66px;height:66px;border-radius:50%;display:grid;place-items:center;background:#18231b;border:1px solid #48612c;font-size:26px}.profileName{font-size:22px;font-weight:800}.profileGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.profileVal{padding:12px;border:1px solid var(--line);border-radius:10px;background:#080d0d}.profileVal span{display:block;font-size:11px;color:var(--muted)}.profileVal b{display:block;margin-top:5px}
     .nav{position:fixed;bottom:0;left:0;right:0;z-index:10;background:#070a0aee;backdrop-filter:blur(18px);border-top:1px solid var(--line);display:flex;justify-content:center;padding:8px max(10px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom));gap:4px}.nav button{background:transparent;color:var(--muted);border:1px solid transparent;border-radius:10px;padding:8px 14px;min-width:75px;font-size:11px}.nav button .navico{display:block;font-size:18px;margin-bottom:3px}.nav button.active{color:var(--green);background:#111a11}
     .notice{margin-top:12px;color:var(--muted);font-size:12px}.toast{position:fixed;top:15px;left:50%;transform:translateX(-50%);z-index:30;background:var(--green);color:#152000;padding:12px 18px;border-radius:10px;font-weight:800;display:none;box-shadow:0 10px 35px #0008}
-    .coverScreen{position:fixed;inset:0;z-index:50;display:none;background:#050707 var(--portada) 42% 100%/auto 90% no-repeat;overflow:hidden}
+    .coverScreen{position:fixed;inset:0;z-index:50;display:none;background:#050707 var(--portada) 42% 100%/auto 106% no-repeat;overflow:hidden}
     .coverScreen::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#050707 0%,#050707 9%,#050707b8 20%,#0507074d 32%,#05070700 46%,#05070700 58%,#050707d9 84%,#050707 100%)}
     .coverInner{position:relative;z-index:1;height:100%;max-width:520px;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:max(34px,env(safe-area-inset-top)) 26px max(34px,env(safe-area-inset-bottom));text-align:center}
     .coverLogo{display:flex;flex-direction:column;align-items:center}
@@ -44,7 +44,7 @@
     .coverSub{font-size:11px;letter-spacing:2.5px;color:var(--green);font-style:italic;margin-top:8px;text-transform:uppercase}
     .coverBottom{width:100%}
     @media(min-width:700px){.coverScreen{background:#050707}.coverScreen::before{display:none}
-      .coverInner{background:linear-gradient(180deg,#050707 0%,#050707 16.5%,#050707c0 22%,#05070766 32%,#05070700 46%,#05070700 58%,#050707d9 84%,#050707 100%),var(--portada) 45% 100%/auto 84% no-repeat;box-shadow:inset 90px 0 70px -40px #050707,inset -90px 0 70px -40px #050707}}
+      .coverInner{background:linear-gradient(180deg,#050707 0%,#050707 10%,#050707b0 18%,#05070759 28%,#05070700 40%,#05070700 58%,#050707d9 84%,#050707 100%),var(--portada) 45% 100%/auto 100% no-repeat;box-shadow:inset 40px 0 50px -30px #050707,inset -40px 0 50px -30px #050707}}
     .coverTag{font-size:20px;font-weight:700;color:#fff;letter-spacing:.5px}.coverTag b{display:block;color:var(--green);font-size:22px;letter-spacing:.5px}
     .coverBtn{width:100%;margin-top:22px;border:0;border-radius:12px;padding:17px 16px;background:var(--green);color:#101500;font-weight:900;font-size:16px;letter-spacing:1px;box-shadow:0 8px 30px #a8ff0040}
     .app.onHome header{display:none}
@@ -104,7 +104,7 @@
     </form>
     <button class="btn secondary smallbtn" type="button" id="resetPassword" style="margin-top:10px;width:100%">Olvidé mi contraseña</button>
     <div class="authMessage" id="authMessage" role="status"></div>
-    <div class="authFoot">Tus datos se guardan en tu cuenta. No compartas tu contraseña. · Versión 7</div>
+    <div class="authFoot">Tus datos se guardan en tu cuenta. No compartas tu contraseña. · Versión 8</div>
   </div>
 </section>
 <div class="toast" id="toast"></div>
