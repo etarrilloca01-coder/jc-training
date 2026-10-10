@@ -1,0 +1,17 @@
+AGREGA este bloque dentro de "match /databases/{database}/documents { ... }"
+(sin borrar las reglas que ya tienes para users/{uid}/...)
+
+    match /members/{uid} {
+      allow read: if request.auth != null &&
+        (request.auth.uid == uid || request.auth.token.email == 'eulertcc@gmail.com');
+
+      allow create: if request.auth != null && request.auth.uid == uid &&
+        request.resource.data.active == true &&
+        request.resource.data.keys().hasOnly(['email','name','active','createdAt','lastSeen']);
+
+      allow update: if request.auth != null && (
+        request.auth.token.email == 'eulertcc@gmail.com' ||
+        (request.auth.uid == uid &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['email','name','lastSeen']))
+      );
+    }
