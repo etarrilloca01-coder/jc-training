@@ -51,6 +51,8 @@
     .measureRow{align-items:center}.measureRow label{flex:1}.measureRow small{display:block;color:var(--muted);font-size:11px;margin-top:3px;line-height:1.3}.mnum{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--green);color:#101500;font-size:11px;font-weight:900;margin-right:8px}
     .fig{perspective:900px;display:flex;justify-content:center;background:#000;border-radius:14px;overflow:hidden;touch-action:pan-y;cursor:grab;padding:6px 0}.figStage{position:relative;aspect-ratio:520/932;transform-style:preserve-3d}.figStage img{width:100%;height:100%;display:block;user-select:none;-webkit-user-drag:none;pointer-events:none}
     .fdot{position:absolute;transform:translate(-50%,-50%) translateZ(40px);width:24px;height:24px;border-radius:50%;border:2px solid #101500;background:var(--green);color:#101500;font-size:11px;font-weight:900;display:grid;place-items:center;padding:0;box-shadow:0 0 0 4px #a8ff0033}.fdot.on{background:#fff;box-shadow:0 0 0 5px #a8ff0099}
+    .modal{position:fixed;inset:0;z-index:80;background:#000b;display:none;align-items:center;justify-content:center;padding:12px}.mcard{width:min(100%,560px);max-height:88vh;overflow:auto;background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid #315027;border-radius:20px;padding:18px}.mhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.mhead h2{margin:0}
+    .exrow{display:grid;grid-template-columns:1fr 52px 52px 56px 36px;gap:6px;margin-bottom:6px;align-items:center}.exrow input{min-width:0;width:100%;background:#070b0b;border:1px solid var(--line);border-radius:8px;padding:9px 6px;color:#fff}.exlab{font-size:10px;color:var(--muted)}
     .app.onHome header{display:none}
     .saveStatus{position:fixed;top:max(10px,env(safe-area-inset-top));right:12px;z-index:60;font-size:11px;padding:6px 11px;border-radius:20px;background:#0d1314;border:1px solid var(--line);color:var(--green);opacity:0;transform:translateY(-6px);transition:.25s;pointer-events:none}
     .saveStatus.show{opacity:1;transform:none}
@@ -108,10 +110,11 @@
     </form>
     <button class="btn secondary smallbtn" type="button" id="resetPassword" style="margin-top:10px;width:100%">Olvidé mi contraseña</button>
     <div class="authMessage" id="authMessage" role="status"></div>
-    <div class="authFoot">Tus datos se guardan en tu cuenta. No compartas tu contraseña. · Versión 12</div>
+    <div class="authFoot">Tus datos se guardan en tu cuenta. No compartas tu contraseña. · Versión 13</div>
   </div>
 </section>
 <div class="toast" id="toast"></div>
+<div class="modal" id="dayModal" onclick="if(event.target===this)closeDay()"><div class="mcard" id="dayCard"></div></div>
 <div class="saveStatus" id="saveStatus" role="status"></div>
 <div class="app onHome" id="mainApp" style="display:none">
   <header>
@@ -123,7 +126,7 @@
     <section class="section active" id="inicio">
       <div class="homeTop">
         <div><h1>¡Hola, <span id="helloName">Atleta</span>! 👋</h1><p>Es hora de entrenar y superar tus límites.</p></div>
-        <button class="bell" type="button" onclick="showToast('No tienes notificaciones nuevas.')" aria-label="Notificaciones"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></button>
+        <button class="bell" type="button" onclick="showSection('salud')" aria-label="Notificaciones"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></button>
       </div>
       <div class="homeWeek" id="homeWeek"></div>
       <div class="homeBanner">
@@ -136,7 +139,7 @@
         <button class="htile" onclick="showSection('volumen')"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg><div><strong>Volumen</strong><span>Volumen de entrenamiento</span></div></button>
         <button class="htile" onclick="showSection('comparar')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 12 12 3M12 12l6 4"/></svg><div><strong>Progreso</strong><span>Tu evolución por semana</span></div></button>
         <button class="htile" onclick="showSection('perfil')"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><div><strong>Perfil</strong><span>Datos personales</span></div></button>
-        <button class="htile" onclick="showToast('No tienes notificaciones nuevas.')"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg><div><strong>Notificaciones</strong><span>Mensajes y alertas</span></div></button>
+        <button class="htile" onclick="showSection('salud')"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg><div><strong>Agua y alertas</strong><span>Agua, calorías y recordatorios</span></div></button>
       </div>
       <div style="display:none">
         <strong id="statWeight">78 kg</strong><strong id="statCompliance">0%</strong><strong id="statVolume">0 kg</strong><strong id="statMeasures">0</strong>
@@ -144,13 +147,10 @@
     </section>
 
     <section class="section" id="rutina">
-      <div class="sectionHead"><div><h2>Calendario semanal</h2><p>Selecciona un día y registra lo que entrenaste.</p></div><button class="btn secondary smallbtn" onclick="setToday()">Hoy</button></div>
-      <div class="week" id="weekDays"></div>
-      <div class="card">
-        <div class="sectionHead" style="margin-top:0"><div><h2 id="selectedDayTitle">Lunes</h2><p>Marca las sesiones que completes.</p></div></div>
-        <div class="list" id="routineList"></div>
-        <div class="actions"><button class="btn secondary" onclick="setProgTab('rutina');showSection('comparar')">VER MI PROGRESO SEMANAL</button></div>
-      </div>
+      <div class="sectionHead"><div><h2>Mi rutina semanal</h2><p>Toca un día para ver qué vas a hacer. Usa ＋ para planear ese día.</p></div><button class="btn secondary smallbtn" onclick="openDay((new Date().getDay()+6)%7,false)">Hoy</button></div>
+      <div class="week" id="weekDays" style="display:none"></div>
+      <div class="list" id="planList"></div>
+      <div class="actions"><button class="btn secondary" onclick="setProgTab('rutina');showSection('comparar')">VER MI PROGRESO SEMANAL</button><button class="btn secondary" onclick="showSection('salud')">AGUA Y CALORÍAS</button></div>
       <div class="sectionHead"><div><h2>Registro de entrenamiento</h2><p>Guarda cada ejercicio en tu historial.</p></div></div>
       <div class="card">
         <div class="formgrid">
@@ -198,6 +198,20 @@
       </div>
       <div class="card"><div class="eyebrow">VOLUMEN POR DÍA</div><div class="chart" id="volumeChart"></div><p class="notice">El volumen es una métrica de seguimiento simple (series × repeticiones × peso), no una medida completa de la dificultad del entrenamiento.</p></div>
       <div class="sectionHead"><div><h2>Últimos registros</h2><p>Historial de ejercicios guardados en este dispositivo.</p></div></div><div class="list" id="workoutHistory"></div>
+    </section>
+
+    <section class="section" id="salud">
+      <div class="sectionHead"><div><h2>Agua, calorías y alertas</h2><p>Metas estimadas con los datos de tu perfil.</p></div></div>
+      <div class="card"><div class="eyebrow">💧 AGUA DE HOY</div><h2 id="waterNow" style="margin:8px 0">0 / 2500 ml</h2><div class="track" style="height:12px"><div class="fill1" id="waterBar" style="width:0%"></div></div>
+        <div class="actions"><button class="btn" onclick="addWater(250)">＋ 250 ml</button><button class="btn" onclick="addWater(500)">＋ 500 ml</button><button class="btn secondary" onclick="addWater(-250)">− 250</button></div><p class="notice" id="waterNote"></p></div>
+      <div class="card" style="margin-top:14px"><div class="eyebrow">🏃 RUNNING Y CALORÍAS</div><p id="calInfo" style="margin:10px 0"></p>
+        <div class="formgrid"><div class="field"><label>Kilómetros</label><input id="runKm" type="number" min="0" step="0.1" placeholder="5"></div><div class="field"><label>Minutos</label><input id="runMin" type="number" min="0" placeholder="30"></div><div class="field"><label>&nbsp;</label><button class="btn" onclick="addRun()">REGISTRAR</button></div></div>
+        <div class="list" id="runList" style="margin-top:12px"></div><p class="notice">Valores aproximados (≈1 kcal por kg por km corrido). No sustituyen a un nutricionista.</p></div>
+      <div class="card" style="margin-top:14px"><div class="eyebrow">🔔 RECORDATORIOS</div><p class="notice" id="remindStatus"></p>
+        <div class="formgrid" style="margin:12px 0"><div class="field"><label>Avisar cada</label><select id="remEvery" onchange="setRemind('every',+this.value)"><option value="30">30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option><option value="120">120 min</option></select></div><div class="field"><label>Desde</label><input id="remFrom" type="time" onchange="setRemind('from',this.value)"></div><div class="field"><label>Hasta</label><input id="remTo" type="time" onchange="setRemind('to',this.value)"></div><div class="field"><label>Aviso de entrenamiento (opcional)</label><input id="remTrain" type="time" onchange="setRemind('train',this.value)"></div></div>
+        <div class="actions"><button class="btn" id="remindBtn" onclick="toggleRemind()">ACTIVAR NOTIFICACIONES</button><button class="btn secondary" onclick="testNotif()">PROBAR AHORA</button></div>
+        <div class="actions"><button class="btn secondary" onclick="downloadICS()">DESCARGAR ALARMAS PARA EL CALENDARIO (.ics)</button></div>
+        <p class="notice">Las notificaciones de la app llegan mientras la app esté abierta o en segundo plano (instálala en la pantalla de inicio). Con la app cerrada, el celular puede no entregarlas: por eso descarga las alarmas, ábrelas con tu calendario (Google Calendar, etc.) y sonarán siempre, todos los días.</p></div>
     </section>
 
     <section class="section" id="comparar">
@@ -270,6 +284,9 @@ let coverDismissed = false;
 let routineLog = JSON.parse(localStorage.getItem('jc_routine_log') || '{}');
 let doneWeek = localStorage.getItem('jc_done_week') || '';
 let progTab = 'medidas';
+let plan=JSON.parse(localStorage.getItem('jc_plan')||'{}'),modalDay=0,modalEdit=false,draft=null;
+let water=JSON.parse(localStorage.getItem('jc_water')||'{}'),runs=JSON.parse(localStorage.getItem('jc_runs')||'[]');
+let remind={on:false,every:60,from:'07:00',to:'22:00',train:'',last:0,trainDay:'',...JSON.parse(localStorage.getItem('jc_remind')||'{}')};
 function applyScreens(){
   const cover=document.getElementById('coverScreen'), auth=document.getElementById('authScreen'), main=document.getElementById('mainApp');
   cover.style.display = coverDismissed ? 'none' : 'block';
@@ -387,11 +404,13 @@ async function saveCloudDoc(collectionName,id,data){ if(!currentUser||!firebaseR
 async function loadCloudData(){
   if(!currentUser||cloudLoadInProgress)return; cloudLoadInProgress=true;
   try {
-    const [ws,ms,profileSnap,doneSnap]=await Promise.all([
+    const [ws,ms,profileSnap,doneSnap,planSnap,healthSnap]=await Promise.all([
       userCollection('workouts').orderBy('date','desc').limit(500).get(),
       userCollection('measurements').get(),
       userCollection('profile').doc('main').get(),
-      userCollection('settings').doc('routine').get()
+      userCollection('settings').doc('routine').get(),
+      userCollection('settings').doc('plan').get(),
+      userCollection('settings').doc('health').get()
     ]);
     if(!ws.empty) workouts=ws.docs.map(d=>d.data()).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
     if(!ms.empty) measurements=ms.docs.map(d=>d.data()).sort((a,b)=>(a.week||'').localeCompare(b.week||''));
@@ -402,7 +421,7 @@ async function loadCloudData(){
     localStorage.setItem('jc_profile',JSON.stringify(profile));
     localStorage.setItem('jc_done_days',JSON.stringify(doneDays));
     ['pName','pAge','pSex','pHeight','pWeight','pFat','pGoal','pLevel'].forEach(id=>{const key={pName:'name',pAge:'age',pSex:'sex',pHeight:'height',pWeight:'weight',pFat:'bodyFat',pGoal:'goal',pLevel:'level'}[id];if(profile[key]!==undefined)document.getElementById(id).value=profile[key]});
-    updateProfile();renderAll();renderRoutine();loadMeasureForm();
+    if(planSnap.exists){plan=planSnap.data().plan||plan;localStorage.setItem('jc_plan',JSON.stringify(plan))}if(healthSnap.exists){const h=healthSnap.data();water=h.water||water;runs=h.runs||runs;remind={...remind,...(h.remind||{})};persistHealth(false)}updateProfile();renderAll();renderRoutine();loadMeasureForm();
   } finally {cloudLoadInProgress=false;}
 }
 function cloudSaveWorkout(w){if(!currentUser)return;const id=w.id||('w_'+Date.now()+'_'+Math.random().toString(36).slice(2,8));w.id=id;saveCloudDoc('workouts',id,w).catch(e=>{console.error(e);showToast('Se guardó localmente, pero falló la nube.');});}
@@ -418,7 +437,7 @@ function init(){
   buildWeek(); renderRoutine(); renderBody(); buildCompareSelectors(); updateProfile(); renderAll(); loadMeasureForm(); restoreWorkoutDraft();
 }
 function isoDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
-function showSection(id){document.getElementById('mainApp').classList.toggle('onHome',id==='inicio');document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active',s.id===id));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.section===id));if(id==='volumen')renderVolume();if(id==='comparar')renderCompare();window.scrollTo({top:0,behavior:'smooth'})}
+function showSection(id){document.getElementById('mainApp').classList.toggle('onHome',id==='inicio');document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active',s.id===id));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.section===id));if(id==='volumen')renderVolume();if(id==='salud')renderHealth();if(id==='comparar')renderCompare();window.scrollTo({top:0,behavior:'smooth'})}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',2400)}
 function buildHomeWeek(){const now=new Date();const mon=new Date(now);mon.setDate(now.getDate()-((now.getDay()+6)%7));const t=(now.getDay()+6)%7;
   const hw=document.getElementById('homeWeek'); if(hw) hw.innerHTML=Array.from({length:7},(_,i)=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return `<button type="button" class="hw ${i===t?'today':''}" onclick="selectedDay=${i};buildWeek();showSection('rutina')"><b>${SHORT[i]}</b><span>${d.getDate()}</span></button>`}).join('');
@@ -426,8 +445,6 @@ function buildHomeWeek(){const now=new Date();const mon=new Date(now);mon.setDat
 function buildWeek(){buildHomeWeek();const now=new Date();let mon=new Date(now);let offset=(now.getDay()+6)%7;mon.setDate(now.getDate()-offset);document.getElementById('weekDays').innerHTML=Array.from({length:7},(_,i)=>{let d=new Date(mon);d.setDate(mon.getDate()+i);return `<button class="day ${i===selectedDay?'active':''}" onclick="selectDay(${i})"><b>${SHORT[i]}</b><span>${d.getDate()}</span></button>`}).join('')}
 function selectDay(i){selectedDay=i;buildWeek();renderRoutine()}
 function setToday(){selectedDay=(new Date().getDay()+6)%7;buildWeek();renderRoutine()}
-function renderRoutine(){rollWeek();document.getElementById('selectedDayTitle').textContent=DAYS[selectedDay];document.getElementById('routineList').innerHTML=ROUTINES.map((r,i)=>`<div class="rowitem"><div><strong>${r[0]}</strong><small>${i===selectedDay?'Sugerido para hoy · ':''}${r[1]}</small></div><button class="btn smallbtn ${doneDays[selectedDay+'-'+i]?'':'secondary'}" onclick="toggleDone(${i})">${doneDays[selectedDay+'-'+i]?'✓ Completado':'Marcar'}</button></div>`).join('')}
-function toggleDone(i){const k=selectedDay+'-'+i;doneDays[k]=!doneDays[k];localStorage.setItem('jc_done_days',JSON.stringify(doneDays));cloudSaveRoutine();renderRoutine();renderStats()}
 function saveWorkoutUI(){const w={date:document.getElementById('workDate').value,group:document.getElementById('workGroup').value,exercise:document.getElementById('workExercise').value.trim(),sets:+document.getElementById('workSets').value,reps:+document.getElementById('workReps').value,weight:+document.getElementById('workWeight').value,notes:document.getElementById('workNotes').value};if(!w.date||!w.exercise){showToast('Completa fecha y ejercicio.');return}w.volume=Math.max(0,w.sets)*Math.max(0,w.reps)*Math.max(0,w.weight);workouts.unshift(w);localStorage.setItem('jc_workouts',JSON.stringify(workouts));cloudSaveWorkout(w);document.getElementById('workExercise').value='';document.getElementById('workNotes').value='';localStorage.removeItem('jc_draft_workout');renderAll();showToast('Entrenamiento guardado.')}
 function saveProfileUI(){profile={name:v('pName')||(currentUser&&currentUser.displayName)||'Atleta',age:v('pAge'),sex:v('pSex'),height:v('pHeight'),weight:v('pWeight'),bodyFat:v('pFat'),goal:v('pGoal'),level:v('pLevel')};localStorage.setItem('jc_profile',JSON.stringify(profile));cloudSaveProfile(profile);updateProfile();renderStats();showToast('Perfil guardado.')}
 function updateProfile(){document.getElementById('helloName').textContent=profile.name||'Atleta';document.getElementById('avatar').textContent=(profile.name||'A').charAt(0).toUpperCase();document.getElementById('profileDisplayName').textContent=profile.name||'Atleta';document.getElementById('profileDisplayMeta').textContent=[profile.age?profile.age+' años':'',profile.sex||''].filter(Boolean).join(' · ')||'Completa tus datos personales';document.getElementById('statWeight').textContent=(profile.weight||'—')+' kg'}
@@ -465,7 +482,7 @@ function renderProgress(){const body=document.getElementById('progBody');if(!bod
    h=ptable(ms.map(m=>[String(m.week||'').replace('Semana ','Sem '),(m.date||'').slice(5).split('-').reverse().join('/')]),rows)}}
  else{const ws=progWeeks();
   if(!ws.length)h='<p class="muted">Aún no hay datos. Marca tu rutina como completada o guarda entrenamientos, y aquí verás cada semana.</p>';
-  else if(progTab==='rutina'){h=ptable(ws.map(w=>['Sem '+w.n,w.label]),[{label:'Rutinas completadas',vals:ws.map(w=>w.done)},{label:'Entrenamientos',vals:ws.map(w=>w.ses)},{label:'Volumen',u:'kg',vals:ws.map(w=>Math.round(w.vol))}]);
+  else if(progTab==='rutina'){h=ptable(ws.map(w=>['Sem '+w.n,w.label]),[{label:'Días de rutina hechos',vals:ws.map(w=>w.done)},{label:'Entrenamientos',vals:ws.map(w=>w.ses)},{label:'Volumen',u:'kg',vals:ws.map(w=>Math.round(w.vol))}]);
    h+='<div class="list" style="margin-top:12px">'+ws.map(w=>{const g=Object.entries(w.groups).sort((a,b)=>b[1]-a[1]).map(([n,c])=>escapeHtml(n)+' ×'+c).join(', ');return `<div class="rowitem"><div><strong>Semana ${w.n}</strong><small>${w.label} · ${g||'Sin entrenamientos registrados'}</small></div></div>`}).join('')+'</div>'}
   else{const ids={};ws.forEach(w=>Object.keys(w.ex).forEach(i=>ids[i]=w.ex[i].name));const rows=Object.keys(ids).map(i=>({label:escapeHtml(ids[i]),u:'kg',vals:ws.map(w=>w.ex[i]?w.ex[i].max:null)})).sort((a,b)=>b.vals.filter(x=>x!=null).length-a.vals.filter(x=>x!=null).length);
    h=rows.length?ptable(ws.map(w=>['Sem '+w.n,w.label]),rows)+'<p class="notice">Se muestra el peso máximo que usaste en cada ejercicio por semana.</p>':'<p class="muted">Guarda entrenamientos en Rutina para ver cómo sube tu peso en cada ejercicio.</p>'}}
@@ -506,6 +523,45 @@ function restoreWorkoutDraft(){ try{ const d=JSON.parse(localStorage.getItem('jc
   sel.addEventListener('change',loadMeasureForm); })();
 document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') flushAuto(); });
 window.addEventListener('pagehide',flushAuto);
+function cloudSavePlan(){if(!currentUser)return;saveCloudDoc('settings','plan',{plan}).catch(e=>console.error(e))}
+function persistHealth(cloud=true){localStorage.setItem('jc_water',JSON.stringify(water));localStorage.setItem('jc_runs',JSON.stringify(runs));localStorage.setItem('jc_remind',JSON.stringify(remind));if(cloud&&currentUser)saveCloudDoc('settings','health',{water,runs,remind}).catch(e=>console.error(e))}
+function renderRoutine(){rollWeek();const t=(new Date().getDay()+6)%7;document.getElementById('planList').innerHTML=DAYS.map((d,i)=>{const p=plan[i];const n=p&&p.ex?p.ex.length:0;const parts=[];if(n)parts.push(n+' ejercicio'+(n>1?'s':'')+': '+p.ex.slice(0,3).map(e=>escapeHtml(e.n)).join(', ')+(n>3?'…':''));if(p&&p.run)parts.push('Running '+escapeHtml(p.run)+' km');const sm=parts.join(' · ')||'Sin plan · toca ＋ para planearlo';return `<div class="rowitem" onclick="openDay(${i},false)" style="cursor:pointer;${i===t?'border-color:var(--green)':''}"><div><strong>${d}${i===t?' · Hoy':''}${doneDays[i+'-0']?' ✓':''}</strong><small>${sm}</small></div><button class="btn smallbtn" onclick="event.stopPropagation();openDay(${i},true)" aria-label="Agregar ejercicio">＋</button></div>`}).join('')}
+function openDay(i,add){modalDay=i;const p=plan[i];const has=p&&((p.ex&&p.ex.length)||p.run);modalEdit=!!add||!has;draft=JSON.parse(JSON.stringify(p||{ex:[],run:'',note:''}));if(!draft.ex)draft.ex=[];if(modalEdit&&(!draft.ex.length||add&&has&&String(draft.ex[draft.ex.length-1].n).trim()))draft.ex.push({n:'',s:3,r:10,w:0});renderModal()}
+function renderModal(){const m=document.getElementById('dayModal');m.style.display='flex';const d=DAYS[modalDay];let h=`<div class="mhead"><h2>${d}</h2><button class="btn secondary smallbtn" onclick="closeDay()">✕</button></div>`;
+ if(!modalEdit){const p=plan[modalDay];h+='<div class="list">'+p.ex.filter(e=>e.n).map(e=>`<div class="rowitem"><div><strong>${escapeHtml(e.n)}</strong><small>${escapeHtml(e.s)} × ${escapeHtml(e.r)}${+e.w?' · '+escapeHtml(e.w)+' kg':''}</small></div></div>`).join('')+'</div>';if(p.run)h+=`<p class="notice">🏃 Running: ${escapeHtml(p.run)} km</p>`;if(p.note)h+=`<p class="notice">${escapeHtml(p.note)}</p>`;const dn=doneDays[modalDay+'-0'];h+=`<div class="actions"><button class="btn secondary" onclick="editDay()">EDITAR DÍA ${d.toUpperCase()}</button><button class="btn ${dn?'':'secondary'}" onclick="toggleDayDone()">${dn?'✓ HECHO':'MARCAR COMO HECHO'}</button></div>`}
+ else{h+='<div class="exrow exlab"><span>Ejercicio</span><span>Series</span><span>Reps</span><span>Kg</span><span></span></div>'+draft.ex.map((e,i)=>`<div class="exrow"><input value="${escapeHtml(e.n)}" placeholder="Press banca" oninput="draft.ex[${i}].n=this.value"><input type="number" min="0" value="${escapeHtml(e.s)}" oninput="draft.ex[${i}].s=this.value"><input type="number" min="0" value="${escapeHtml(e.r)}" oninput="draft.ex[${i}].r=this.value"><input type="number" min="0" step="0.5" value="${escapeHtml(e.w)}" oninput="draft.ex[${i}].w=this.value"><button class="btn secondary smallbtn" onclick="delEx(${i})" aria-label="Quitar">×</button></div>`).join('')+`<div class="actions"><button class="btn secondary" onclick="addEx()">＋ AGREGAR EJERCICIO</button></div><div class="formgrid" style="margin-top:12px"><div class="field"><label>Running (km, opcional)</label><input type="number" min="0" step="0.1" value="${escapeHtml(draft.run)}" oninput="draft.run=this.value"></div><div class="field" style="grid-column:span 2"><label>Nota (opcional)</label><input value="${escapeHtml(draft.note)}" oninput="draft.note=this.value"></div></div><div class="actions"><button class="btn" onclick="savePlanDay()">GUARDAR ENTRENAMIENTO</button><button class="btn secondary" onclick="cancelEdit()">CANCELAR</button></div>`}
+ document.getElementById('dayCard').innerHTML=h}
+function closeDay(){document.getElementById('dayModal').style.display='none'}
+function editDay(){modalEdit=true;draft=JSON.parse(JSON.stringify(plan[modalDay]));if(!draft.ex.length)draft.ex.push({n:'',s:3,r:10,w:0});renderModal()}
+function addEx(){draft.ex.push({n:'',s:3,r:10,w:0});renderModal()}
+function delEx(i){draft.ex.splice(i,1);renderModal()}
+function cancelEdit(){const p=plan[modalDay];if(p&&((p.ex&&p.ex.length)||p.run)){modalEdit=false;renderModal()}else closeDay()}
+function savePlanDay(){draft.ex=draft.ex.filter(e=>String(e.n).trim());if(!draft.ex.length&&!String(draft.run).trim()){delete plan[modalDay];localStorage.setItem('jc_plan',JSON.stringify(plan));cloudSavePlan();renderRoutine();closeDay();showToast('Día vacío.');return}plan[modalDay]=draft;localStorage.setItem('jc_plan',JSON.stringify(plan));cloudSavePlan();modalEdit=false;renderModal();renderRoutine();showToast('Entrenamiento guardado.')}
+function toggleDayDone(){const k=modalDay+'-0';doneDays[k]=!doneDays[k];localStorage.setItem('jc_done_days',JSON.stringify(doneDays));cloudSaveRoutine();renderModal();renderRoutine();renderStats()}
+function targets(){const w=+profile.weight||0,h=+profile.height||0,a=+profile.age||0,male=profile.sex!=='Mujer';const bmr=(w&&h&&a)?10*w+6.25*h-5*a+(male?5:-161):null;const adj={'Definición':-400,'Hipertrofia':300,'Fuerza':200}[profile.goal]||0;return{water:w?Math.round(w*35/50)*50:2500,kcal:bmr?Math.round((bmr*1.55+adj)/50)*50:null}}
+function todayRuns(){const t=isoDate(new Date());return runs.filter(r=>r.date===t)}
+function waterToday(){return water[isoDate(new Date())]||0}
+function waterGoal(){return targets().water+Math.round(todayRuns().reduce((s,r)=>s+(+r.min||0),0)*12/50)*50}
+function addWater(ml){const k=isoDate(new Date());water[k]=Math.max(0,(water[k]||0)+ml);const ks=Object.keys(water).sort();while(ks.length>90)delete water[ks.shift()];persistHealth();renderHealth()}
+function addRun(){const km=+v('runKm'),min=+v('runMin');if(!km&&!min){showToast('Escribe los km o los minutos.');return}const wt=+profile.weight||70;runs.unshift({id:Date.now(),date:isoDate(new Date()),km,min,kcal:km?Math.round(wt*km):Math.round(min*wt*0.14)});runs=runs.slice(0,60);document.getElementById('runKm').value='';document.getElementById('runMin').value='';persistHealth();renderHealth();showToast('Running registrado.')}
+function delRun(id){runs=runs.filter(r=>r.id!==id);persistHealth();renderHealth()}
+function renderHealth(){const g=waterGoal(),ml=waterToday(),T=targets(),tr=todayRuns(),rk=tr.reduce((s,r)=>s+(+r.kcal||0),0);document.getElementById('waterNow').textContent=ml+' / '+g+' ml';document.getElementById('waterBar').style.width=Math.min(100,ml/g*100)+'%';document.getElementById('waterNote').textContent='Meta: ≈35 ml por kg de peso'+(g>T.water?' + extra por tu running de hoy.':'.')+(+profile.weight?'':' Completa tu peso en Perfil para afinarla.');
+ document.getElementById('calInfo').innerHTML=T.kcal?`Meta diaria: <b>${T.kcal} kcal</b>${rk?` + ${rk} kcal del running de hoy = <b>${T.kcal+rk} kcal</b>`:''}<br><span class="muted small">Calculada con tu edad, altura, peso, sexo y objetivo (${escapeHtml(profile.goal||'')}).</span>`:'Completa edad, altura y peso en <b>Perfil</b> para calcular tu meta de calorías.';
+ document.getElementById('runList').innerHTML=runs.slice(0,6).map(r=>`<div class="rowitem"><div><strong>${r.km?r.km+' km':''}${r.km&&r.min?' · ':''}${r.min?r.min+' min':''}</strong><small>${r.date} · ≈${r.kcal} kcal quemadas</small></div><button class="btn secondary smallbtn" onclick="delRun(${r.id})">×</button></div>`).join('')||'<div class="muted small">Aún no registras running.</div>';
+ document.getElementById('remEvery').value=String(remind.every);document.getElementById('remFrom').value=remind.from;document.getElementById('remTo').value=remind.to;document.getElementById('remTrain').value=remind.train||'';
+ const perm='Notification' in window?Notification.permission:'none';document.getElementById('remindBtn').textContent=remind.on&&perm==='granted'?'DESACTIVAR NOTIFICACIONES':'ACTIVAR NOTIFICACIONES';document.getElementById('remindStatus').textContent=perm==='none'?'Este navegador no permite notificaciones.':perm==='denied'?'Notificaciones bloqueadas: actívalas en los ajustes del navegador para este sitio.':remind.on&&perm==='granted'?`Activas: te aviso cada ${remind.every} min entre ${remind.from} y ${remind.to}.`:'Desactivadas.'}
+async function askNotif(){if(!('Notification' in window)){showToast('Este navegador no permite notificaciones.');return}const p=await Notification.requestPermission();if(p==='granted'){remind.on=true;remind.last=Date.now();persistHealth();showToast('Notificaciones activadas.');fireNotif('💧 JC Training','Listo: te avisaré para tomar agua.')}else showToast('Permiso denegado.');renderHealth()}
+function toggleRemind(){if(remind.on){remind.on=false;persistHealth();renderHealth()}else askNotif()}
+function setRemind(k,val){remind[k]=val;if(k==='every')remind.last=Date.now();persistHealth();renderHealth()}
+function testNotif(){if(!('Notification' in window)||Notification.permission!=='granted'){showToast('Primero activa las notificaciones.');return}fireNotif('💧 Hora de tomar agua','Así se verá tu recordatorio.')}
+async function fireNotif(title,body,tag){try{const reg=await navigator.serviceWorker.getRegistration();const o={body,icon:'icon.svg',badge:'icon.svg',tag:tag||'jc-water',renotify:true,vibrate:[200,100,200]};if(reg)await reg.showNotification(title,o);else new Notification(title,o)}catch(e){console.error(e)}}
+function hm(t){const a=String(t||'0:0').split(':').map(Number);return a[0]*60+(a[1]||0)}
+function checkRemind(){if(!remind.on||!('Notification' in window)||Notification.permission!=='granted')return;const now=new Date(),m=now.getHours()*60+now.getMinutes(),today=isoDate(now);
+ if(m>=hm(remind.from)&&m<=hm(remind.to)&&Date.now()-(remind.last||0)>=remind.every*60000){remind.last=Date.now();persistHealth(false);const ml=waterToday(),g=waterGoal();fireNotif('💧 Hora de tomar agua',ml>=g?'Ya llegaste a tu meta de hoy. ¡Buen trabajo!':'Llevas '+ml+' de '+g+' ml. Toma un vaso ahora.')}
+ const p=plan[(now.getDay()+6)%7];if(remind.train&&p&&p.ex&&p.ex.length&&remind.trainDay!==today&&m>=hm(remind.train)&&m<hm(remind.train)+120){remind.trainDay=today;persistHealth(false);fireNotif('🏋️ Hoy toca entrenar',p.ex.slice(0,3).map(e=>e.n).join(', ')+(p.ex.length>3?'…':''),'jc-train')}}
+function downloadICS(){const pad=n=>String(n).padStart(2,'0'),d=new Date(),day=`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`,slots=[];for(let m=hm(remind.from);m<=hm(remind.to)&&slots.length<48;m+=+remind.every)slots.push(m);let o='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//JC Training//ES\r\nCALSCALE:GREGORIAN\r\n';slots.forEach((m,i)=>{o+=`BEGIN:VEVENT\r\nUID:jc-agua-${i}@jctraining\r\nDTSTAMP:${day}T000000Z\r\nDTSTART:${day}T${pad(Math.floor(m/60))}${pad(m%60)}00\r\nDURATION:PT5M\r\nRRULE:FREQ=DAILY\r\nSUMMARY:💧 Tomar agua\r\nBEGIN:VALARM\r\nTRIGGER:PT0M\r\nACTION:DISPLAY\r\nDESCRIPTION:Toma un vaso de agua\r\nEND:VALARM\r\nEND:VEVENT\r\n`});o+='END:VCALENDAR';const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([o],{type:'text/calendar'}));a.download='jc-training-agua.ics';document.body.appendChild(a);a.click();a.remove();showToast(slots.length+' alarmas diarias descargadas. Ábrelas con tu calendario.')}
+setInterval(checkRemind,30000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkRemind()});
+
 init();
 initFirebase();
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
