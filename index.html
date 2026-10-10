@@ -100,7 +100,7 @@
     </form>
     <button class="btn secondary smallbtn" type="button" id="resetPassword" style="margin-top:10px;width:100%">Olvidé mi contraseña</button>
     <div class="authMessage" id="authMessage" role="status"></div>
-    <div class="authFoot">Tus datos se guardan en tu cuenta. No compartas tu contraseña.</div>
+    <div class="authFoot">Tus datos se guardan en tu cuenta. No compartas tu contraseña. · Versión 3</div>
   </div>
 </section>
 <div class="toast" id="toast"></div>
@@ -258,7 +258,7 @@ applyScreens();
 function initFirebase(){
   try {
     if (!window.JC_FIREBASE_CONFIG || !window.JC_FIREBASE_CONFIG.apiKey || window.JC_FIREBASE_CONFIG.apiKey === 'PEGA_AQUI_TU_API_KEY') {
-      setAuthMessage('Primero configura firebase-config.js con los datos de tu aplicación Firebase.');
+      setAuthMessage('Primero configura firebase-config.js con los datos de tu aplicación Firebase.',true);
       return;
     }
     firebase.initializeApp(window.JC_FIREBASE_CONFIG);
@@ -285,9 +285,9 @@ function initFirebase(){
         catch (e) { console.error(e); showToast('Sesión iniciada; no se pudo sincronizar la nube.'); }
       }
     });
-  } catch(e) { console.error(e); setAuthMessage('No se pudo iniciar Firebase. Revisa firebase-config.js.'); }
+  } catch(e) { console.error(e); setAuthMessage('No se pudo iniciar Firebase: '+(e&&e.message?e.message:'revisa firebase-config.js')+'. Si dice que firebase no está definido, revisa tu conexión a internet.',true); }
 }
-function setAuthMessage(message){ const el=document.getElementById('authMessage'); if(el) el.textContent=message||''; }
+function setAuthMessage(message,isError){ const el=document.getElementById('authMessage'); if(el){ el.textContent=message||''; el.style.color=isError?'var(--red)':'var(--green)'; el.style.fontSize=isError?'13px':'12px'; } }
 function firebaseErrorMessage(error){
   const code=error && error.code || '';
   const messages={
@@ -327,7 +327,7 @@ document.getElementById('authToggle').addEventListener('click',()=>{
 });
 document.getElementById('authForm').addEventListener('submit',async e=>{
   e.preventDefault();
-  if(!firebaseReady){setAuthMessage('Configura Firebase primero y vuelve a cargar la página.');return;}
+  if(!firebaseReady){setAuthMessage('Firebase no está listo. Recarga la página con Ctrl + F5.',true);return;}
   const email=v('authEmail').trim(), password=v('authPassword'), name=v('authName').trim();
   if(authMode==='register' && !name){setAuthMessage('Escribe tu nombre.');return;}
   setAuthMessage('Procesando…'); document.getElementById('authSubmit').disabled=true;
@@ -345,7 +345,7 @@ document.getElementById('authForm').addEventListener('submit',async e=>{
     }
     else await jcAuth.signInWithEmailAndPassword(email,password);
     setAuthMessage('');
-  } catch(err){setAuthMessage(firebaseErrorMessage(err));}
+  } catch(err){console.error(err);setAuthMessage(firebaseErrorMessage(err)+' ['+((err&&err.code)||'sin-codigo')+']',true);}
   finally{document.getElementById('authSubmit').disabled=false;}
 });
 document.getElementById('resetPassword').addEventListener('click',async()=>{
@@ -418,6 +418,10 @@ function v(id){return document.getElementById(id)?.value ?? ''}
 function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 init();
 initFirebase();
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  const hadController=!!navigator.serviceWorker.controller; let reloaded=false;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{ if(!hadController||reloaded) return; reloaded=true; location.reload(); });
+}
 if('serviceWorker' in navigator && location.protocol.startsWith('http')) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(console.warn));
 </script>
 </body>
