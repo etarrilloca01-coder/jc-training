@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#050707">
+  <meta name="description" content="JC Training: rutinas, medidas corporales y progreso de entrenamiento.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <style>
+    :root{--bg:#050707;--panel:#0d1314;--panel2:#11191a;--line:#263233;--green:#a8ff00;--green2:#78c900;--text:#f4f7f3;--muted:#9aa8a3;--red:#ff6969}
+    *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 15% 0%,#142017 0,transparent 30%),var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+    button,input,select{font:inherit} button{cursor:pointer}
+    .app{max-width:1180px;margin:auto;min-height:100vh;padding:20px 18px 100px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}
+    .brand{display:flex;align-items:center;gap:10px}.logo{font-weight:1000;font-style:italic;font-size:25px;letter-spacing:-2px;color:var(--green);line-height:1}.logo span{color:#fff;font-size:18px;letter-spacing:-.5px}.sub{font-size:9px;color:var(--green);letter-spacing:1.3px;margin-top:4px}
+    .avatar{border:1px solid var(--line);background:#121a1b;border-radius:50%;width:42px;height:42px;display:grid;place-items:center;color:var(--green);font-weight:800}
+    .welcome h1{font-size:clamp(25px,4vw,38px);margin:8px 0 4px}.muted{color:var(--muted)}.small{font-size:12px}
+    .hero{display:grid;grid-template-columns:1.25fr 1fr;gap:18px;margin:18px 0 22px}
+    .heroMain{min-height:210px;border:1px solid #315027;border-radius:20px;padding:24px;background:linear-gradient(110deg,rgba(8,13,11,.97),rgba(12,23,14,.75)),radial-gradient(circle at 80% 50%,#355c17,transparent 40%);display:flex;flex-direction:column;justify-content:center;overflow:hidden;position:relative}
+    .heroMain:after{content:'JC';position:absolute;right:18px;bottom:-48px;font-size:180px;font-weight:1000;font-style:italic;color:#b0ff0010;pointer-events:none}
+    .eyebrow{font-size:11px;letter-spacing:2px;color:var(--green);text-transform:uppercase}.heroMain h2{font-size:clamp(25px,4vw,40px);margin:10px 0}.heroMain p{color:#c4cec7;max-width:420px;margin:0 0 18px}
+    .btn{border:0;border-radius:10px;padding:12px 16px;font-weight:850;background:var(--green);color:#101500;box-shadow:0 5px 20px #8fe90019}.btn.secondary{background:#17201c;color:var(--text);border:1px solid var(--line);box-shadow:none}.btn.smallbtn{padding:8px 11px;font-size:12px}
+    .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.stat,.card{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:16px;padding:16px}.stat .label{font-size:12px;color:var(--muted)}.stat strong{display:block;font-size:25px;margin:9px 0 3px}.stat em{font-size:11px;color:var(--green);font-style:normal}
+    .section{display:none}.section.active{display:block}.sectionHead{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:26px 0 14px}.sectionHead h2{margin:0;font-size:24px}.sectionHead p{margin:5px 0 0;color:var(--muted);font-size:13px}
+    .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.tile{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:17px;text-align:left;color:var(--text);min-height:105px}.tile:hover,.nav button.active{border-color:var(--green)}.tile .ico{font-size:22px;color:var(--green)}.tile strong{display:block;margin:10px 0 5px}.tile span{font-size:12px;color:var(--muted)}
+    .week{display:grid;grid-template-columns:repeat(7,1fr);gap:7px;margin-bottom:15px}.day{border:1px solid var(--line);border-radius:12px;padding:12px 5px;background:#0a1010;color:var(--muted);text-align:center}.day b{display:block;font-size:11px}.day span{display:block;font-size:18px;color:#fff;margin-top:6px}.day.active{background:var(--green);border-color:var(--green);color:#172000}.day.active span{color:#172000}
+    .list{display:grid;gap:8px}.rowitem{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#0b1111;border:1px solid var(--line);border-radius:12px;padding:13px}.rowitem strong{font-size:14px}.rowitem small{display:block;color:var(--muted);margin-top:4px}.check{color:var(--green);font-size:20px}
+    .formgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.field{display:grid;gap:6px}.field label{font-size:12px;color:var(--muted)}.field input,.field select{width:100%;background:#070b0b;border:1px solid var(--line);border-radius:9px;padding:11px;color:var(--text);outline:none}.field input:focus,.field select:focus{border-color:var(--green)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .measureLayout{display:grid;grid-template-columns:1fr 1fr;gap:16px}.measureRows{display:grid;gap:7px}.measureRow{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #202929;padding:10px 0;font-size:13px}.measureRow input{width:90px;background:#070b0b;border:1px solid var(--line);border-radius:7px;padding:7px;color:#fff;text-align:right}
+    .toggle{display:flex;gap:6px;background:#070b0b;border:1px solid var(--line);padding:4px;border-radius:10px}.toggle button{background:transparent;border:0;color:var(--muted);border-radius:7px;padding:8px 12px}.toggle button.active{background:var(--green);color:#172000;font-weight:800}
+    .bodyView{min-height:350px;display:flex;align-items:center;justify-content:center;position:relative;background:radial-gradient(ellipse,#18251b 0%,#0a1010 62%);border-radius:14px;overflow:hidden}.bodyView svg{height:320px;max-width:100%}.bodylabel{position:absolute;left:12px;right:12px;bottom:12px;text-align:center;font-size:11px;color:var(--muted)}
+    .chart{height:220px;display:flex;align-items:end;gap:clamp(6px,2vw,18px);padding:18px 8px 0;border-bottom:1px solid var(--line)}.barWrap{height:100%;flex:1;display:flex;flex-direction:column;justify-content:end;align-items:center;gap:7px}.bar{width:min(34px,80%);min-height:5px;background:linear-gradient(0deg,#69b800,var(--green));border-radius:6px 6px 2px 2px}.barWrap small{font-size:10px;color:var(--muted)}.barWrap b{font-size:10px}
+    .compare{display:grid;gap:13px}.compareRow{display:grid;grid-template-columns:100px 1fr 45px;gap:10px;align-items:center;font-size:12px}.dualbar{display:grid;gap:4px}.track{height:7px;background:#202929;border-radius:8px;overflow:hidden}.fill1{height:100%;background:#728078}.fill2{height:100%;background:var(--green);border-radius:8px}
+    .profileTop{display:flex;align-items:center;gap:14px;margin-bottom:16px}.profilePic{width:66px;height:66px;border-radius:50%;display:grid;place-items:center;background:#18231b;border:1px solid #48612c;font-size:26px}.profileName{font-size:22px;font-weight:800}.profileGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.profileVal{padding:12px;border:1px solid var(--line);border-radius:10px;background:#080d0d}.profileVal span{display:block;font-size:11px;color:var(--muted)}.profileVal b{display:block;margin-top:5px}
+    .nav{position:fixed;bottom:0;left:0;right:0;z-index:10;background:#070a0aee;backdrop-filter:blur(18px);border-top:1px solid var(--line);display:flex;justify-content:center;padding:8px max(10px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom));gap:4px}.nav button{background:transparent;color:var(--muted);border:1px solid transparent;border-radius:10px;padding:8px 14px;min-width:75px;font-size:11px}.nav button .navico{display:block;font-size:18px;margin-bottom:3px}.nav button.active{color:var(--green);background:#111a11}
+    .notice{margin-top:12px;color:var(--muted);font-size:12px}.toast{position:fixed;top:15px;left:50%;transform:translateX(-50%);z-index:30;background:var(--green);color:#152000;padding:12px 18px;border-radius:10px;font-weight:800;display:none;box-shadow:0 10px 35px #0008}
+    .authScreen{min-height:100vh;display:grid;place-items:center;padding:22px;background:radial-gradient(circle at 50% 0%,#1a2c18,transparent 42%),var(--bg)}
+    .authCard{width:min(100%,440px);padding:28px;background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid #315027;border-radius:22px;box-shadow:0 25px 80px #0008}
+    .authLogo{font-size:30px;font-weight:1000;font-style:italic;color:var(--green);letter-spacing:-2px}.authLogo span{color:#fff;font-size:21px;letter-spacing:-.5px}.authCard h1{font-size:26px;margin:25px 0 7px}.authCard p{color:var(--muted);font-size:13px;line-height:1.5}.authCard .field{margin-top:13px}.authCard .actions{display:grid;grid-template-columns:1fr 1fr}.authMessage{font-size:12px;min-height:18px;color:var(--green);margin-top:12px}.authFoot{font-size:11px;color:var(--muted);margin-top:20px}
+    .accountTools{display:flex;align-items:center;gap:8px}.accountEmail{font-size:11px;color:var(--muted);max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    @media(max-width:760px){.app{padding:14px 12px 100px}.hero{grid-template-columns:1fr}.heroMain{min-height:180px}.stats{grid-template-columns:repeat(2,1fr)}.tiles{grid-template-columns:repeat(2,1fr)}.measureLayout{grid-template-columns:1fr}.formgrid{grid-template-columns:repeat(2,1fr)}.week{gap:4px}.day{padding:10px 2px}.day b{font-size:9px}.day span{font-size:15px}.nav button{min-width:0;flex:1;padding:7px 3px}.nav button .navico{font-size:17px}.compareRow{grid-template-columns:80px 1fr 35px}}
+    @media(max-width:420px){.formgrid{grid-template-columns:1fr 1fr}.stat,.card{padding:13px}.stat strong{font-size:21px}.sectionHead h2{font-size:21px}.tile{padding:13px}}
+  </style>
+</head>
+<body>
+<section class="authScreen" id="authScreen">
+  <div class="authCard">
+    <div class="authLogo">JC<span> TRAINING</span></div>
+    <div class="eyebrow" style="margin-top:8px">TU PROGRESO, TU MEJOR VERSIÓN</div>
+    <h1 id="authTitle">Inicia sesión</h1>
+    <p id="authDescription">Accede para guardar tus rutinas, medidas y evolución en tu cuenta personal.</p>
+    <form id="authForm">
+      <div class="field"><label for="authEmail">Correo electrónico</label><input id="authEmail" type="email" autocomplete="email" required placeholder="tu@correo.com"></div>
+      <div class="field"><label for="authPassword">Contraseña (mínimo 6 caracteres)</label><input id="authPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="••••••••"></div>
+      <div class="actions"><button class="btn" id="authSubmit" type="submit">INICIAR SESIÓN</button><button class="btn secondary" type="button" id="authToggle">CREAR CUENTA</button></div>
+    </form>
+    <button class="btn secondary smallbtn" type="button" id="resetPassword" style="margin-top:10px;width:100%">Olvidé mi contraseña</button>
+    <div class="authMessage" id="authMessage" role="status"></div>
+    <div class="authFoot">Tus datos se guardan en tu cuenta. No compartas tu contraseña.</div>
+  </div>
+</section>
+<div class="toast" id="toast"></div>
+<div class="app" id="mainApp" style="display:none">
+  <header>
+    <div class="brand"><div class="logo">JC<span> TRAINING</span><div class="sub">REGISTRO DE ENTRENAMIENTO</div></div></div>
+    <div class="accountTools"><span class="accountEmail" id="accountEmail"></span><button class="btn secondary smallbtn" id="signOutBtn" type="button">Salir</button><button class="avatar" onclick="showSection('perfil')" title="Mi perfil" id="avatar">J</button></div>
+  </header>
+
+  <main>
+    <section class="section active" id="inicio">
+      <div class="welcome"><div class="eyebrow">TU PROGRESO, TU MEJOR VERSIÓN</div><h1>¡Hola, <span id="helloName">Jackson</span>! 👋</h1><div class="muted">Construye constancia. Registra cada avance.</div></div>
+      <div class="hero">
+        <div class="heroMain"><div class="eyebrow">HOY ES TU DÍA</div><h2>Entrena con intención.</h2><p>Tu rutina, tus medidas y tu progreso, todo en un solo lugar.</p><button class="btn" onclick="showSection('rutina')">VER MI RUTINA　↗</button></div>
+        <div class="stats">
+          <div class="stat"><span class="label">Peso actual</span><strong id="statWeight">78 kg</strong><em>Meta paso a paso</em></div>
+          <div class="stat"><span class="label">Cumplimiento</span><strong id="statCompliance">0%</strong><em>Entrenamientos registrados</em></div>
+          <div class="stat"><span class="label">Volumen semanal</span><strong id="statVolume">0 kg</strong><em>Series × reps × peso</em></div>
+          <div class="stat"><span class="label">Medidas</span><strong id="statMeasures">0</strong><em>Campos completados</em></div>
+        </div>
+      </div>
+      <div class="sectionHead"><div><h2>Tu espacio de entrenamiento</h2><p>Acceso rápido a cada sección.</p></div></div>
+      <div class="tiles">
+        <button class="tile" onclick="showSection('rutina')"><div class="ico">▦</div><strong>Rutina semanal</strong><span>Calendario de lunes a domingo</span></button>
+        <button class="tile" onclick="showSection('medidas')"><div class="ico">♧</div><strong>Medidas corporales</strong><span>Lista y vista corporal 3D conceptual</span></button>
+        <button class="tile" onclick="showSection('volumen')"><div class="ico">▥</div><strong>Volumen</strong><span>Series, repeticiones y carga</span></button>
+        <button class="tile" onclick="showSection('comparar')"><div class="ico">⇄</div><strong>Comparar semanas</strong><span>Observa los cambios</span></button>
+        <button class="tile" onclick="showSection('perfil')"><div class="ico">♙</div><strong>Mi perfil</strong><span>Datos personales y objetivo</span></button>
+        <button class="tile" onclick="showToast('No tienes notificaciones nuevas.')"><div class="ico">♧</div><strong>Notificaciones</strong><span>Recordatorios y logros</span></button>
+      </div>
+    </section>
+
+    <section class="section" id="rutina">
+      <div class="sectionHead"><div><h2>Calendario semanal</h2><p>Selecciona un día y registra lo que entrenaste.</p></div><button class="btn secondary smallbtn" onclick="setToday()">Hoy</button></div>
+      <div class="week" id="weekDays"></div>
+      <div class="card">
+        <div class="sectionHead" style="margin-top:0"><div><h2 id="selectedDayTitle">Lunes</h2><p>Marca las sesiones que completes.</p></div></div>
+        <div class="list" id="routineList"></div>
+      </div>
+      <div class="sectionHead"><div><h2>Registro de entrenamiento</h2><p>Guarda cada ejercicio en tu historial.</p></div></div>
+      <div class="card">
+        <div class="formgrid">
+          <div class="field"><label>Fecha</label><input type="date" id="workDate"></div>
+          <div class="field"><label>Grupo muscular</label><select id="workGroup"><option>Pecho</option><option>Espalda</option><option>Piernas</option><option>Hombros</option><option>Brazos</option><option>Abdomen</option><option>Cardio</option><option>Descanso</option></select></div>
+          <div class="field"><label>Ejercicio</label><input id="workExercise" placeholder="Press banca"></div>
+          <div class="field"><label>Series</label><input id="workSets" type="number" min="0" value="3"></div>
+          <div class="field"><label>Repeticiones por serie</label><input id="workReps" type="number" min="0" value="10"></div>
+          <div class="field"><label>Peso (kg)</label><input id="workWeight" type="number" min="0" step="0.5" value="20"></div>
+          <div class="field" style="grid-column:1/-1"><label>Notas (opcional)</label><input id="workNotes" placeholder="Sensaciones, técnica, RPE…"></div>
+        </div>
+        <div class="actions"><button class="btn" onclick="saveWorkoutUI()">GUARDAR ENTRENAMIENTO</button></div>
+        <p class="notice">El volumen se calcula como series × repeticiones × peso. Para ejercicios con peso corporal o cardio, puedes registrar 0 kg y añadir detalles en notas.</p>
+      </div>
+    </section>
+
+    <section class="section" id="medidas">
+      <div class="sectionHead"><div><h2>Medidas corporales</h2><p>Registra una vez por semana para seguir tu evolución.</p></div>
+        <div class="toggle"><button class="active" id="listToggle" onclick="setMeasureMode('lista')">Lista</button><button id="threeToggle" onclick="setMeasureMode('3d')">3D</button></div>
+      </div>
+      <div class="card" style="margin-bottom:14px"><div class="formgrid">
+        <div class="field"><label>Semana</label><select id="measureWeek"><option>Semana 1</option><option>Semana 2</option><option>Semana 3</option><option>Semana 4</option><option>Semana 5</option><option>Semana 6</option><option>Semana 7</option><option>Semana 8</option><option>Semana 9</option><option>Semana 10</option><option>Semana 11</option><option>Semana 12</option></select></div>
+        <div class="field"><label>Vista corporal</label><select id="bodyGender" onchange="renderBody()"><option>Hombre</option><option>Mujer</option></select></div>
+        <div class="field"><label>Fecha de medición</label><input type="date" id="measureDate"></div>
+      </div></div>
+      <div class="measureLayout">
+        <div class="card" id="measureListCard">
+          <div class="eyebrow">MEDICIONES EN CM</div><div class="measureRows" id="measureFields"></div>
+          <div class="formgrid" style="margin-top:12px"><div class="field"><label>Peso (kg)</label><input id="mWeight" type="number" min="0" step="0.1" placeholder="78"></div><div class="field"><label>Grasa corporal (%)</label><input id="mFat" type="number" min="0" max="100" step="0.1" placeholder="25"></div></div>
+          <div class="actions"><button class="btn" onclick="saveMeasuresUI()">GUARDAR MEDIDAS</button><button class="btn secondary" onclick="showSection('comparar')">VER RESUMEN</button></div>
+        </div>
+        <div class="card" id="bodyCard">
+          <div class="eyebrow">VISTA CORPORAL · REFERENCIA VISUAL</div>
+          <div class="bodyView" id="bodyView"></div>
+          <p class="notice">La silueta es una referencia ilustrativa; no calcula medidas automáticamente. La vista 3D real puede integrarse después con un modelo 3D interactivo.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="volumen">
+      <div class="sectionHead"><div><h2>Volumen de entrenamiento</h2><p>Compara tu carga total por día.</p></div><div class="field"><label>Periodo</label><select id="volumePeriod" onchange="renderVolume()"><option value="week">Esta semana</option><option value="all">Todo el historial</option></select></div></div>
+      <div class="stats" style="margin-bottom:15px">
+        <div class="stat"><span class="label">Volumen total</span><strong id="volumeTotal">0 kg</strong><em>kg levantados acumulados</em></div>
+        <div class="stat"><span class="label">Sesiones</span><strong id="sessionCount">0</strong><em>Registros guardados</em></div>
+      </div>
+      <div class="card"><div class="eyebrow">VOLUMEN POR DÍA</div><div class="chart" id="volumeChart"></div><p class="notice">El volumen es una métrica de seguimiento simple (series × repeticiones × peso), no una medida completa de la dificultad del entrenamiento.</p></div>
+      <div class="sectionHead"><div><h2>Últimos registros</h2><p>Historial de ejercicios guardados en este dispositivo.</p></div></div><div class="list" id="workoutHistory"></div>
+    </section>
+
+    <section class="section" id="comparar">
+      <div class="sectionHead"><div><h2>Comparar semanas</h2><p>Revisa los cambios entre dos registros semanales.</p></div></div>
+      <div class="card"><div class="formgrid" style="margin-bottom:20px"><div class="field"><label>Semana inicial</label><select id="compareA" onchange="renderCompare()"></select></div><div class="field"><label>Semana para comparar</label><select id="compareB" onchange="renderCompare()"></select></div></div><div class="compare" id="compareRows"></div><p class="notice">La comparación usa los valores que hayas guardado en cada semana. Completa ambas semanas para obtener resultados útiles.</p></div>
+    </section>
+
+    <section class="section" id="perfil">
+      <div class="sectionHead"><div><h2>Mi perfil</h2><p>Tus datos personales y objetivo de entrenamiento.</p></div></div>
+      <div class="card">
+        <div class="profileTop"><div class="profilePic">🏋️</div><div><div class="profileName" id="profileDisplayName">Jackson</div><div class="muted small" id="profileDisplayMeta">Completa tus datos personales</div></div></div>
+        <div class="formgrid">
+          <div class="field"><label>Nombre</label><input id="pName" value="Jackson"></div>
+          <div class="field"><label>Edad</label><input id="pAge" type="number" min="1" placeholder="24"></div>
+          <div class="field"><label>Sexo</label><select id="pSex"><option>Hombre</option><option>Mujer</option><option>Prefiero no decirlo</option></select></div>
+          <div class="field"><label>Altura (cm)</label><input id="pHeight" type="number" min="1" placeholder="165"></div>
+          <div class="field"><label>Peso (kg)</label><input id="pWeight" type="number" min="1" step="0.1" placeholder="78"></div>
+          <div class="field"><label>Grasa corporal (%)</label><input id="pFat" type="number" min="0" max="100" step="0.1" placeholder="25"></div>
+          <div class="field"><label>Objetivo</label><select id="pGoal"><option>Definición</option><option>Hipertrofia</option><option>Fuerza</option><option>Mantenimiento</option><option>Salud general</option></select></div>
+          <div class="field"><label>Nivel</label><select id="pLevel"><option>Principiante</option><option>Intermedio</option><option>Avanzado</option></select></div>
+        </div>
+        <div class="actions"><button class="btn" onclick="saveProfileUI()">GUARDAR PERFIL</button></div>
+        <p class="notice">Los datos personales se usan para mostrar tu perfil y tus métricas. Evita introducir información que no quieras guardar.</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<nav class="nav">
+  <button class="active" data-section="inicio" onclick="showSection('inicio')"><span class="navico">⌂</span>Inicio</button>
+  <button data-section="rutina" onclick="showSection('rutina')"><span class="navico">▦</span>Rutina</button>
+  <button data-section="medidas" onclick="showSection('medidas')"><span class="navico">♧</span>Medidas</button>
+  <button data-section="volumen" onclick="showSection('volumen')"><span class="navico">▥</span>Volumen</button>
+  <button data-section="perfil" onclick="showSection('perfil')"><span class="navico">♙</span>Perfil</button>
+</nav>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+const DAYS = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+const SHORT = ['LUN','MAR','MIÉ','JUE','VIE','SÁB','DOM'];
+const ROUTINES = [
+  ['Pecho + tríceps','Entrenamiento de fuerza'],['Espalda + bíceps','Entrenamiento de fuerza'],['Piernas','Entrenamiento de fuerza'],['Hombros','Entrenamiento de fuerza'],['Brazos + abdomen','Entrenamiento de fuerza'],['Cardio / movilidad','Recuperación activa'],['Descanso','Recuperación']
+];
+const MEASUREMENTS = [['Cuello','neck'],['Hombros','shoulders'],['Pecho','chest'],['Bíceps','biceps'],['Antebrazo','forearm'],['Cintura','waist'],['Cadera','hips'],['Muslo','thigh'],['Pantorrilla','calf']];
+let selectedDay = 0;
+let workouts = JSON.parse(localStorage.getItem('jc_workouts') || '[]');
+let measurements = JSON.parse(localStorage.getItem('jc_measurements') || '[]');
+let profile = JSON.parse(localStorage.getItem('jc_profile') || '{"name":"Jackson","sex":"Hombre","goal":"Definición","level":"Intermedio"}');
+let doneDays = JSON.parse(localStorage.getItem('jc_done_days') || '{}');
+let measureMode = 'lista';
+let currentUser = null;
+let authMode = 'login';
+let firebaseReady = false;
+let cloudLoadInProgress = false;
+
+function initFirebase(){
+  try {
+    if (!window.JC_FIREBASE_CONFIG || !window.JC_FIREBASE_CONFIG.apiKey || window.JC_FIREBASE_CONFIG.apiKey === 'PEGA_AQUI_TU_API_KEY') {
+      setAuthMessage('Primero configura firebase-config.js con los datos de tu aplicación Firebase.');
+      return;
+    }
+    firebase.initializeApp(window.JC_FIREBASE_CONFIG);
+    window.jcAuth = firebase.auth();
+    window.jcDb = firebase.firestore();
+    firebaseReady = true;
+    jcAuth.onAuthStateChanged(async user => {
+      currentUser = user || null;
+      document.getElementById('authScreen').style.display = user ? 'none' : 'grid';
+      document.getElementById('mainApp').style.display = user ? 'block' : 'none';
+      document.getElementById('accountEmail').textContent = user ? (user.email || '') : '';
+      if (user) {
+        try { await loadCloudData(); showToast('Sesión iniciada. Datos sincronizados.'); }
+        catch (e) { console.error(e); showToast('Sesión iniciada; no se pudo sincronizar la nube.'); }
+      }
+    });
+  } catch(e) { console.error(e); setAuthMessage('No se pudo iniciar Firebase. Revisa firebase-config.js.'); }
+}
+function setAuthMessage(message){ const el=document.getElementById('authMessage'); if(el) el.textContent=message||''; }
+function firebaseErrorMessage(error){
+  const code=error && error.code || '';
+  const messages={
+    'auth/invalid-email':'El correo electrónico no tiene un formato válido.',
+    'auth/user-not-found':'No existe una cuenta con ese correo.',
+    'auth/wrong-password':'La contraseña es incorrecta.',
+    'auth/invalid-credential':'Correo o contraseña incorrectos.',
+    'auth/email-already-in-use':'Ese correo ya tiene una cuenta. Inicia sesión.',
+    'auth/weak-password':'La contraseña debe tener al menos 6 caracteres.',
+    'auth/too-many-requests':'Demasiados intentos. Espera un momento e inténtalo otra vez.',
+    'auth/network-request-failed':'Error de conexión. Revisa tu internet.',
+    'auth/operation-not-allowed':'Activa el acceso Correo/Contraseña en Firebase Authentication.'
+  };
+  return messages[code] || (error && error.message) || 'Ocurrió un error. Revisa la configuración de Firebase.';
+}
+document.getElementById('authToggle').addEventListener('click',()=>{
+  authMode=authMode==='login'?'register':'login';
+  document.getElementById('authTitle').textContent=authMode==='login'?'Inicia sesión':'Crea tu cuenta';
+  document.getElementById('authDescription').textContent=authMode==='login'?'Accede para guardar tus rutinas, medidas y evolución en tu cuenta personal.':'Regístrate para tener tu propio historial de entrenamiento.';
+  document.getElementById('authSubmit').textContent=authMode==='login'?'INICIAR SESIÓN':'CREAR CUENTA';
+  document.getElementById('authToggle').textContent=authMode==='login'?'CREAR CUENTA':'YA TENGO CUENTA';
+  document.getElementById('resetPassword').style.display=authMode==='login'?'block':'none';
+  setAuthMessage('');
+});
+document.getElementById('authForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!firebaseReady){setAuthMessage('Configura Firebase primero y vuelve a cargar la página.');return;}
+  const email=v('authEmail').trim(), password=v('authPassword');
+  setAuthMessage('Procesando…'); document.getElementById('authSubmit').disabled=true;
+  try {
+    if(authMode==='register') await jcAuth.createUserWithEmailAndPassword(email,password);
+    else await jcAuth.signInWithEmailAndPassword(email,password);
+    setAuthMessage('');
+  } catch(err){setAuthMessage(firebaseErrorMessage(err));}
+  finally{document.getElementById('authSubmit').disabled=false;}
+});
+document.getElementById('resetPassword').addEventListener('click',async()=>{
+  if(!firebaseReady){setAuthMessage('Configura Firebase primero.');return;}
+  const email=v('authEmail').trim(); if(!email){setAuthMessage('Escribe tu correo y vuelve a pulsar.');return;}
+  try{await jcAuth.sendPasswordResetEmail(email);setAuthMessage('Te enviamos un enlace para restablecer la contraseña.');}
+  catch(err){setAuthMessage(firebaseErrorMessage(err));}
+});
+document.getElementById('signOutBtn').addEventListener('click',()=>{if(firebaseReady)jcAuth.signOut();});
+
+function userCollection(name){ if(!currentUser) throw new Error('Inicia sesión para guardar datos.'); return jcDb.collection('users').doc(currentUser.uid).collection(name); }
+async function saveCloudDoc(collectionName,id,data){ if(!currentUser||!firebaseReady)return; await userCollection(collectionName).doc(id).set({...data,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}); }
+async function loadCloudData(){
+  if(!currentUser||cloudLoadInProgress)return; cloudLoadInProgress=true;
+  try {
+    const [ws,ms,profileSnap,doneSnap]=await Promise.all([
+      userCollection('workouts').orderBy('date','desc').limit(500).get(),
+      userCollection('measurements').get(),
+      userCollection('profile').doc('main').get(),
+      userCollection('settings').doc('routine').get()
+    ]);
+    if(!ws.empty) workouts=ws.docs.map(d=>d.data()).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+    if(!ms.empty) measurements=ms.docs.map(d=>d.data()).sort((a,b)=>(a.week||'').localeCompare(b.week||''));
+    if(profileSnap.exists) profile={...profile,...profileSnap.data()};
+    if(doneSnap.exists) doneDays=doneSnap.data().doneDays||{};
+    localStorage.setItem('jc_workouts',JSON.stringify(workouts));
+    localStorage.setItem('jc_measurements',JSON.stringify(measurements));
+    localStorage.setItem('jc_profile',JSON.stringify(profile));
+    localStorage.setItem('jc_done_days',JSON.stringify(doneDays));
+    ['pName','pAge','pSex','pHeight','pWeight','pFat','pGoal','pLevel'].forEach(id=>{const key={pName:'name',pAge:'age',pSex:'sex',pHeight:'height',pWeight:'weight',pFat:'bodyFat',pGoal:'goal',pLevel:'level'}[id];if(profile[key]!==undefined)document.getElementById(id).value=profile[key]});
+    updateProfile();renderAll();renderRoutine();
+  } finally {cloudLoadInProgress=false;}
+}
+function cloudSaveWorkout(w){if(!currentUser)return;const id=w.id||('w_'+Date.now()+'_'+Math.random().toString(36).slice(2,8));w.id=id;saveCloudDoc('workouts',id,w).catch(e=>{console.error(e);showToast('Se guardó localmente, pero falló la nube.');});}
+function cloudSaveMeasurement(data){if(!currentUser)return;const id=String(data.week||'semana').toLowerCase().replace(/[^a-z0-9_-]/g,'_');saveCloudDoc('measurements',id,data).catch(e=>{console.error(e);showToast('Se guardó localmente, pero falló la nube.');});}
+function cloudSaveProfile(data){if(!currentUser)return;saveCloudDoc('profile','main',data).catch(e=>{console.error(e);showToast('Se guardó localmente, pero falló la nube.');});}
+function cloudSaveRoutine(){if(!currentUser)return;saveCloudDoc('settings','routine',{doneDays}).catch(e=>console.error(e));}
+
+
+function init(){
+  const today = new Date(); document.getElementById('workDate').value = isoDate(today); document.getElementById('measureDate').value = isoDate(today);
+  document.getElementById('measureFields').innerHTML = MEASUREMENTS.map(([label,key])=>`<div class="measureRow"><label for="m_${key}">${label}</label><input id="m_${key}" type="number" min="0" step="0.1" placeholder="cm"></div>`).join('');
+  ['pName','pAge','pSex','pHeight','pWeight','pFat','pGoal','pLevel'].forEach(id=>{const key={pName:'name',pAge:'age',pSex:'sex',pHeight:'height',pWeight:'weight',pFat:'bodyFat',pGoal:'goal',pLevel:'level'}[id];if(profile[key]!==undefined)document.getElementById(id).value=profile[key]});
+  buildWeek(); renderRoutine(); renderBody(); buildCompareSelectors(); updateProfile(); renderAll();
+}
+function isoDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function showSection(id){document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active',s.id===id));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.section===id));if(id==='volumen')renderVolume();if(id==='comparar')renderCompare();window.scrollTo({top:0,behavior:'smooth'})}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',2400)}
+function buildWeek(){const now=new Date();let mon=new Date(now);let offset=(now.getDay()+6)%7;mon.setDate(now.getDate()-offset);document.getElementById('weekDays').innerHTML=Array.from({length:7},(_,i)=>{let d=new Date(mon);d.setDate(mon.getDate()+i);return `<button class="day ${i===selectedDay?'active':''}" onclick="selectDay(${i})"><b>${SHORT[i]}</b><span>${d.getDate()}</span></button>`}).join('')}
+function selectDay(i){selectedDay=i;buildWeek();renderRoutine()}
+function setToday(){selectedDay=(new Date().getDay()+6)%7;buildWeek();renderRoutine()}
+function renderRoutine(){document.getElementById('selectedDayTitle').textContent=DAYS[selectedDay];document.getElementById('routineList').innerHTML=ROUTINES.map((r,i)=>`<div class="rowitem"><div><strong>${r[0]}</strong><small>${i===selectedDay?'Sugerido para hoy · ':''}${r[1]}</small></div><button class="btn smallbtn ${doneDays[selectedDay+'-'+i]?'':'secondary'}" onclick="toggleDone(${i})">${doneDays[selectedDay+'-'+i]?'✓ Completado':'Marcar'}</button></div>`).join('')}
+function toggleDone(i){const k=selectedDay+'-'+i;doneDays[k]=!doneDays[k];localStorage.setItem('jc_done_days',JSON.stringify(doneDays));cloudSaveRoutine();renderRoutine();renderStats()}
+function saveWorkoutUI(){const w={date:document.getElementById('workDate').value,group:document.getElementById('workGroup').value,exercise:document.getElementById('workExercise').value.trim(),sets:+document.getElementById('workSets').value,reps:+document.getElementById('workReps').value,weight:+document.getElementById('workWeight').value,notes:document.getElementById('workNotes').value};if(!w.date||!w.exercise){showToast('Completa fecha y ejercicio.');return}w.volume=Math.max(0,w.sets)*Math.max(0,w.reps)*Math.max(0,w.weight);workouts.unshift(w);localStorage.setItem('jc_workouts',JSON.stringify(workouts));cloudSaveWorkout(w);document.getElementById('workExercise').value='';document.getElementById('workNotes').value='';renderAll();showToast('Entrenamiento guardado.')}
+function saveProfileUI(){profile={name:v('pName')||'Jackson',age:v('pAge'),sex:v('pSex'),height:v('pHeight'),weight:v('pWeight'),bodyFat:v('pFat'),goal:v('pGoal'),level:v('pLevel')};localStorage.setItem('jc_profile',JSON.stringify(profile));cloudSaveProfile(profile);updateProfile();renderStats();showToast('Perfil guardado.')}
+function updateProfile(){document.getElementById('helloName').textContent=profile.name||'Jackson';document.getElementById('avatar').textContent=(profile.name||'J').charAt(0).toUpperCase();document.getElementById('profileDisplayName').textContent=profile.name||'Jackson';document.getElementById('profileDisplayMeta').textContent=[profile.age?profile.age+' años':'',profile.sex||''].filter(Boolean).join(' · ')||'Completa tus datos personales';document.getElementById('statWeight').textContent=(profile.weight||'—')+' kg'}
+function saveMeasuresUI(){const data={week:v('measureWeek'),date:v('measureDate'),bodyView:v('bodyGender'),weight:v('mWeight'),bodyFat:v('mFat')};MEASUREMENTS.forEach(([label,key])=>data[key]=v('m_'+key));if(!data.week){showToast('Selecciona una semana.');return}const existing=measurements.findIndex(m=>m.week===data.week);if(existing>=0)measurements[existing]=data;else measurements.push(data);localStorage.setItem('jc_measurements',JSON.stringify(measurements));cloudSaveMeasurement(data);buildCompareSelectors();renderAll();showToast('Medidas guardadas.')}
+function setMeasureMode(mode){measureMode=mode;document.getElementById('listToggle').classList.toggle('active',mode==='lista');document.getElementById('threeToggle').classList.toggle('active',mode==='3d');document.getElementById('measureListCard').style.display=mode==='lista'?'block':'none';document.getElementById('bodyCard').style.display=mode==='3d'?'block':'none';if(mode==='3d'){document.querySelector('.measureLayout').style.gridTemplateColumns='1fr';}else{document.querySelector('.measureLayout').style.gridTemplateColumns='1fr 1fr';}}
+function renderBody(){const woman=v('bodyGender')==='Mujer';const torso=woman?'M 95 85 Q 115 72 135 88 L 145 130 Q 137 150 143 180 L 135 220 L 120 220 L 116 160 L 110 160 L 106 220 L 91 220 L 83 180 Q 89 150 81 130 Z':'M 87 82 Q 110 65 133 82 L 148 108 L 138 147 L 131 178 L 126 220 L 113 220 L 110 158 L 104 158 L 101 220 L 88 220 L 83 178 L 76 147 L 68 108 Z';const chest=woman?'M 91 103 Q 110 92 129 103 Q 126 124 110 126 Q 94 124 91 103Z':'M 83 101 Q 110 89 137 101 L 132 126 Q 110 139 88 126 Z';document.getElementById('bodyView').innerHTML=`<svg viewBox="0 0 220 290" role="img" aria-label="Silueta corporal ilustrativa"><defs><linearGradient id="skin" x1="0" x2="1"><stop stop-color="#52665a"/><stop offset=".5" stop-color="#c4d0c5"/><stop offset="1" stop-color="#394b40"/></linearGradient></defs><circle cx="110" cy="42" r="24" fill="url(#skin)" stroke="#a8ff00" stroke-opacity=".6"/><path d="${torso}" fill="url(#skin)" stroke="#a8ff00" stroke-opacity=".8" stroke-width="1.5"/><path d="M 78 95 L 58 126 L 45 174 L 54 178 L 73 139 L 89 115Z M 142 95 L 162 126 L 175 174 L 166 178 L 147 139 L 131 115Z" fill="url(#skin)" stroke="#a8ff00" stroke-opacity=".5"/><path d="${chest}" fill="#9eafa2" stroke="#a8ff00" stroke-opacity=".5"/><path d="M 110 128 L 110 156 M 92 135 L 101 155 M 128 135 L 119 155 M 92 160 L 106 166 M 128 160 L 114 166" stroke="#405347" stroke-width="2" fill="none"/><path d="M 89 220 L 86 266 L 99 266 L 108 222 M 131 220 L 134 266 L 121 266 L 112 222" fill="url(#skin)" stroke="#a8ff00" stroke-opacity=".6"/><g fill="#a8ff00" font-size="7"><text x="145" y="96">Hombros</text><text x="145" y="115">Pecho</text><text x="145" y="151">Cintura</text><text x="145" y="198">Muslo</text></g><g stroke="#a8ff00" stroke-width=".7" opacity=".9"><path d="M 133 92 L 143 94 L 145 94"/><path d="M 133 115 L 145 113"/><path d="M 126 154 L 145 150"/><path d="M 128 199 L 145 198"/></g></svg><div class="bodylabel">${woman?'Vista de mujer':'Vista de hombre'} · ilustración conceptual · medidas en cm</div>`}
+function renderVolume(){const filtered=document.getElementById('volumePeriod').value==='week'?workouts.filter(w=>{const d=new Date(w.date+'T12:00:00');const now=new Date();return d>=new Date(now.getFullYear(),now.getMonth(),now.getDate()-((now.getDay()+6)%7))}):workouts;const total=filtered.reduce((s,w)=>s+(+w.volume||0),0);document.getElementById('volumeTotal').textContent=Math.round(total).toLocaleString('es-PE')+' kg';document.getElementById('sessionCount').textContent=filtered.length;const daily=[0,0,0,0,0,0,0];filtered.forEach(w=>{const d=new Date(w.date+'T12:00:00');daily[(d.getDay()+6)%7]+=(+w.volume||0)});const max=Math.max(...daily,1);document.getElementById('volumeChart').innerHTML=daily.map((n,i)=>`<div class="barWrap"><b>${Math.round(n/100)/10}k</b><div class="bar" style="height:${Math.max(3,n/max*72)}%"></div><small>${SHORT[i]}</small></div>`).join('');document.getElementById('workoutHistory').innerHTML=workouts.slice(0,8).map(w=>`<div class="rowitem"><div><strong>${escapeHtml(w.exercise)}</strong><small>${escapeHtml(w.date)} · ${escapeHtml(w.group)} · ${w.sets} × ${w.reps} · ${w.weight} kg</small></div><b>${Math.round(w.volume).toLocaleString('es-PE')} kg</b></div>`).join('')||'<div class="muted small">Aún no hay entrenamientos guardados.</div>'}
+function buildCompareSelectors(){const a=document.getElementById('compareA'),b=document.getElementById('compareB');if(!a||!b)return;const opts=Array.from({length:12},(_,i)=>`<option>Semana ${i+1}</option>`).join('');a.innerHTML=opts;b.innerHTML=opts;a.value='Semana 1';b.value='Semana 2'}
+function renderCompare(){const a=measurements.find(m=>m.week===v('compareA')),b=measurements.find(m=>m.week===v('compareB'));const rows=[['Peso','weight','kg'],['Grasa corporal','bodyFat','%'],...MEASUREMENTS.map(([n,k])=>[n,k,'cm'])];document.getElementById('compareRows').innerHTML=rows.map(([label,key,unit])=>{const va=a&&a[key]!==''&&a[key]!=null?Number(a[key]):null,vb=b&&b[key]!==''&&b[key]!=null?Number(b[key]):null;const max=Math.max(va||0,vb||0,1);return `<div class="compareRow"><span>${label}</span><div class="dualbar"><div class="track"><div class="fill1" style="width:${va===null?0:va/max*100}%"></div></div><div class="track"><div class="fill2" style="width:${vb===null?0:vb/max*100}%"></div></div></div><b>${vb===null?'—':vb+' '+unit}</b></div>`}).join('');}
+function renderStats(){document.getElementById('statCompliance').textContent=Math.min(100,Math.round(Object.values(doneDays).filter(Boolean).length/7*100))+'%';document.getElementById('statVolume').textContent=Math.round(workouts.reduce((s,w)=>s+(+w.volume||0),0)).toLocaleString('es-PE')+' kg';const m=measurements.length?measurements[measurements.length-1]:null;document.getElementById('statMeasures').textContent=m?MEASUREMENTS.filter(([n,k])=>m[k]!==''&&m[k]!=null).length:0;updateProfile()}
+function renderAll(){renderVolume();renderCompare();renderStats()}
+function v(id){return document.getElementById(id)?.value ?? ''}
+function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+init();
+initFirebase();
+if('serviceWorker' in navigator && location.protocol.startsWith('http')) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(console.warn));
+</script>
+</body>
+</html>
