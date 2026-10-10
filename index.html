@@ -35,24 +35,44 @@
     .profileTop{display:flex;align-items:center;gap:14px;margin-bottom:16px}.profilePic{width:66px;height:66px;border-radius:50%;display:grid;place-items:center;background:#18231b;border:1px solid #48612c;font-size:26px}.profileName{font-size:22px;font-weight:800}.profileGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.profileVal{padding:12px;border:1px solid var(--line);border-radius:10px;background:#080d0d}.profileVal span{display:block;font-size:11px;color:var(--muted)}.profileVal b{display:block;margin-top:5px}
     .nav{position:fixed;bottom:0;left:0;right:0;z-index:10;background:#070a0aee;backdrop-filter:blur(18px);border-top:1px solid var(--line);display:flex;justify-content:center;padding:8px max(10px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom));gap:4px}.nav button{background:transparent;color:var(--muted);border:1px solid transparent;border-radius:10px;padding:8px 14px;min-width:75px;font-size:11px}.nav button .navico{display:block;font-size:18px;margin-bottom:3px}.nav button.active{color:var(--green);background:#111a11}
     .notice{margin-top:12px;color:var(--muted);font-size:12px}.toast{position:fixed;top:15px;left:50%;transform:translateX(-50%);z-index:30;background:var(--green);color:#152000;padding:12px 18px;border-radius:10px;font-weight:800;display:none;box-shadow:0 10px 35px #0008}
+    .coverScreen{position:fixed;inset:0;z-index:50;display:none;background:#050707 url(portada.jpg) center top/cover no-repeat;overflow:hidden}
+    .coverScreen::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#050707e6 0%,#05070700 28%,#05070700 52%,#050707f2 88%,#050707 100%)}
+    .coverInner{position:relative;z-index:1;height:100%;max-width:520px;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:max(34px,env(safe-area-inset-top)) 26px max(34px,env(safe-area-inset-bottom));text-align:center}
+    .coverLogo{display:flex;flex-direction:column;align-items:center}
+    .coverJC{font-size:clamp(70px,22vw,110px);font-weight:1000;font-style:italic;color:var(--green);letter-spacing:-6px;line-height:.9;text-shadow:0 4px 30px #a8ff0055;transform:skewX(-6deg)}
+    .coverTraining{font-size:clamp(34px,10vw,52px);font-weight:1000;font-style:italic;color:#fff;letter-spacing:-1px;line-height:1;margin-top:2px}
+    .coverSub{font-size:11px;letter-spacing:2.5px;color:var(--green);font-style:italic;margin-top:8px;text-transform:uppercase}
+    .coverBottom{width:100%}
+    .coverTag{font-size:20px;font-weight:700;color:#fff;letter-spacing:.5px}.coverTag b{display:block;color:var(--green);font-size:22px;letter-spacing:.5px}
+    .coverBtn{width:100%;margin-top:22px;border:0;border-radius:12px;padding:17px 16px;background:var(--green);color:#101500;font-weight:900;font-size:16px;letter-spacing:1px;box-shadow:0 8px 30px #a8ff0040}
     .authScreen{min-height:100vh;display:grid;place-items:center;padding:22px;background:radial-gradient(circle at 50% 0%,#1a2c18,transparent 42%),var(--bg)}
     .authCard{width:min(100%,440px);padding:28px;background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid #315027;border-radius:22px;box-shadow:0 25px 80px #0008}
-    .authLogo{font-size:30px;font-weight:1000;font-style:italic;color:var(--green);letter-spacing:-2px}.authLogo span{color:#fff;font-size:21px;letter-spacing:-.5px}.authCard h1{font-size:26px;margin:25px 0 7px}.authCard p{color:var(--muted);font-size:13px;line-height:1.5}.authCard .field{margin-top:13px}.authCard .actions{display:grid;grid-template-columns:1fr 1fr}.authMessage{font-size:12px;min-height:18px;color:var(--green);margin-top:12px}.authFoot{font-size:11px;color:var(--muted);margin-top:20px}
+    .authLogo{font-size:30px;font-weight:1000;font-style:italic;color:var(--green);letter-spacing:-2px}.authLogo span{color:#fff;font-size:21px;letter-spacing:-.5px}.authCard h1{font-size:26px;margin:25px 0 7px}.authCard p{color:var(--muted);font-size:13px;line-height:1.5}.authCard .field{margin-top:13px}.authCard .actions{display:grid;grid-template-columns:1fr 1fr}.authMessage{font-size:12px;min-height:18px;color:var(--green);margin-top:12px}.pwWrap{position:relative}.pwWrap input{padding-right:48px!important}.pwEye{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:transparent;border:0;color:var(--muted);font-size:19px;line-height:1;padding:8px;border-radius:8px}.authFoot{font-size:11px;color:var(--muted);margin-top:20px}
     .accountTools{display:flex;align-items:center;gap:8px}.accountEmail{font-size:11px;color:var(--muted);max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     @media(max-width:760px){.app{padding:14px 12px 100px}.hero{grid-template-columns:1fr}.heroMain{min-height:180px}.stats{grid-template-columns:repeat(2,1fr)}.tiles{grid-template-columns:repeat(2,1fr)}.measureLayout{grid-template-columns:1fr}.formgrid{grid-template-columns:repeat(2,1fr)}.week{gap:4px}.day{padding:10px 2px}.day b{font-size:9px}.day span{font-size:15px}.nav button{min-width:0;flex:1;padding:7px 3px}.nav button .navico{font-size:17px}.compareRow{grid-template-columns:80px 1fr 35px}}
     @media(max-width:420px){.formgrid{grid-template-columns:1fr 1fr}.stat,.card{padding:13px}.stat strong{font-size:21px}.sectionHead h2{font-size:21px}.tile{padding:13px}}
   </style>
 </head>
 <body>
-<section class="authScreen" id="authScreen">
+<section class="coverScreen" id="coverScreen">
+  <div class="coverInner">
+    <div class="coverLogo"><div class="coverJC">JC</div><div class="coverTraining">TRAINING</div><div class="coverSub">Registro de entrenamiento</div></div>
+    <div class="coverBottom">
+      <div class="coverTag">TU PROGRESO<b>TU MEJOR VERSIÓN</b></div>
+      <button type="button" class="coverBtn" id="coverStart">COMENZAR</button>
+    </div>
+  </div>
+</section>
+<section class="authScreen" id="authScreen" style="display:none">
   <div class="authCard">
     <div class="authLogo">JC<span> TRAINING</span></div>
     <div class="eyebrow" style="margin-top:8px">TU PROGRESO, TU MEJOR VERSIÓN</div>
     <h1 id="authTitle">Inicia sesión</h1>
     <p id="authDescription">Accede para guardar tus rutinas, medidas y evolución en tu cuenta personal.</p>
     <form id="authForm">
+      <div class="field" id="authNameField" style="display:none"><label for="authName">Tu nombre</label><input id="authName" type="text" autocomplete="given-name" maxlength="40" placeholder="Ej: Juan"></div>
       <div class="field"><label for="authEmail">Correo electrónico</label><input id="authEmail" type="email" autocomplete="email" required placeholder="tu@correo.com"></div>
-      <div class="field"><label for="authPassword">Contraseña (mínimo 6 caracteres)</label><input id="authPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="••••••••"></div>
+      <div class="field"><label for="authPassword">Contraseña (mínimo 6 caracteres)</label><div class="pwWrap"><input id="authPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="••••••••"><button type="button" class="pwEye" id="pwEye" aria-label="Mostrar u ocultar contraseña" title="Mostrar contraseña">👁️</button></div></div>
       <div class="actions"><button class="btn" id="authSubmit" type="submit">INICIAR SESIÓN</button><button class="btn secondary" type="button" id="authToggle">CREAR CUENTA</button></div>
     </form>
     <button class="btn secondary smallbtn" type="button" id="resetPassword" style="margin-top:10px;width:100%">Olvidé mi contraseña</button>
@@ -69,7 +89,7 @@
 
   <main>
     <section class="section active" id="inicio">
-      <div class="welcome"><div class="eyebrow">TU PROGRESO, TU MEJOR VERSIÓN</div><h1>¡Hola, <span id="helloName">Jackson</span>! 👋</h1><div class="muted">Construye constancia. Registra cada avance.</div></div>
+      <div class="welcome"><div class="eyebrow">TU PROGRESO, TU MEJOR VERSIÓN</div><h1>¡Hola, <span id="helloName">Atleta</span>! 👋</h1><div class="muted">Construye constancia. Registra cada avance.</div></div>
       <div class="hero">
         <div class="heroMain"><div class="eyebrow">HOY ES TU DÍA</div><h2>Entrena con intención.</h2><p>Tu rutina, tus medidas y tu progreso, todo en un solo lugar.</p><button class="btn" onclick="showSection('rutina')">VER MI RUTINA　↗</button></div>
         <div class="stats">
@@ -154,9 +174,9 @@
     <section class="section" id="perfil">
       <div class="sectionHead"><div><h2>Mi perfil</h2><p>Tus datos personales y objetivo de entrenamiento.</p></div></div>
       <div class="card">
-        <div class="profileTop"><div class="profilePic">🏋️</div><div><div class="profileName" id="profileDisplayName">Jackson</div><div class="muted small" id="profileDisplayMeta">Completa tus datos personales</div></div></div>
+        <div class="profileTop"><div class="profilePic">🏋️</div><div><div class="profileName" id="profileDisplayName">Atleta</div><div class="muted small" id="profileDisplayMeta">Completa tus datos personales</div></div></div>
         <div class="formgrid">
-          <div class="field"><label>Nombre</label><input id="pName" value="Jackson"></div>
+          <div class="field"><label>Nombre</label><input id="pName" value=""></div>
           <div class="field"><label>Edad</label><input id="pAge" type="number" min="1" placeholder="24"></div>
           <div class="field"><label>Sexo</label><select id="pSex"><option>Hombre</option><option>Mujer</option><option>Prefiero no decirlo</option></select></div>
           <div class="field"><label>Altura (cm)</label><input id="pHeight" type="number" min="1" placeholder="165"></div>
@@ -194,13 +214,22 @@ const MEASUREMENTS = [['Cuello','neck'],['Hombros','shoulders'],['Pecho','chest'
 let selectedDay = 0;
 let workouts = JSON.parse(localStorage.getItem('jc_workouts') || '[]');
 let measurements = JSON.parse(localStorage.getItem('jc_measurements') || '[]');
-let profile = JSON.parse(localStorage.getItem('jc_profile') || '{"name":"Jackson","sex":"Hombre","goal":"Definición","level":"Intermedio"}');
+let profile = JSON.parse(localStorage.getItem('jc_profile') || '{"name":"","sex":"Hombre","goal":"Definición","level":"Intermedio"}');
 let doneDays = JSON.parse(localStorage.getItem('jc_done_days') || '{}');
 let measureMode = 'lista';
 let currentUser = null;
 let authMode = 'login';
 let firebaseReady = false;
 let cloudLoadInProgress = false;
+let coverDismissed = false;
+function applyScreens(){
+  const cover=document.getElementById('coverScreen'), auth=document.getElementById('authScreen'), main=document.getElementById('mainApp');
+  cover.style.display = coverDismissed ? 'none' : 'block';
+  auth.style.display = (coverDismissed && !currentUser) ? 'grid' : 'none';
+  main.style.display = (coverDismissed && currentUser) ? 'block' : 'none';
+}
+document.getElementById('coverStart').addEventListener('click',()=>{coverDismissed=true;applyScreens();window.scrollTo(0,0);});
+applyScreens();
 
 function initFirebase(){
   try {
@@ -214,10 +243,20 @@ function initFirebase(){
     firebaseReady = true;
     jcAuth.onAuthStateChanged(async user => {
       currentUser = user || null;
-      document.getElementById('authScreen').style.display = user ? 'none' : 'grid';
-      document.getElementById('mainApp').style.display = user ? 'block' : 'none';
+      applyScreens();
       document.getElementById('accountEmail').textContent = user ? (user.email || '') : '';
       if (user) {
+        const lastUid = localStorage.getItem('jc_uid');
+        if (lastUid && lastUid !== user.uid) {
+          workouts=[]; measurements=[]; doneDays={};
+          profile={name:user.displayName||'',sex:'Hombre',goal:'Definición',level:'Intermedio'};
+          ['jc_workouts','jc_measurements','jc_done_days'].forEach(k=>localStorage.removeItem(k));
+          localStorage.setItem('jc_profile',JSON.stringify(profile));
+          ['pName','pAge','pSex','pHeight','pWeight','pFat','pGoal','pLevel'].forEach(id=>{const el=document.getElementById(id); if(el) el.value = id==='pName'?profile.name:(id==='pSex'?'Hombre':(id==='pGoal'?'Definición':(id==='pLevel'?'Intermedio':'')));});
+          renderAll(); renderRoutine(); updateProfile();
+        }
+        localStorage.setItem('jc_uid', user.uid);
+        if (!profile.name && user.displayName) { profile.name = user.displayName; localStorage.setItem('jc_profile',JSON.stringify(profile)); updateProfile(); }
         try { await loadCloudData(); showToast('Sesión iniciada. Datos sincronizados.'); }
         catch (e) { console.error(e); showToast('Sesión iniciada; no se pudo sincronizar la nube.'); }
       }
@@ -236,10 +275,20 @@ function firebaseErrorMessage(error){
     'auth/weak-password':'La contraseña debe tener al menos 6 caracteres.',
     'auth/too-many-requests':'Demasiados intentos. Espera un momento e inténtalo otra vez.',
     'auth/network-request-failed':'Error de conexión. Revisa tu internet.',
+    'auth/unauthorized-domain':'Este dominio no está autorizado en Firebase Authentication (Configuración → Dominios autorizados).',
+    'auth/invalid-api-key':'La API key de firebase-config.js no es válida.',
+    'auth/api-key-not-valid.-please-pass-a-valid-api-key.':'La API key de firebase-config.js no es válida.',
+    'auth/configuration-not-found':'Falta activar Authentication en Firebase (botón Comenzar y Correo/Contraseña).',
     'auth/operation-not-allowed':'Activa el acceso Correo/Contraseña en Firebase Authentication.'
   };
   return messages[code] || (error && error.message) || 'Ocurrió un error. Revisa la configuración de Firebase.';
 }
+document.getElementById('pwEye').addEventListener('click',()=>{
+  const i=document.getElementById('authPassword'), show=i.type==='password';
+  i.type=show?'text':'password';
+  document.getElementById('pwEye').textContent=show?'🙈':'👁️';
+  document.getElementById('pwEye').title=show?'Ocultar contraseña':'Mostrar contraseña';
+});
 document.getElementById('authToggle').addEventListener('click',()=>{
   authMode=authMode==='login'?'register':'login';
   document.getElementById('authTitle').textContent=authMode==='login'?'Inicia sesión':'Crea tu cuenta';
@@ -247,15 +296,29 @@ document.getElementById('authToggle').addEventListener('click',()=>{
   document.getElementById('authSubmit').textContent=authMode==='login'?'INICIAR SESIÓN':'CREAR CUENTA';
   document.getElementById('authToggle').textContent=authMode==='login'?'CREAR CUENTA':'YA TENGO CUENTA';
   document.getElementById('resetPassword').style.display=authMode==='login'?'block':'none';
+  document.getElementById('authNameField').style.display=authMode==='register'?'block':'none';
+  document.getElementById('authName').required=authMode==='register';
+  document.getElementById('authPassword').autocomplete=authMode==='register'?'new-password':'current-password';
   setAuthMessage('');
 });
 document.getElementById('authForm').addEventListener('submit',async e=>{
   e.preventDefault();
   if(!firebaseReady){setAuthMessage('Configura Firebase primero y vuelve a cargar la página.');return;}
-  const email=v('authEmail').trim(), password=v('authPassword');
+  const email=v('authEmail').trim(), password=v('authPassword'), name=v('authName').trim();
+  if(authMode==='register' && !name){setAuthMessage('Escribe tu nombre.');return;}
   setAuthMessage('Procesando…'); document.getElementById('authSubmit').disabled=true;
   try {
-    if(authMode==='register') await jcAuth.createUserWithEmailAndPassword(email,password);
+    if(authMode==='register'){
+      const cred=await jcAuth.createUserWithEmailAndPassword(email,password);
+      profile={...profile,name:name};
+      localStorage.setItem('jc_profile',JSON.stringify(profile));
+      const pn=document.getElementById('pName'); if(pn) pn.value=name;
+      updateProfile();
+      cred.user.updateProfile({displayName:name}).catch(e2=>console.error(e2));
+      jcDb.collection('users').doc(cred.user.uid).collection('profile').doc('main')
+        .set({name:name,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})
+        .catch(e2=>console.error(e2));
+    }
     else await jcAuth.signInWithEmailAndPassword(email,password);
     setAuthMessage('');
   } catch(err){setAuthMessage(firebaseErrorMessage(err));}
@@ -313,8 +376,8 @@ function setToday(){selectedDay=(new Date().getDay()+6)%7;buildWeek();renderRout
 function renderRoutine(){document.getElementById('selectedDayTitle').textContent=DAYS[selectedDay];document.getElementById('routineList').innerHTML=ROUTINES.map((r,i)=>`<div class="rowitem"><div><strong>${r[0]}</strong><small>${i===selectedDay?'Sugerido para hoy · ':''}${r[1]}</small></div><button class="btn smallbtn ${doneDays[selectedDay+'-'+i]?'':'secondary'}" onclick="toggleDone(${i})">${doneDays[selectedDay+'-'+i]?'✓ Completado':'Marcar'}</button></div>`).join('')}
 function toggleDone(i){const k=selectedDay+'-'+i;doneDays[k]=!doneDays[k];localStorage.setItem('jc_done_days',JSON.stringify(doneDays));cloudSaveRoutine();renderRoutine();renderStats()}
 function saveWorkoutUI(){const w={date:document.getElementById('workDate').value,group:document.getElementById('workGroup').value,exercise:document.getElementById('workExercise').value.trim(),sets:+document.getElementById('workSets').value,reps:+document.getElementById('workReps').value,weight:+document.getElementById('workWeight').value,notes:document.getElementById('workNotes').value};if(!w.date||!w.exercise){showToast('Completa fecha y ejercicio.');return}w.volume=Math.max(0,w.sets)*Math.max(0,w.reps)*Math.max(0,w.weight);workouts.unshift(w);localStorage.setItem('jc_workouts',JSON.stringify(workouts));cloudSaveWorkout(w);document.getElementById('workExercise').value='';document.getElementById('workNotes').value='';renderAll();showToast('Entrenamiento guardado.')}
-function saveProfileUI(){profile={name:v('pName')||'Jackson',age:v('pAge'),sex:v('pSex'),height:v('pHeight'),weight:v('pWeight'),bodyFat:v('pFat'),goal:v('pGoal'),level:v('pLevel')};localStorage.setItem('jc_profile',JSON.stringify(profile));cloudSaveProfile(profile);updateProfile();renderStats();showToast('Perfil guardado.')}
-function updateProfile(){document.getElementById('helloName').textContent=profile.name||'Jackson';document.getElementById('avatar').textContent=(profile.name||'J').charAt(0).toUpperCase();document.getElementById('profileDisplayName').textContent=profile.name||'Jackson';document.getElementById('profileDisplayMeta').textContent=[profile.age?profile.age+' años':'',profile.sex||''].filter(Boolean).join(' · ')||'Completa tus datos personales';document.getElementById('statWeight').textContent=(profile.weight||'—')+' kg'}
+function saveProfileUI(){profile={name:v('pName')||(currentUser&&currentUser.displayName)||'Atleta',age:v('pAge'),sex:v('pSex'),height:v('pHeight'),weight:v('pWeight'),bodyFat:v('pFat'),goal:v('pGoal'),level:v('pLevel')};localStorage.setItem('jc_profile',JSON.stringify(profile));cloudSaveProfile(profile);updateProfile();renderStats();showToast('Perfil guardado.')}
+function updateProfile(){document.getElementById('helloName').textContent=profile.name||'Atleta';document.getElementById('avatar').textContent=(profile.name||'A').charAt(0).toUpperCase();document.getElementById('profileDisplayName').textContent=profile.name||'Atleta';document.getElementById('profileDisplayMeta').textContent=[profile.age?profile.age+' años':'',profile.sex||''].filter(Boolean).join(' · ')||'Completa tus datos personales';document.getElementById('statWeight').textContent=(profile.weight||'—')+' kg'}
 function saveMeasuresUI(){const data={week:v('measureWeek'),date:v('measureDate'),bodyView:v('bodyGender'),weight:v('mWeight'),bodyFat:v('mFat')};MEASUREMENTS.forEach(([label,key])=>data[key]=v('m_'+key));if(!data.week){showToast('Selecciona una semana.');return}const existing=measurements.findIndex(m=>m.week===data.week);if(existing>=0)measurements[existing]=data;else measurements.push(data);localStorage.setItem('jc_measurements',JSON.stringify(measurements));cloudSaveMeasurement(data);buildCompareSelectors();renderAll();showToast('Medidas guardadas.')}
 function setMeasureMode(mode){measureMode=mode;document.getElementById('listToggle').classList.toggle('active',mode==='lista');document.getElementById('threeToggle').classList.toggle('active',mode==='3d');document.getElementById('measureListCard').style.display=mode==='lista'?'block':'none';document.getElementById('bodyCard').style.display=mode==='3d'?'block':'none';if(mode==='3d'){document.querySelector('.measureLayout').style.gridTemplateColumns='1fr';}else{document.querySelector('.measureLayout').style.gridTemplateColumns='1fr 1fr';}}
 function renderBody(){const woman=v('bodyGender')==='Mujer';const torso=woman?'M 95 85 Q 115 72 135 88 L 145 130 Q 137 150 143 180 L 135 220 L 120 220 L 116 160 L 110 160 L 106 220 L 91 220 L 83 180 Q 89 150 81 130 Z':'M 87 82 Q 110 65 133 82 L 148 108 L 138 147 L 131 178 L 126 220 L 113 220 L 110 158 L 104 158 L 101 220 L 88 220 L 83 178 L 76 147 L 68 108 Z';const chest=woman?'M 91 103 Q 110 92 129 103 Q 126 124 110 126 Q 94 124 91 103Z':'M 83 101 Q 110 89 137 101 L 132 126 Q 110 139 88 126 Z';document.getElementById('bodyView').innerHTML=`<svg viewBox="0 0 220 290" role="img" aria-label="Silueta corporal ilustrativa"><defs><linearGradient id="skin" x1="0" x2="1"><stop stop-color="#52665a"/><stop offset=".5" stop-color="#c4d0c5"/><stop offset="1" stop-color="#394b40"/></linearGradient></defs><circle cx="110" cy="42" r="24" fill="url(#skin)" stroke="#a8ff00" stroke-opacity=".6"/><path d="${torso}" fill="url(#skin)" stroke="#a8ff00" stroke-opacity=".8" stroke-width="1.5"/><path d="M 78 95 L 58 126 L 45 174 L 54 178 L 73 139 L 89 115Z M 142 95 L 162 126 L 175 174 L 166 178 L 147 139 L 131 115Z" fill="url(#skin)" stroke="#a8ff00" stroke-opacity=".5"/><path d="${chest}" fill="#9eafa2" stroke="#a8ff00" stroke-opacity=".5"/><path d="M 110 128 L 110 156 M 92 135 L 101 155 M 128 135 L 119 155 M 92 160 L 106 166 M 128 160 L 114 166" stroke="#405347" stroke-width="2" fill="none"/><path d="M 89 220 L 86 266 L 99 266 L 108 222 M 131 220 L 134 266 L 121 266 L 112 222" fill="url(#skin)" stroke="#a8ff00" stroke-opacity=".6"/><g fill="#a8ff00" font-size="7"><text x="145" y="96">Hombros</text><text x="145" y="115">Pecho</text><text x="145" y="151">Cintura</text><text x="145" y="198">Muslo</text></g><g stroke="#a8ff00" stroke-width=".7" opacity=".9"><path d="M 133 92 L 143 94 L 145 94"/><path d="M 133 115 L 145 113"/><path d="M 126 154 L 145 150"/><path d="M 128 199 L 145 198"/></g></svg><div class="bodylabel">${woman?'Vista de mujer':'Vista de hombre'} · ilustración conceptual · medidas en cm</div>`}
