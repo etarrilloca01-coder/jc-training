@@ -550,23 +550,27 @@ async function jcOnLogin(user){
   document.getElementById('accessBlock').style.display='none';
   document.getElementById('adminCard').style.display=isAdmin(user)?'block':'none';
   clearInterval(window.jcBeat);
-  if(!user||!firebaseReady)return;
-  const ref=jcDb.collection('members').doc(user.uid),ts=()=>firebase.firestore.FieldValue.serverTimestamp();
+  if(!user||!firebaseReady)return false;
+  const adm=isAdmin(user),ref=jcDb.collection('members').doc(user.uid),ts=()=>firebase.firestore.FieldValue.serverTimestamp();
+  const PEND='No tienes permiso del administrador todavía. Tu cuenta está pendiente de aprobación. Cuando te activen, pulsa "Ya me activaron".';
   try{
     const snap=await ref.get();
-    if(!snap.exists){const adm=isAdmin(user);await ref.set({email:user.email||'',name:nameOf(user),active:adm,pending:!adm,createdAt:ts(),lastSeen:ts()});if(!adm){jcBlock('Tu cuenta fue creada y está pendiente de aprobación. El administrador debe activarla para que puedas entrar.');return}}
-    else{
+    if(!snap.exists){
+      if(!adm){jcBlock(PEND);ref.set({email:user.email||'',name:nameOf(user),active:false,pending:true,createdAt:ts(),lastSeen:ts()}).catch(()=>{});return false}
+      ref.set({email:user.email||'',name:nameOf(user),active:true,pending:false,createdAt:ts(),lastSeen:ts()}).catch(()=>{});
+    }else{
       const d=snap.data(),until=d.accessUntil&&d.accessUntil.toDate?d.accessUntil.toDate():null;
-      if(!isAdmin(user)){
-        if(d.archived){jcBlock('Tu cuenta fue archivada. Contacta al administrador.');return}
-        if(d.active===false){jcBlock(d.pending?'Tu cuenta está pendiente de aprobación. El administrador debe activarla para que puedas entrar.':'Tu cuenta está desactivada. Contacta al administrador.');return}
-        if(until&&until<new Date()){jcBlock('Tu tiempo de acceso terminó. Contacta al administrador para renovarlo.');return}
+      if(!adm){
+        if(d.archived){jcBlock('Tu cuenta fue archivada. Contacta al administrador.');return false}
+        if(d.active===false){jcBlock(d.pending?PEND:'Tu cuenta está desactivada. Contacta al administrador.');return false}
+        if(until&&until<new Date()){jcBlock('Tu tiempo de acceso terminó. Contacta al administrador para renovarlo.');return false}
       }
-      await ref.update({email:user.email||'',name:nameOf(user),lastSeen:ts()});
+      ref.update({email:user.email||'',name:nameOf(user),lastSeen:ts()}).catch(()=>{});
     }
     window.jcBeat=setInterval(()=>{if(!document.hidden)ref.update({lastSeen:ts()}).catch(()=>{})},240000);
-    if(isAdmin(user))loadAdminUsers();
-  }catch(e){console.warn('members:',e&&e.code||e)}
+    if(adm)loadAdminUsers();
+    return true;
+  }catch(e){console.warn('members:',e&&e.code||e);return true}
 }
 let jcMembers=[],jcLast=null,jcMore=false;
 const EXDICT=[["Press banca", "barbell bench press", ["press de banca", "banca plana", "bench press", "press plano"]], ["Press inclinado", "barbell incline bench press", ["banca inclinada", "press de banca inclinado"]], ["Press con mancuernas", "dumbbell bench press", ["press mancuernas", "banca con mancuernas"]], ["Aperturas con mancuernas", "dumbbell flyes", ["aperturas", "fly", "flyes"]], ["Cruce de poleas", "cable crossover", ["cruces en polea", "crossover"]], ["Mariposa (pec deck)", "butterfly", ["pec deck", "contractor", "peck deck"]], ["Fondos en paralelas", "dips chest", ["fondos", "dips", "paralelas"]], ["Flexiones", "pushups", ["lagartijas", "push ups", "pushups", "planchas de pecho"]], ["Dominadas", "pullups", ["pull ups", "dominada", "barra fija"]], ["Jalón al pecho", "wide grip lat pulldown", ["jalon", "lat pulldown", "jalones"]], ["Remo con barra", "bent over barbell row", ["remo barra", "remo inclinado"]], ["Remo con mancuerna", "one arm dumbbell row", ["remo unilateral", "remo a una mano"]], ["Remo en polea baja", "seated cable rows", ["remo sentado", "remo polea"]], ["Peso muerto", "barbell deadlift", ["deadlift", "peso muerto convencional"]], ["Peso muerto rumano", "romanian deadlift", ["rumano", "rdl"]], ["Face pull", "face pull", ["facepull", "jalon a la cara"]], ["Encogimientos", "barbell shrug", ["trapecios", "shrugs", "encogimiento de hombros"]], ["Press militar", "standing military press", ["press de hombro", "press hombros", "overhead press"]], ["Press Arnold", "arnold dumbbell press", ["arnold press"]], ["Elevaciones laterales", "side lateral raise", ["laterales", "vuelos laterales"]], ["Elevaciones frontales", "front dumbbell raise", ["frontales", "vuelos frontales"]], ["Pájaros", "reverse flyes", ["vuelos posteriores", "pajaros", "deltoides posterior"]], ["Curl con barra", "barbell curl", ["curl de biceps con barra", "biceps barra"]], ["Curl con mancuernas", "dumbbell bicep curl", ["curl biceps", "biceps mancuernas", "curl alterno"]], ["Curl martillo", "hammer curls", ["martillo", "hammer"]], ["Curl predicador", "preacher curl", ["predicador", "banco scott", "scott"]], ["Extensión de tríceps en polea", "triceps pushdown", ["jalon de triceps", "triceps polea", "pushdown"]], ["Press francés", "ez bar skullcrusher", ["skullcrusher", "rompecraneos", "press frances"]], ["Patada de tríceps", "tricep dumbbell kickback", ["kickback", "patada de triceps"]], ["Fondos en banco", "bench dips", ["fondos de triceps", "dips en banco"]], ["Sentadilla", "barbell squat", ["sentadillas", "squat", "sentadilla libre"]], ["Sentadilla frontal", "front barbell squat", ["front squat"]], ["Sentadilla búlgara", "split squat", ["bulgara", "bulgarian split squat", "sentadilla bulgara"]], ["Prensa de piernas", "leg press", ["prensa", "prensa 45"]], ["Zancadas", "dumbbell lunges", ["estocadas", "lunges", "desplantes"]], ["Extensión de cuádriceps", "leg extensions", ["extension de piernas", "cuadriceps", "silla de cuadriceps"]], ["Curl femoral", "lying leg curls", ["femoral", "curl de piernas", "isquios"]], ["Hip thrust", "barbell hip thrust", ["puente de gluteos", "empuje de cadera", "hipthrust"]], ["Elevación de talones", "standing calf raises", ["gemelos", "pantorrillas", "calf raise"]], ["Abductores", "thigh abductor", ["abduccion de cadera", "maquina abductores"]], ["Aductores", "thigh adductor", ["aduccion de cadera", "maquina aductores"]], ["Buenos días", "good morning", ["good morning"]], ["Plancha", "plank", ["plank", "plancha abdominal"]], ["Abdominales", "crunches", ["crunch", "abdominales crunch"]], ["Elevación de piernas colgado", "hanging leg raise", ["elevacion de piernas", "leg raise"]], ["Rueda abdominal", "ab roller", ["rueda", "ab wheel"]], ["Giro ruso", "russian twist", ["russian twist", "giros rusos"]], ["Bicicleta abdominal", "air bike", ["bicicleta", "bicycle crunch"]]];
@@ -595,35 +599,54 @@ function memArch(m,i){const ar=m.archivedAt&&m.archivedAt.toDate?m.archivedAt.to
 function memCard(m,i,now){const ls=m.lastSeen&&m.lastSeen.toDate?m.lastSeen.toDate():null;const online=ls&&now-ls.getTime()<360000;const me=(m.email||'').toLowerCase()===ADMIN_EMAIL;
   return `<div class="mem"><b><span class="${online?'dotOn':'dotOff'}"></span>${escapeHtml(m.name||'Sin nombre')}${me?' (admin)':''}</b><small>${escapeHtml(m.email||'')}</small><small>${memStatus(m)} · ${online?'En línea':(ls?'Visto '+ls.toLocaleString('es'):'Sin actividad')}</small>`+
   (me?'':`<div class="row"><button class="btn secondary smallbtn" onclick="adminToggle(${i})">${m.active===false?'ACTIVAR':'DESACTIVAR'}</button><button class="btn secondary smallbtn" onclick="adminReset(${i})">NUEVA CONTRASEÑA</button><button class="btn secondary smallbtn" onclick="adminArchive(${i})">🗄️ ARCHIVAR</button></div><div class="row"><input id="gN${i}" type="number" min="1" value="1" inputmode="numeric" style="width:70px"><select id="gU${i}"><option value="d">días</option><option value="w">semanas</option><option value="m">meses</option><option value="y">años</option></select><button class="btn smallbtn" onclick="adminGrant(${i})">DAR ACCESO</button><button class="btn secondary smallbtn" onclick="adminUnlimited(${i})">DE POR VIDA</button></div>`)+`</div>`}
+function renderAdmin(){
+  const box=document.getElementById('adminList');if(!box)return;const now=Date.now();
+  const all=jcMembers.map((m,i)=>[m,i]),arch=all.filter(x=>x[0].archived),act=all.filter(x=>!x[0].archived);
+  const on=act.filter(x=>{const l=x[0].lastSeen;return l&&l.toDate&&now-l.toDate().getTime()<360000}).length;
+  const pend=act.filter(x=>x[0].active===false&&x[0].pending),rest=act.filter(x=>!(x[0].active===false&&x[0].pending));
+  document.getElementById('adminInfo').textContent=act.length+(jcMore?'+':'')+' usuarios · '+on+' conectados ahora · '+pend.length+' pendientes · '+arch.length+' archivadas';
+  box.innerHTML=(pend.length?`<div class="eyebrow" style="margin:14px 0 4px;color:#ffb3b6">⏳ PENDIENTES DE APROBAR (${pend.length})</div>`+pend.map(x=>memCard(x[0],x[1],now)).join(''):'')+
+    (rest.length?`<div class="eyebrow" style="margin:14px 0 4px">USUARIOS</div>`+rest.map(x=>memCard(x[0],x[1],now)).join(''):'')||'<p class="notice">Aún no hay usuarios.</p>';
+  if(jcMore)box.innerHTML+='<div class="actions"><button class="btn secondary smallbtn" type="button" onclick="loadAdminUsers(true)">VER MÁS USUARIOS</button></div>';
+  const aw=document.getElementById('adminArchWrap');aw.style.display=arch.length?'block':'none';
+  document.getElementById('adminArchTitle').textContent='🗄️ CUENTAS ARCHIVADAS ('+arch.length+')';
+  document.getElementById('adminArchList').innerHTML=arch.map(x=>memArch(x[0],x[1])).join('');
+}
 async function loadAdminUsers(more){
   if(!isAdmin(currentUser))return;const box=document.getElementById('adminList');
   try{
     let qq=jcDb.collection('members').orderBy('lastSeen','desc');if(more===true&&jcLast)qq=qq.startAfter(jcLast);
     const q=await qq.limit(200).get(),rows=q.docs.map(d=>({id:d.id,...d.data()}));
     jcMembers=(more===true&&jcLast)?jcMembers.concat(rows):rows;if(q.docs.length)jcLast=q.docs[q.docs.length-1];jcMore=q.docs.length===200;
-    const now=Date.now();const arch=jcMembers.map((m,i)=>[m,i]).filter(x=>x[0].archived);const on=jcMembers.filter(m=>!m.archived&&m.lastSeen&&m.lastSeen.toDate&&now-m.lastSeen.toDate().getTime()<360000).length;
-    const act=jcMembers.map((m,i)=>[m,i]).filter(x=>!x[0].archived),pend=act.filter(x=>x[0].active===false&&x[0].pending),rest=act.filter(x=>!(x[0].active===false&&x[0].pending));
-    document.getElementById('adminInfo').textContent=act.length+(jcMore?'+':'')+' usuarios · '+on+' conectados ahora · '+pend.length+' pendientes · '+arch.length+' archivadas';
-    box.innerHTML=(pend.length?`<div class="eyebrow" style="margin:14px 0 4px;color:#ffb3b6">⏳ PENDIENTES DE APROBAR (${pend.length})</div>`+pend.map(x=>memCard(x[0],x[1],now)).join(''):'')+
-      (rest.length?`<div class="eyebrow" style="margin:14px 0 4px">USUARIOS</div>`+rest.map(x=>memCard(x[0],x[1],now)).join(''):'')||'<p class="notice">Aún no hay usuarios.</p>';
-    const aw=document.getElementById('adminArchWrap');aw.style.display=arch.length?'block':'none';document.getElementById('adminArchTitle').textContent='🗄️ CUENTAS ARCHIVADAS ('+arch.length+')';document.getElementById('adminArchList').innerHTML=arch.map(x=>memArch(x[0],x[1])).join('');
-    if(jcMore)box.innerHTML+='<div class="actions"><button class="btn secondary smallbtn" type="button" onclick="loadAdminUsers(true)">VER MÁS USUARIOS</button></div>';
+    renderAdmin();
   }catch(e){console.error(e);box.innerHTML='<p class="notice" style="color:var(--red)">No se pudo leer la lista ('+escapeHtml((e&&e.code)||'error')+'). Revisa las reglas de Firestore.</p>'}
 }
-async function adminUpd(i,data,msg){try{await jcDb.collection('members').doc(jcMembers[i].id).update(data);showToast(msg);loadAdminUsers()}catch(e){console.error(e);showToast('No se pudo guardar: '+((e&&e.code)||'error'))}}
-function adminArchive(i){const m=jcMembers[i];if(!confirm('¿Archivar la cuenta de '+(m.name||m.email)+'? No podrá entrar mientras esté archivada. Podrás restaurarla o eliminarla desde "Cuentas archivadas".'))return;adminUpd(i,{archived:true,archivedAt:firebase.firestore.FieldValue.serverTimestamp(),active:false,pending:false},'Cuenta archivada.')}
-function adminRestore(i){adminUpd(i,{archived:false,archivedAt:firebase.firestore.FieldValue.delete()},'Cuenta restaurada. Sigue desactivada: actívala o dale acceso.')}
-async function adminDelete(i){const m=jcMembers[i];if(!m||!m.archived){showToast('Primero archiva la cuenta.');return}
+async function adminUpd(i,data,msg,local){
+  const m=jcMembers[i];if(!m)return;const id=m.id,bak={...m};
+  Object.assign(m,local||{});renderAdmin();showToast(msg);
+  try{await jcDb.collection('members').doc(id).update(data)}
+  catch(e){console.error(e);const k=jcMembers.findIndex(x=>x.id===id);if(k>=0)jcMembers[k]=bak;renderAdmin();showToast('No se pudo guardar: '+((e&&e.code)||'error'))}
+}
+function adminArchive(i){const m=jcMembers[i];if(!m)return;if(!confirm('¿Archivar la cuenta de '+(m.name||m.email)+'? No podrá entrar mientras esté archivada. Podrás restaurarla o eliminarla desde "Cuentas archivadas".'))return;
+  adminUpd(i,{archived:true,archivedAt:firebase.firestore.FieldValue.serverTimestamp(),active:false,pending:false},'Cuenta archivada.',{archived:true,archivedAt:{toDate:()=>new Date()},active:false,pending:false})}
+function adminRestore(i){adminUpd(i,{archived:false,archivedAt:firebase.firestore.FieldValue.delete()},'Cuenta restaurada. Sigue desactivada: actívala o dale acceso.',{archived:false,archivedAt:null})}
+async function adminDelete(i){
+  const m=jcMembers[i];if(!m)return;if(!m.archived){showToast('Primero archiva la cuenta.');return}
   if(!confirm('¿ELIMINAR definitivamente la cuenta de '+(m.name||m.email)+'?\n\nSe borrarán sus datos guardados (rutinas, medidas, perfil). Esta acción no se puede deshacer.'))return;
+  const id=m.id,bak={...m};jcMembers.splice(i,1);renderAdmin();showToast('Eliminando…');
+  let fail=0;
   try{
-    for(const n of ['workouts','measurements','profile','settings']){
-      try{const q=await jcDb.collection('users').doc(m.id).collection(n).get();for(let k=0;k<q.docs.length;k+=400){const b=jcDb.batch();q.docs.slice(k,k+400).forEach(d=>b.delete(d.ref));await b.commit()}}catch(e){console.warn('del '+n+':',e&&e.code||e)}
-    }
-    await jcDb.collection('members').doc(m.id).delete();showToast('Cuenta eliminada.');loadAdminUsers()
-  }catch(e){console.error(e);showToast('No se pudo eliminar: '+((e&&e.code)||'error'))}}
-function adminToggle(i){const m=jcMembers[i];adminUpd(i,{active:m.active===false,pending:false},m.active===false?'Cuenta activada.':'Cuenta desactivada.')}
-function adminGrant(i){const n=Math.max(1,parseInt(document.getElementById('gN'+i).value)||1),u=document.getElementById('gU'+i).value,d=new Date();if(u==='d')d.setDate(d.getDate()+n);else if(u==='w')d.setDate(d.getDate()+n*7);else if(u==='m')d.setMonth(d.getMonth()+n);else d.setFullYear(d.getFullYear()+n);adminUpd(i,{active:true,pending:false,accessUntil:firebase.firestore.Timestamp.fromDate(d)},'Acceso hasta '+d.toLocaleDateString('es')+' ✓')}
-function adminUnlimited(i){adminUpd(i,{active:true,pending:false,accessUntil:firebase.firestore.FieldValue.delete()},'Acceso de por vida ✓')}
+    await Promise.all(['workouts','measurements','profile','settings'].map(async n=>{
+      try{const q=await jcDb.collection('users').doc(id).collection(n).get();for(let k=0;k<q.docs.length;k+=400){const b=jcDb.batch();q.docs.slice(k,k+400).forEach(d=>b.delete(d.ref));await b.commit()}}
+      catch(e){fail++;console.warn('del '+n+':',e&&e.code||e)}
+    }));
+    await jcDb.collection('members').doc(id).delete();
+    showToast(fail?'Cuenta eliminada (algunos datos no se pudieron borrar: revisa las reglas).':'Cuenta eliminada.');
+  }catch(e){console.error(e);jcMembers.splice(Math.min(i,jcMembers.length),0,bak);renderAdmin();showToast('No se pudo eliminar: '+((e&&e.code)||'error'))}
+}
+function adminToggle(i){const m=jcMembers[i];if(!m)return;const act=m.active===false;adminUpd(i,{active:act,pending:false},act?'Cuenta activada.':'Cuenta desactivada.',{active:act,pending:false})}
+function adminGrant(i){const n=Math.max(1,parseInt(document.getElementById('gN'+i).value)||1),u=document.getElementById('gU'+i).value,d=new Date();if(u==='d')d.setDate(d.getDate()+n);else if(u==='w')d.setDate(d.getDate()+n*7);else if(u==='m')d.setMonth(d.getMonth()+n);else d.setFullYear(d.getFullYear()+n);adminUpd(i,{active:true,pending:false,accessUntil:firebase.firestore.Timestamp.fromDate(d)},'Acceso hasta '+d.toLocaleDateString('es')+' ✓',{active:true,pending:false,accessUntil:{toDate:()=>d}})}
+function adminUnlimited(i){adminUpd(i,{active:true,pending:false,accessUntil:firebase.firestore.FieldValue.delete()},'Acceso de por vida ✓',{active:true,pending:false,accessUntil:null})}
 async function adminReset(i){const m=jcMembers[i];if(!m.email||!confirm('¿Enviar a '+m.email+' un correo para crear una contraseña nueva?'))return;try{await jcAuth.sendPasswordResetEmail(m.email);showToast('Correo enviado a '+m.email)}catch(e){showToast('No se pudo enviar: '+((e&&e.code)||'error'))}}
 </script>
 <script>
@@ -660,21 +683,10 @@ function applyScreens(){
 document.getElementById('coverStart').addEventListener('click',()=>{coverDismissed=true;applyScreens();window.scrollTo(0,0);try{if(!localStorage.getItem('jc_perm_auto')){localStorage.setItem('jc_perm_auto','1');setTimeout(()=>{try{askAllPerms()}catch(e){}},500)}}catch(e){}});
 applyScreens();
 
-function initFirebase(){
-  try {
-    if (!window.JC_FIREBASE_CONFIG || !window.JC_FIREBASE_CONFIG.apiKey || window.JC_FIREBASE_CONFIG.apiKey === 'PEGA_AQUI_TU_API_KEY') {
-      setAuthMessage('Primero configura firebase-config.js con los datos de tu aplicación Firebase.',true);
-      return;
-    }
-    firebase.initializeApp(window.JC_FIREBASE_CONFIG);
-    window.jcAuth = firebase.auth();
-    window.jcDb = firebase.firestore();
-    try{ jcDb.enablePersistence({synchronizeTabs:true}).catch(e=>console.warn('Sin persistencia offline:',e&&e.code)); }catch(e){}
-    firebaseReady = true;
-    jcAuth.onAuthStateChanged(async user => {
+async function jcHandleUser(user){
       currentUser = user || null;
       applyScreens();
-      jcOnLogin(user);
+      const okP=jcOnLogin(user);
       document.getElementById('accountEmail').textContent = user ? (user.email || '') : '';
       if (user) {
         const lastUid = localStorage.getItem('jc_uid');
@@ -688,10 +700,23 @@ function initFirebase(){
         }
         localStorage.setItem('jc_uid', user.uid);
         if (!profile.name && nameOf(user)) { profile.name = nameOf(user); localStorage.setItem('jc_profile',JSON.stringify(profile)); updateProfile(); }
-        try { await loadCloudData(); showToast('Sesión iniciada. Datos sincronizados.'); }
-        catch (e) { console.error(e); showToast('Sesión iniciada; no se pudo sincronizar la nube.'); }
+        const lp=loadCloudData().then(()=>true,e=>{console.error(e);return false});
+        const ok=await okP.catch(()=>true),synced=await lp;
+        if(ok)showToast(synced?'Sesión iniciada. Datos sincronizados.':'Sesión iniciada; no se pudo sincronizar la nube.');
       }
-    });
+}
+function initFirebase(){
+  try {
+    if (!window.JC_FIREBASE_CONFIG || !window.JC_FIREBASE_CONFIG.apiKey || window.JC_FIREBASE_CONFIG.apiKey === 'PEGA_AQUI_TU_API_KEY') {
+      setAuthMessage('Primero configura firebase-config.js con los datos de tu aplicación Firebase.',true);
+      return;
+    }
+    firebase.initializeApp(window.JC_FIREBASE_CONFIG);
+    window.jcAuth = firebase.auth();
+    window.jcDb = firebase.firestore();
+    try{ jcDb.enablePersistence({synchronizeTabs:true}).catch(e=>console.warn('Sin persistencia offline:',e&&e.code)); }catch(e){}
+    firebaseReady = true;
+    jcAuth.onAuthStateChanged(user=>{if(user&&window.jcRegistering)return;jcHandleUser(user)});
   } catch(e) { console.error(e); setAuthMessage('No se pudo iniciar Firebase: '+(e&&e.message?e.message:'revisa firebase-config.js')+'. Si dice que firebase no está definido, revisa tu conexión a internet.',true); }
 }
 function setAuthMessage(message,isError){ const el=document.getElementById('authMessage'); if(el){ el.textContent=message||''; el.style.color=isError?'var(--red)':'var(--green)'; el.style.fontSize=isError?'13px':'12px'; } }
@@ -729,7 +754,7 @@ document.getElementById('authToggle').addEventListener('click',()=>{
   document.getElementById('resetPassword').style.display=authMode==='login'?'block':'none';
   document.getElementById('authNameField').style.display=authMode==='register'?'block':'none';
   document.getElementById('authName').required=authMode==='register';
-  document.getElementById('authPassword').autocomplete='new-password';
+  document.getElementById('authPassword').autocomplete=authMode==='login'?'current-password':'new-password';
   setAuthMessage('');
 });
 document.getElementById('authForm').addEventListener('submit',async e=>{
@@ -740,16 +765,24 @@ document.getElementById('authForm').addEventListener('submit',async e=>{
   setAuthMessage('Procesando…'); document.getElementById('authSubmit').disabled=true;
   try {
     if(authMode==='register'){
-      window.jcPendingName=name;
-      const cred=await jcAuth.createUserWithEmailAndPassword(email,password);
-      profile={...profile,name:name};
-      localStorage.setItem('jc_profile',JSON.stringify(profile));
-      const pn=document.getElementById('pName'); if(pn) pn.value=name;
-      updateProfile();
-      cred.user.updateProfile({displayName:name}).catch(e2=>console.error(e2));
-      jcDb.collection('users').doc(cred.user.uid).collection('profile').doc('main')
-        .set({name:name,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})
-        .catch(e2=>console.error(e2));
+      window.jcPendingName=name;window.jcRegistering=true;
+      let cred;
+      try{cred=await jcAuth.createUserWithEmailAndPassword(email,password)}catch(er){window.jcRegistering=false;throw er}
+      const adm=isAdmin(cred.user),tsv=firebase.firestore.FieldValue.serverTimestamp();
+      await Promise.all([
+        cred.user.updateProfile({displayName:name}).catch(e2=>console.error(e2)),
+        jcDb.collection('members').doc(cred.user.uid).set({email:cred.user.email||email,name:name,active:adm,pending:!adm,createdAt:tsv,lastSeen:tsv}).catch(e2=>console.error(e2))
+      ]);
+      if(!adm){
+        await jcAuth.signOut().catch(()=>{});
+        window.jcRegistering=false;window.jcPendingName='';
+        document.getElementById('authPassword').value='';document.getElementById('authName').value='';
+        document.getElementById('authToggle').click();
+        setAuthMessage('✅ Cuenta creada, '+name+'. Ahora inicia sesión con tu correo y contraseña. Para entrar necesitas el permiso del administrador.');
+        return;
+      }
+      window.jcRegistering=false;profile={...profile,name:name};localStorage.setItem('jc_profile',JSON.stringify(profile));
+      jcHandleUser(cred.user);
     }
     else await jcAuth.signInWithEmailAndPassword(email,password);
     setAuthMessage('');
