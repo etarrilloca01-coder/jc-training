@@ -513,7 +513,7 @@
         <div class="actions"><button class="btn" onclick="saveProfileUI()">GUARDAR PERFIL</button><button class="btn secondary" type="button" id="signOutBtn2">CERRAR SESIÓN</button></div>
         <p class="notice">Los datos personales se usan para mostrar tu perfil y tus métricas. Evita introducir información que no quieras guardar.</p>
       </div>
-      <div class="card" id="adminCard" style="display:none;margin-top:14px"><div class="eyebrow">🛡️ ADMIN</div><p class="notice" id="adminInfo">Usuarios registrados.</p><div class="actions"><button class="btn secondary smallbtn" type="button" onclick="loadAdminUsers()">↻ ACTUALIZAR</button></div><div id="adminList"></div></div>
+      <div class="card" id="adminCard" style="display:none;margin-top:14px"><div class="eyebrow">🛡️ ADMIN</div><p class="notice" id="adminInfo">Usuarios registrados.</p><div class="actions"><button class="btn secondary smallbtn" type="button" onclick="loadAdminUsers()">↻ ACTUALIZAR</button></div><div id="adminList"></div><details id="adminArchWrap" style="display:none;margin-top:16px"><summary class="eyebrow" style="cursor:pointer;margin:0;padding:6px 0" id="adminArchTitle">🗄️ CUENTAS ARCHIVADAS</summary><p class="notice" style="margin:6px 0 0">Las cuentas archivadas no pueden entrar. Desde aquí puedes restaurarlas o eliminarlas definitivamente.</p><div id="adminArchList"></div></details></div>
     </section>
   </main>
 </div>
@@ -558,6 +558,7 @@ async function jcOnLogin(user){
     else{
       const d=snap.data(),until=d.accessUntil&&d.accessUntil.toDate?d.accessUntil.toDate():null;
       if(!isAdmin(user)){
+        if(d.archived){jcBlock('Tu cuenta fue archivada. Contacta al administrador.');return}
         if(d.active===false){jcBlock(d.pending?'Tu cuenta está pendiente de aprobación. El administrador debe activarla para que puedas entrar.':'Tu cuenta está desactivada. Contacta al administrador.');return}
         if(until&&until<new Date()){jcBlock('Tu tiempo de acceso terminó. Contacta al administrador para renovarlo.');return}
       }
@@ -589,25 +590,37 @@ async function exHelp(i,txt){const box=document.getElementById('exh'+i);if(!box)
  if(hit)html+='<div class="eximgs">'+hit.im.map(p=>'<img loading="lazy" alt="" src="'+base+p+'" onerror="this.style.display=\'none\'">').join('')+'</div><span class="exname">'+escapeHtml(hit.name)+'</span>';
  document.getElementById('exh'+i).innerHTML=html}
 
-function memStatus(m){const u=m.accessUntil&&m.accessUntil.toDate?m.accessUntil.toDate():null;if(m.active===false&&m.pending)return '<span class="tagRed">⏳ Pendiente de aprobar</span>';if(m.active===false)return '<span class="tagRed">Desactivada</span>';if(u&&u<new Date())return '<span class="tagRed">Acceso vencido</span>';if(u)return '<span class="tagGreen">Acceso hasta '+u.toLocaleDateString('es')+'</span>';return '<span class="tagGreen">Activa · de por vida</span>'}
+function memStatus(m){if(m.archived)return '<span class="tagRed">🗄️ Archivada</span>';const u=m.accessUntil&&m.accessUntil.toDate?m.accessUntil.toDate():null;if(m.active===false&&m.pending)return '<span class="tagRed">⏳ Pendiente de aprobar</span>';if(m.active===false)return '<span class="tagRed">Desactivada</span>';if(u&&u<new Date())return '<span class="tagRed">Acceso vencido</span>';if(u)return '<span class="tagGreen">Acceso hasta '+u.toLocaleDateString('es')+'</span>';return '<span class="tagGreen">Activa · de por vida</span>'}
+function memArch(m,i){const ar=m.archivedAt&&m.archivedAt.toDate?m.archivedAt.toDate():null;return `<div class="mem"><b>${escapeHtml(m.name||'Sin nombre')}</b><small>${escapeHtml(m.email||'')}</small><small>${memStatus(m)}${ar?' · desde '+ar.toLocaleDateString('es'):''}</small><div class="row"><button class="btn secondary smallbtn" onclick="adminRestore(${i})">RESTAURAR</button><button class="btn smallbtn" style="background:var(--red);border-color:var(--red);color:#fff" onclick="adminDelete(${i})">ELIMINAR</button></div></div>`}
 function memCard(m,i,now){const ls=m.lastSeen&&m.lastSeen.toDate?m.lastSeen.toDate():null;const online=ls&&now-ls.getTime()<360000;const me=(m.email||'').toLowerCase()===ADMIN_EMAIL;
   return `<div class="mem"><b><span class="${online?'dotOn':'dotOff'}"></span>${escapeHtml(m.name||'Sin nombre')}${me?' (admin)':''}</b><small>${escapeHtml(m.email||'')}</small><small>${memStatus(m)} · ${online?'En línea':(ls?'Visto '+ls.toLocaleString('es'):'Sin actividad')}</small>`+
-  (me?'':`<div class="row"><button class="btn secondary smallbtn" onclick="adminToggle(${i})">${m.active===false?'ACTIVAR':'DESACTIVAR'}</button><button class="btn secondary smallbtn" onclick="adminReset(${i})">NUEVA CONTRASEÑA</button></div><div class="row"><input id="gN${i}" type="number" min="1" value="1" inputmode="numeric" style="width:70px"><select id="gU${i}"><option value="d">días</option><option value="w">semanas</option><option value="m">meses</option><option value="y">años</option></select><button class="btn smallbtn" onclick="adminGrant(${i})">DAR ACCESO</button><button class="btn secondary smallbtn" onclick="adminUnlimited(${i})">DE POR VIDA</button></div>`)+`</div>`}
+  (me?'':`<div class="row"><button class="btn secondary smallbtn" onclick="adminToggle(${i})">${m.active===false?'ACTIVAR':'DESACTIVAR'}</button><button class="btn secondary smallbtn" onclick="adminReset(${i})">NUEVA CONTRASEÑA</button><button class="btn secondary smallbtn" onclick="adminArchive(${i})">🗄️ ARCHIVAR</button></div><div class="row"><input id="gN${i}" type="number" min="1" value="1" inputmode="numeric" style="width:70px"><select id="gU${i}"><option value="d">días</option><option value="w">semanas</option><option value="m">meses</option><option value="y">años</option></select><button class="btn smallbtn" onclick="adminGrant(${i})">DAR ACCESO</button><button class="btn secondary smallbtn" onclick="adminUnlimited(${i})">DE POR VIDA</button></div>`)+`</div>`}
 async function loadAdminUsers(more){
   if(!isAdmin(currentUser))return;const box=document.getElementById('adminList');
   try{
     let qq=jcDb.collection('members').orderBy('lastSeen','desc');if(more===true&&jcLast)qq=qq.startAfter(jcLast);
     const q=await qq.limit(200).get(),rows=q.docs.map(d=>({id:d.id,...d.data()}));
     jcMembers=(more===true&&jcLast)?jcMembers.concat(rows):rows;if(q.docs.length)jcLast=q.docs[q.docs.length-1];jcMore=q.docs.length===200;
-    const now=Date.now();const on=jcMembers.filter(m=>m.lastSeen&&m.lastSeen.toDate&&now-m.lastSeen.toDate().getTime()<360000).length;
-    const pend=jcMembers.map((m,i)=>[m,i]).filter(x=>x[0].active===false&&x[0].pending),rest=jcMembers.map((m,i)=>[m,i]).filter(x=>!(x[0].active===false&&x[0].pending));
-    document.getElementById('adminInfo').textContent=jcMembers.length+(jcMore?'+':'')+' usuarios · '+on+' conectados ahora · '+pend.length+' pendientes';
+    const now=Date.now();const arch=jcMembers.map((m,i)=>[m,i]).filter(x=>x[0].archived);const on=jcMembers.filter(m=>!m.archived&&m.lastSeen&&m.lastSeen.toDate&&now-m.lastSeen.toDate().getTime()<360000).length;
+    const act=jcMembers.map((m,i)=>[m,i]).filter(x=>!x[0].archived),pend=act.filter(x=>x[0].active===false&&x[0].pending),rest=act.filter(x=>!(x[0].active===false&&x[0].pending));
+    document.getElementById('adminInfo').textContent=act.length+(jcMore?'+':'')+' usuarios · '+on+' conectados ahora · '+pend.length+' pendientes · '+arch.length+' archivadas';
     box.innerHTML=(pend.length?`<div class="eyebrow" style="margin:14px 0 4px;color:#ffb3b6">⏳ PENDIENTES DE APROBAR (${pend.length})</div>`+pend.map(x=>memCard(x[0],x[1],now)).join(''):'')+
       (rest.length?`<div class="eyebrow" style="margin:14px 0 4px">USUARIOS</div>`+rest.map(x=>memCard(x[0],x[1],now)).join(''):'')||'<p class="notice">Aún no hay usuarios.</p>';
+    const aw=document.getElementById('adminArchWrap');aw.style.display=arch.length?'block':'none';document.getElementById('adminArchTitle').textContent='🗄️ CUENTAS ARCHIVADAS ('+arch.length+')';document.getElementById('adminArchList').innerHTML=arch.map(x=>memArch(x[0],x[1])).join('');
     if(jcMore)box.innerHTML+='<div class="actions"><button class="btn secondary smallbtn" type="button" onclick="loadAdminUsers(true)">VER MÁS USUARIOS</button></div>';
   }catch(e){console.error(e);box.innerHTML='<p class="notice" style="color:var(--red)">No se pudo leer la lista ('+escapeHtml((e&&e.code)||'error')+'). Revisa las reglas de Firestore.</p>'}
 }
 async function adminUpd(i,data,msg){try{await jcDb.collection('members').doc(jcMembers[i].id).update(data);showToast(msg);loadAdminUsers()}catch(e){console.error(e);showToast('No se pudo guardar: '+((e&&e.code)||'error'))}}
+function adminArchive(i){const m=jcMembers[i];if(!confirm('¿Archivar la cuenta de '+(m.name||m.email)+'? No podrá entrar mientras esté archivada. Podrás restaurarla o eliminarla desde "Cuentas archivadas".'))return;adminUpd(i,{archived:true,archivedAt:firebase.firestore.FieldValue.serverTimestamp(),active:false,pending:false},'Cuenta archivada.')}
+function adminRestore(i){adminUpd(i,{archived:false,archivedAt:firebase.firestore.FieldValue.delete()},'Cuenta restaurada. Sigue desactivada: actívala o dale acceso.')}
+async function adminDelete(i){const m=jcMembers[i];if(!m||!m.archived){showToast('Primero archiva la cuenta.');return}
+  if(!confirm('¿ELIMINAR definitivamente la cuenta de '+(m.name||m.email)+'?\n\nSe borrarán sus datos guardados (rutinas, medidas, perfil). Esta acción no se puede deshacer.'))return;
+  try{
+    for(const n of ['workouts','measurements','profile','settings']){
+      try{const q=await jcDb.collection('users').doc(m.id).collection(n).get();for(let k=0;k<q.docs.length;k+=400){const b=jcDb.batch();q.docs.slice(k,k+400).forEach(d=>b.delete(d.ref));await b.commit()}}catch(e){console.warn('del '+n+':',e&&e.code||e)}
+    }
+    await jcDb.collection('members').doc(m.id).delete();showToast('Cuenta eliminada.');loadAdminUsers()
+  }catch(e){console.error(e);showToast('No se pudo eliminar: '+((e&&e.code)||'error'))}}
 function adminToggle(i){const m=jcMembers[i];adminUpd(i,{active:m.active===false,pending:false},m.active===false?'Cuenta activada.':'Cuenta desactivada.')}
 function adminGrant(i){const n=Math.max(1,parseInt(document.getElementById('gN'+i).value)||1),u=document.getElementById('gU'+i).value,d=new Date();if(u==='d')d.setDate(d.getDate()+n);else if(u==='w')d.setDate(d.getDate()+n*7);else if(u==='m')d.setMonth(d.getMonth()+n);else d.setFullYear(d.getFullYear()+n);adminUpd(i,{active:true,pending:false,accessUntil:firebase.firestore.Timestamp.fromDate(d)},'Acceso hasta '+d.toLocaleDateString('es')+' ✓')}
 function adminUnlimited(i){adminUpd(i,{active:true,pending:false,accessUntil:firebase.firestore.FieldValue.delete()},'Acceso de por vida ✓')}

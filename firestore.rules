@@ -23,6 +23,8 @@ service cloud.firestore {
     // Datos de cada usuario: solo si su cuenta está aprobada y vigente.
     match /users/{uid}/{document=**} {
       allow read, write: if signedIn() && request.auth.uid == uid && (isAdmin() || approved());
+      // El admin puede leer y eliminar los datos de otros usuarios (para borrar cuentas archivadas).
+      allow read, delete: if isAdmin();
     }
   }
 }
