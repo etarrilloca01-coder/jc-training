@@ -1,4 +1,5 @@
 {
+  "server": { "url": "https://etarrilloca01-coder.github.io/jc-training/" },
   "appId": "com.jc.training",
   "appName": "JC Training",
   "webDir": "www"
