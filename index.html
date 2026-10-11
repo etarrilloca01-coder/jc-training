@@ -320,6 +320,7 @@
     .redConc li.sum{font-size:15px;padding-bottom:9px;border-bottom:1px solid #2a230033}
     .redConc b{color:#1f1a00}
     .exMv{display:flex;gap:6px;align-items:center;margin:-2px 0 8px}.exMv span{font-size:11px;color:var(--muted);margin-right:auto}
+    .exr{margin-top:10px}.exrT{font-size:11px;color:var(--muted);margin-bottom:6px}.exrS{margin-bottom:8px}.exrS b{font-size:12px;display:block;margin-bottom:4px}.exrG{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-end}.exrG label{font-size:10px;color:var(--muted);display:grid;gap:3px;width:54px}.exrG input{text-align:center;padding:9px 2px}.exrR{font-size:10px;color:var(--muted);align-self:center;margin-top:14px}
 
     /* ===== v29 · ajustes de letra + logo ===== */
     h1,h2,h3{letter-spacing:0}
@@ -673,7 +674,37 @@ function applyScreens(){
 document.getElementById('coverStart').addEventListener('click',()=>{coverDismissed=true;applyScreens();window.scrollTo(0,0);try{if(!localStorage.getItem('jc_perm_auto')){localStorage.setItem('jc_perm_auto','1');setTimeout(()=>{try{askAllPerms()}catch(e){}},500)}}catch(e){}});
 applyScreens();
 
+/* ===== SINCRONIZACIÓN EN VIVO (mismo usuario = mismos datos en todos tus dispositivos) ===== */
+let jcUnsubs=[],jcFailT=0;
+function cloudFail(e){console.error(e);if(Date.now()-jcFailT>15000){jcFailT=Date.now();showToast('Se guardó en este dispositivo, pero no se pudo subir a la nube. Revisa tu internet.',5000)}}
+function jcSaveLocalRoutine(){try{localStorage.setItem('jc_done_days',JSON.stringify(doneDays));localStorage.setItem('jc_done_week',doneWeek||'');localStorage.setItem('jc_routine_log',JSON.stringify(routineLog))}catch(e){}}
+function jcApplyRoutineDoc(d){if(!d)return false;const cw=d.doneWeek||'';
+  if(cw&&doneWeek&&cw<doneWeek){routineLog={...(d.routineLog||{}),...routineLog};jcSaveLocalRoutine();cloudSaveRoutine();return true}
+  doneDays=d.doneDays||{};doneWeek=cw||doneWeek;routineLog=d.routineLog||routineLog;jcSaveLocalRoutine();return true}
+function jcApplyPlanDoc(d){if(!d)return false;let p=d.plan||{};const pw=d.planWeek||'';let push=false;planLog=d.planLog||planLog;
+  if(pw){
+    if(!doneWeek||pw>doneWeek){doneWeek=pw;doneDays={};jcSaveLocalRoutine();push=true}
+    else if(pw<doneWeek){if(Object.keys(p).length&&!planLog[pw])planLog[pw]=p;p=Object.keys(plan||{}).length?plan:{};push=true}
+  }
+  plan=p;if(d.routines){routines=d.routines;rtNorm();try{localStorage.setItem('jc_routines',JSON.stringify(routines))}catch(e){}}
+  try{localStorage.setItem('jc_plan',JSON.stringify(plan));localStorage.setItem('jc_plan_log',JSON.stringify(planLog))}catch(e){}
+  if(push){cloudSavePlan();cloudSaveRoutine()}return true}
+function stopLiveSync(){jcUnsubs.forEach(f=>{try{f()}catch(e){}});jcUnsubs=[]}
+function jcEditing(){const m=document.getElementById('dayModal');return !!(m&&m.style.display==='flex'&&modalEdit)}
+function jcRefreshUI(){if(jcEditing())return;try{renderAll()}catch(e){console.error(e)}try{renderRoutine()}catch(e){console.error(e)}}
+function startLiveSync(){stopLiveSync();const u=currentUser;if(!u||!firebaseReady)return;
+  const base=jcDb.collection('users').doc(u.uid),st=base.collection('settings');
+  const sub=(ref,fn)=>{try{jcUnsubs.push(ref.onSnapshot(sn=>{if(sn.metadata.hasPendingWrites||sn.metadata.fromCache||!currentUser||currentUser.uid!==u.uid)return;try{fn(sn)}catch(e){console.error(e)}},e=>console.warn('sync:',e&&e.code||e)))}catch(e){console.warn(e)}};
+  const J=JSON.stringify;
+  sub(st.doc('plan'),sn=>{if(!sn.exists)return;const d=sn.data();if(J([d.plan||{},d.planLog||{},d.planWeek||''])===J([plan,planLog,doneWeek||''])&&(!d.routines||J(d.routines)===J(routines)))return;jcApplyPlanDoc(d);jcRefreshUI()});
+  sub(st.doc('routine'),sn=>{if(!sn.exists)return;const d=sn.data();if(J([d.doneDays||{},d.doneWeek||'',d.routineLog||{}])===J([doneDays,doneWeek||'',routineLog]))return;jcApplyRoutineDoc(d);jcRefreshUI()});
+  sub(st.doc('health'),sn=>{if(!sn.exists)return;const h=sn.data();if(J([h.water||{},h.runs||[],h.playlists||[]])===J([water,runs,playlists]))return;water=h.water||water;runs=h.runs||runs;playlists=h.playlists||playlists;remind={...remind,...(h.remind||{})};persistHealth(false);jcRefreshUI()});
+  sub(st.doc('weights'),sn=>{if(!sn.exists)return;const l=sn.data().list||[];if(J(l)===J(weights))return;weights=l;try{localStorage.setItem('jc_weights',JSON.stringify(weights))}catch(e){}jcRefreshUI()});
+  sub(base.collection('profile').doc('main'),sn=>{if(!sn.exists)return;const d=sn.data(),np={...profile,...d};if(J(np)===J(profile))return;profile=np;try{localStorage.setItem('jc_profile',JSON.stringify(profile))}catch(e){}try{updateProfile()}catch(e){}jcRefreshUI()});
+  sub(base.collection('measurements'),sn=>{const m=sn.docs.map(x=>x.data()).sort((a,b)=>(a.week||'').localeCompare(b.week||''));if(!m.length||J(m)===J(measurements))return;measurements=m;try{localStorage.setItem('jc_measurements',JSON.stringify(measurements))}catch(e){}try{buildMeasureWeeks()}catch(e){}jcRefreshUI()});
+}
 async function jcHandleUser(user){
+  stopLiveSync();
       currentUser = user || null;
       applyScreens();
       const okP=jcOnLogin(user);
@@ -692,7 +723,7 @@ async function jcHandleUser(user){
         if (!profile.name && nameOf(user)) { profile.name = nameOf(user); localStorage.setItem('jc_profile',JSON.stringify(profile)); updateProfile(); }
         const lp=loadCloudData().then(()=>true,e=>{console.error(e);return false});
         const ok=await okP.catch(()=>true),synced=await lp;
-        if(ok)showToast(synced?'Sesión iniciada. Datos sincronizados.':'Sesión iniciada; no se pudo sincronizar la nube.');
+        if(ok){showToast(synced?'Sesión iniciada. Datos sincronizados.':'Sesión iniciada; no se pudo sincronizar la nube.');startLiveSync()}
       }
 }
 function initFirebase(){
@@ -791,7 +822,7 @@ document.getElementById('signOutBtn').addEventListener('click',()=>{if(firebaseR
 document.getElementById('signOutBtn2').addEventListener('click',()=>{if(firebaseReady)jcAuth.signOut();});
 
 function userCollection(name){ if(!currentUser) throw new Error('Inicia sesión para guardar datos.'); return jcDb.collection('users').doc(currentUser.uid).collection(name); }
-async function saveCloudDoc(collectionName,id,data){ if(!currentUser||!firebaseReady)return; await userCollection(collectionName).doc(id).set({...data,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}); }
+async function saveCloudDoc(collectionName,id,data,replace){ if(!currentUser||!firebaseReady)return; const payload={...data,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}; if(replace)await userCollection(collectionName).doc(id).set(payload); else await userCollection(collectionName).doc(id).set(payload,{merge:true}); }
 async function loadCloudData(){
   if(!currentUser||cloudLoadInProgress)return; cloudLoadInProgress=true;
   try {
@@ -807,19 +838,19 @@ async function loadCloudData(){
     if(!ws.empty) workouts=ws.docs.map(d=>d.data()).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
     if(!ms.empty) measurements=ms.docs.map(d=>d.data()).sort((a,b)=>(a.week||'').localeCompare(b.week||''));
     if(profileSnap.exists) profile={...profile,...profileSnap.data()};
-    if(doneSnap.exists){ doneDays=doneSnap.data().doneDays||{}; doneWeek=doneSnap.data().doneWeek||doneWeek; routineLog=doneSnap.data().routineLog||routineLog; }
+    if(doneSnap.exists)jcApplyRoutineDoc(doneSnap.data());
     localStorage.setItem('jc_workouts',JSON.stringify(workouts));
     localStorage.setItem('jc_measurements',JSON.stringify(measurements));
     localStorage.setItem('jc_profile',JSON.stringify(profile));
     localStorage.setItem('jc_done_days',JSON.stringify(doneDays));
     ['pName','pAge','pSex','pHeight','pWeight','pFat','pGoal','pLevel'].forEach(id=>{const key={pName:'name',pAge:'age',pSex:'sex',pHeight:'height',pWeight:'weight',pFat:'bodyFat',pGoal:'goal',pLevel:'level'}[id];if(profile[key]!==undefined)document.getElementById(id).value=profile[key]});
-    if(planSnap.exists){plan=planSnap.data().plan||plan;planLog=planSnap.data().planLog||planLog;if(planSnap.data().routines){routines=planSnap.data().routines;rtNorm();localStorage.setItem('jc_routines',JSON.stringify(routines))}localStorage.setItem('jc_plan',JSON.stringify(plan));localStorage.setItem('jc_plan_log',JSON.stringify(planLog))}if(healthSnap.exists){const h=healthSnap.data();water=h.water||water;runs=h.runs||runs;playlists=h.playlists||playlists;remind={...remind,...(h.remind||{})};persistHealth(false)}if(weightSnap.exists){weights=weightSnap.data().list||weights;localStorage.setItem('jc_weights',JSON.stringify(weights))}else if(weights.length)persistWeights();updateProfile();renderAll();renderRoutine();buildMeasureWeeks();loadMeasureForm();
+    if(planSnap.exists)jcApplyPlanDoc(planSnap.data());if(healthSnap.exists){const h=healthSnap.data();water=h.water||water;runs=h.runs||runs;playlists=h.playlists||playlists;remind={...remind,...(h.remind||{})};persistHealth(false)}if(weightSnap.exists){weights=weightSnap.data().list||weights;localStorage.setItem('jc_weights',JSON.stringify(weights))}else if(weights.length)persistWeights();updateProfile();renderAll();renderRoutine();buildMeasureWeeks();loadMeasureForm();
   } finally {cloudLoadInProgress=false;}
 }
 function cloudSaveWorkout(w){if(!currentUser)return;const id=w.id||('w_'+Date.now()+'_'+Math.random().toString(36).slice(2,8));w.id=id;saveCloudDoc('workouts',id,w).catch(e=>{console.error(e);showToast('Se guardó localmente, pero falló la nube.');});}
 function cloudSaveMeasurement(data){if(!currentUser)return;const id=String(data.week||'semana').toLowerCase().replace(/[^a-z0-9_-]/g,'_');saveCloudDoc('measurements',id,data).catch(e=>{console.error(e);showToast('Se guardó localmente, pero falló la nube.');});}
 function cloudSaveProfile(data){if(!currentUser)return;saveCloudDoc('profile','main',data).catch(e=>{console.error(e);showToast('Se guardó localmente, pero falló la nube.');});}
-function cloudSaveRoutine(){if(!currentUser)return;saveCloudDoc('settings','routine',{doneDays,doneWeek,routineLog}).catch(e=>console.error(e));}
+function cloudSaveRoutine(){if(!currentUser)return;saveCloudDoc('settings','routine',{doneDays,doneWeek,routineLog},true).catch(cloudFail);}
 
 
 function init(){
@@ -950,7 +981,7 @@ function restoreWorkoutDraft(){ try{ const d=JSON.parse(localStorage.getItem('jc
   sel.addEventListener('change',loadMeasureForm); })();
 document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') flushAuto(); });
 window.addEventListener('pagehide',flushAuto);
-function cloudSavePlan(){if(!currentUser)return;saveCloudDoc('settings','plan',{plan,planLog,routines}).catch(e=>console.error(e))}
+function cloudSavePlan(){if(!currentUser)return;saveCloudDoc('settings','plan',{plan,planLog,routines,planWeek:doneWeek||''},true).catch(cloudFail)}
 function persistHealth(cloud=true){localStorage.setItem('jc_water',JSON.stringify(water));localStorage.setItem('jc_runs',JSON.stringify(runs));localStorage.setItem('jc_remind',JSON.stringify(remind));localStorage.setItem('jc_playlists',JSON.stringify(playlists));if(cloud&&currentUser)saveCloudDoc('settings','health',{water,runs,remind,playlists}).catch(e=>console.error(e))}
 
 
@@ -1125,6 +1156,26 @@ const FEELS=['Sin indicar','Muy mal 😣','Mal 😕','Normal 😐','Bien 🙂','
 let justSaved=false;
 [plan,...Object.values(planLog)].forEach(w=>Object.values(w).forEach(p=>(p.ex||[]).forEach(e=>{e.t=e.t||p.type||'normal'})));
 function repsOf(e){return e.t==='cluster'?(+e.c||0)*(+e.r||0):(+e.r||0)}
+/* ===== CUADRITOS DE REPETICIONES (por serie · por cluster) ===== */
+const BOXMAX=20;
+function exNSets(e){return Math.max(0,Math.min(BOXMAX,Math.floor(+e.s||0)))}
+function exNClus(e){return Math.max(1,Math.min(BOXMAX,Math.floor(+e.c||1)))}
+function exFixA(e){const n=exNSets(e),cl=(e.t||'normal')==='cluster',a=Array.isArray(e.a)?e.a:[],out=[];
+  for(let i=0;i<n;i++){if(cl){const m=exNClus(e),old=Array.isArray(a[i])?a[i]:[],row=[];for(let j=0;j<m;j++)row.push(old[j]==null?'':old[j]);out.push(row)}else out.push(Array.isArray(a[i])||a[i]==null?'':a[i])}
+  e.a=out;return out}
+function exHasA(e){return Array.isArray(e.a)&&e.a.some(x=>Array.isArray(x)?x.some(v=>v!==''&&v!=null):(x!==''&&x!=null))}
+function exSumA(e){let t=0;(e.a||[]).forEach(x=>{if(Array.isArray(x))x.forEach(v=>{t+=(+v||0)});else t+=(+x||0)});return t}
+function exMaxA(e){let m=0;(e.a||[]).forEach(x=>{const v=Array.isArray(x)?x.reduce((q,y)=>q+(+y||0),0):(+x||0);if(v>m)m=v});return m}
+function exTotReps(e){const t=e.t||'normal';return exHasA(e)?exSumA(e):(+e.s||0)*repsOf({t,c:e.c,r:e.r})}
+function exSumFull(e){return exSum(e)+(exHasA(e)?' · hechas: '+exSumA(e)+' reps':'')}
+function exViewA(e){if(!exHasA(e))return '';const f=v=>v===''||v==null?'–':v;return (e.t||'normal')==='cluster'?e.a.map((r,k)=>'S'+(k+1)+': '+r.map(f).join('+')).join(' · '):e.a.map(f).join(' · ')}
+function exBoxesHtml(i){const e=draft.ex[i];if(!e)return '';const a=exFixA(e);if(!a.length)return '';const cl=(e.t||'normal')==='cluster',ph=String(+e.r||'');
+  const box=(lab,v,k,j)=>`<label>${lab}<input type="number" inputmode="numeric" min="0" placeholder="${ph}" value="${escapeHtml(v)}" oninput="setRep(${i},${k},${j},this.value)"></label>`;
+  if(!cl)return `<div class="exr"><div class="exrT">Repeticiones que hiciste en cada serie</div><div class="exrG">${a.map((v,k)=>box('S'+(k+1),v,k,-1)).join('')}</div></div>`;
+  const rest=+e.rest||0;
+  return `<div class="exr"><div class="exrT">Repeticiones en cada cluster${rest?' · pausa de '+rest+' s entre clusters':''}</div>${a.map((row,k)=>`<div class="exrS"><b>Serie ${k+1}</b><div class="exrG">${row.map((v,j)=>(j?`<span class="exrR">⏱ ${rest}s</span>`:'')+box('C'+(j+1),v,k,j)).join('')}</div></div>`).join('')}</div>`}
+function setRep(i,k,j,val){const e=draft.ex[i];if(!e)return;exFixA(e);if(j<0)e.a[k]=val;else if(e.a[k])e.a[k][j]=val;const el=document.getElementById('exs'+i);if(el)el.textContent=exSumFull(e)}
+function stripA(p){Object.values(p||{}).forEach(d=>(d&&d.ex||[]).forEach(e=>{delete e.a}));return p}
 function exSum(e){const t=e.t||'normal';return t==='cluster'?`${e.s} series · cada serie: ${e.c} clusters × ${e.r} reps (${repsOf({t,c:e.c,r:e.r})} reps) con ${e.rest} s de pausa`:`${e.s} × ${e.r}${t==='5x5'?' (5×5)':''}`}
 function defRow(t){t=t||(draft&&draft.ex&&draft.ex.length&&draft.ex[draft.ex.length-1].t)||'normal';const b={n:'',t,s:4,r:12,w:0};if(t==='5x5'){b.s=5;b.r=5}if(t==='cluster'){b.s=3;b.c=4;b.r=2;b.rest=20}return b}
 function blankRun(){return {type:'Rodaje suave',km:'',time:'',hr:'',elev:'',feel:'Sin indicar',note:''}}
@@ -1138,15 +1189,15 @@ function runEdit(){if(!draft.run)return '<div class="actions"><button class="btn
 function runSet(k,val){draft.run[k]=val;if(k==='km'||k==='time'){const el=document.getElementById('runStats');if(el)el.innerHTML=runCards(draft.run)}}
 function addRunBlock(){draft.run=blankRun();renderModal()}
 function delRunBlock(){draft.run=null;renderModal()}
-function exSet(i,k,val){draft.ex[i][k]=val;const el=document.getElementById('exs'+i);if(el)el.textContent=exSum(draft.ex[i])}
+function exSet(i,k,val){draft.ex[i][k]=val;const el=document.getElementById('exs'+i);if(el)el.textContent=exSumFull(draft.ex[i]);const bx=document.getElementById('exr'+i);if(bx&&(k==='s'||k==='c'||k==='r'||k==='rest'))bx.innerHTML=exBoxesHtml(i)}
 function setExType(i,t){const e=draft.ex[i];e.t=t;if(t==='5x5'){e.s=5;e.r=5}if(t==='cluster'&&!e.c){e.s=3;e.c=4;e.r=2;e.rest=20}renderModal()}
 function normDraft(){if(!draft.ex)draft.ex=[];const dt=draft.type||'normal';draft.ex.forEach(e=>{e.t=e.t||dt;if(e.t==='cluster'){e.c=e.c||4;e.rest=e.rest||20}});if(typeof draft.run==='string')draft.run=draft.run.trim()?{...blankRun(),km:draft.run.trim()}:null;if(draft.run)draft.run={...blankRun(),...draft.run};else draft.run=null}
 function planHas(p){return !!p&&((p.ex&&p.ex.length)||runHas(p.run))}
-function sessions(){const out=[];Object.entries(planWeeks()).forEach(([wk,pl])=>Object.entries(pl).forEach(([di,p])=>{const d=new Date(wk+'T12:00:00');d.setDate(d.getDate()+(+di));(p.ex||[]).forEach(e=>{if(!String(e.n).trim())return;const t=e.t||p.type||'normal',s=+e.s||0,r=repsOf({t,c:e.c,r:e.r}),w=+e.w||0;out.push({date:isoDate(d),exercise:e.n,group:SHORT_T[t]||t,sets:s,reps:r,weight:w,volume:s*r*w})})}));return out.sort((a,b)=>b.date.localeCompare(a.date))}
+function sessions(){const out=[];Object.entries(planWeeks()).forEach(([wk,pl])=>Object.entries(pl).forEach(([di,p])=>{const d=new Date(wk+'T12:00:00');d.setDate(d.getDate()+(+di));(p.ex||[]).forEach(e=>{if(!String(e.n).trim())return;const t=e.t||p.type||'normal',s=+e.s||0,r=repsOf({t,c:e.c,r:e.r}),w=+e.w||0;out.push({date:isoDate(d),exercise:e.n,group:SHORT_T[t]||t,sets:s,reps:r,weight:w,volume:exTotReps({...e,t})*w})})}));return out.sort((a,b)=>b.date.localeCompare(a.date))}
 /* ===== RUTINAS GUARDADAS (con nombre, repetir cada semana y métricas) ===== */
 function rtNorm(){if(!routines||typeof routines!=='object')routines={};routines.lib=routines.lib||{};routines.weeks=routines.weeks||{};routines.active=routines.active||'';routines.repeat=!!routines.repeat}
 function rtSave(){rtNorm();try{localStorage.setItem('jc_routines',JSON.stringify(routines))}catch(e){}cloudSavePlan()}
-function rtClone(p){return JSON.parse(JSON.stringify(p||{}))}
+function rtClone(p){return stripA(JSON.parse(JSON.stringify(p||{})))}
 function rtHasPlan(p){return Object.keys(p||{}).some(k=>planHas(p[k]))}
 function rtRepeatPlan(cur){rtNorm();const r=routines.repeat&&routines.lib[routines.active];if(!r)return {};routines.weeks[cur]=routines.active;return rtClone(r.plan)}
 function rtAfterRoll(){rtNorm();if(!rtHasPlan(plan))return;for(let d=0;d<7;d++)if(plan[d]&&runHas(plan[d].run))syncRuns(d,plan[d].run);rtSave()}
@@ -1166,7 +1217,7 @@ function delRoutine(i){rtNorm();const n=Object.keys(routines.lib)[i];if(!n||!con
 function toggleRepeatRt(){rtNorm();if(!routines.active){showToast('Primero guarda o elige una rutina.');renderRoutineCard();return}
   routines.repeat=!routines.repeat;rtSave();renderRoutineCard();showToast(routines.repeat?'Cada semana nueva se cargará «'+routines.active+'» sola ✓':'Repetición automática desactivada.')}
 function rtWeeks(n){const pw=planWeeks();return Object.keys(routines.weeks).filter(k=>routines.weeks[k]===n).sort().map((k,idx)=>{const pl=pw[k]||{};let days=0,vol=0,ex=0;
-  Object.values(pl).forEach(p=>{if(!planHas(p))return;days++;(p.ex||[]).forEach(e=>{if(!String(e.n||'').trim())return;ex++;const t=e.t||p.type||'normal';vol+=(+e.s||0)*repsOf({t,c:e.c,r:e.r})*(+e.w||0)})});
+  Object.values(pl).forEach(p=>{if(!planHas(p))return;days++;(p.ex||[]).forEach(e=>{if(!String(e.n||'').trim())return;ex++;const t=e.t||p.type||'normal';vol+=exTotReps({...e,t})*(+e.w||0)})});
   const dn=k===doneWeek?doneDays:(routineLog[k]||{});return {n:idx+1,k,days,done:Object.values(dn).filter(Boolean).length,ex,vol}})}
 function renderRoutineCard(){const el=document.getElementById('routineCard');if(!el)return;rtNorm();
   const names=Object.keys(routines.lib),act=routines.active,sel=(rtSel&&routines.lib[rtSel])?rtSel:act;
@@ -1184,17 +1235,17 @@ function renderRoutine(){rollWeek();const t=(new Date().getDay()+6)%7;
  document.getElementById('planList').innerHTML=DAYS.map((d,i)=>{const p=plan[i];const n=p&&p.ex?p.ex.length:0;const parts=[];if(n){const ts=[...new Set(p.ex.map(e=>SHORT_T[e.t||'normal']))].join('/');parts.push(ts+' · '+n+' ejercicio'+(n>1?'s':'')+': '+p.ex.slice(0,3).map(e=>escapeHtml(e.n)).join(', ')+(n>3?'…':''))}if(p&&runHas(p.run))parts.push('Running '+escapeHtml(p.run.km||'')+' km '+escapeHtml(p.run.type));const has=parts.length;return `<div class="rowitem" onclick="openDay(${i},false)" style="cursor:pointer;${has?'background:#a8ff00;border-color:#a8ff00;color:#0a0f0a':'opacity:.45'}"><div><strong style="${has?'color:#0a0f0a':''}">${d}${i===t?' · Hoy':''}</strong><small style="${has?'color:#0a0f0acc':''}">${parts.join(' · ')||'Sin entrenamiento · toca ✏️ para registrarlo'}</small></div><button class="btn smallbtn" style="${has?'background:#0a0f0a33;color:#0a0f0a;border:1px solid #0a0f0a55;':''}font-size:16px;box-shadow:none" onclick="event.stopPropagation();openDay(${i},true)" aria-label="Editar día">✏️</button></div>`}).join('');renderRoutineCard()}
 function openDay(i,add){modalDay=i;const p=plan[i];const has=planHas(p);modalEdit=!!add||!has;draft=JSON.parse(JSON.stringify(p||{ex:[],run:null,note:''}));normDraft();if(modalEdit&&(!draft.ex.length||add&&has&&String(draft.ex[draft.ex.length-1].n).trim()))draft.ex.push(defRow());renderModal()}
 function lastWeekDay(i){const ks=Object.keys(planLog).filter(k=>k<doneWeek).sort();for(let n=ks.length-1;n>=0;n--){const p=planLog[ks[n]][i];if(planHas(p))return p}return null}
-function copyLast(){const p=lastWeekDay(modalDay);if(p){draft=JSON.parse(JSON.stringify(p));normDraft();renderModal()}}
+function copyLast(){const p=lastWeekDay(modalDay);if(p){draft=JSON.parse(JSON.stringify(p));(draft.ex||[]).forEach(e=>{delete e.a});normDraft();renderModal()}}
 function editDay(){draft=JSON.parse(JSON.stringify(plan[modalDay]));normDraft();if(!draft.ex.length&&!draft.run)draft.ex.push(defRow());renderModal()}
 function renderModal(){const m=document.getElementById('dayModal');m.style.display='flex';const d=DAYS[modalDay];let h=`<div class="mhead"><h2 style="color:${DAYCOL[modalDay]}">${d}</h2><button class="btn secondary smallbtn" onclick="closeDay()">✕</button></div>`;
- if(!modalEdit){const p=plan[modalDay];if(justSaved)h+='<p class="notice" style="margin:0 0 10px;color:var(--green);font-weight:800">✓ Guardado exitoso</p>';h+='<div class="list">'+(p.ex||[]).filter(e=>e.n).map(e=>`<div class="rowitem"><div><strong>${escapeHtml(e.n)} <span class="muted small">· ${SHORT_T[e.t||'normal']}</span></strong><small>${exSum(e)}${+e.w?' · '+escapeHtml(e.w)+' kg':''}</small></div></div>`).join('')+'</div>';if(runHas(p.run))h+=runView(p.run);if(p.note)h+=`<p class="notice">${escapeHtml(p.note)}</p>`;h+=`<div class="actions"></div>`}
- else{const lw=!draft.ex.some(e=>String(e.n).trim())&&!draft.run&&lastWeekDay(modalDay);h+=(lw?'<div class="actions" style="margin:0 0 10px"><button class="btn secondary" onclick="copyLast()">COPIAR DE LA SEMANA PASADA</button></div>':'')+draft.ex.map((e,i)=>{const t=e.t||'normal';const f=t==='cluster'?[['Series','s'],['Clusters','c'],['Reps/cluster','r'],['Pausa (s)','rest'],['Kg','w']]:[['Series','s'],['Reps','r'],['Kg','w']];return `<div class="exb"><div class="exn"><input value="${escapeHtml(e.n)}" placeholder="Press banca" id="exin${i}" autocomplete="off" oninput="draft.ex[${i}].n=this.value;exHelpDeb(${i},this.value)"><select onchange="setExType(${i},this.value)">${Object.entries(SHORT_T).map(([k,l])=>`<option value="${k}" ${t===k?'selected':''}>${l}</option>`).join('')}</select><button class="btn secondary smallbtn" onclick="delEx(${i})" aria-label="Quitar">×</button></div>${draft.ex.length>1?`<div class="exMv"><span>Mover:</span>${i>0?`<button class="btn secondary smallbtn" type="button" onclick="moveEx(${i},'top')">⤒ INICIO</button><button class="btn secondary smallbtn" type="button" onclick="moveEx(${i},-1)" aria-label="Subir">▲</button>`:''}${i<draft.ex.length-1?`<button class="btn secondary smallbtn" type="button" onclick="moveEx(${i},1)" aria-label="Bajar">▼</button>`:''}</div>`:''}<div class="exh" id="exh${i}"></div><div class="exf" style="--n:${f.length}">${f.map(([l,k])=>`<label>${l}<input type="number" min="0" step="${k==='w'?'0.5':'1'}" value="${escapeHtml(e[k])}" oninput="exSet(${i},'${k}',this.value)"></label>`).join('')}</div><small class="muted" id="exs${i}">${exSum(e)}</small></div>`}).join('')+`<div class="actions"><button class="btn secondary" onclick="addEx()">＋ AGREGAR EJERCICIO</button></div>`+runEdit()+`<div class="field" style="margin-top:12px"><label>Nota del día (opcional)</label><input value="${escapeHtml(draft.note)}" oninput="draft.note=this.value"></div><div class="actions"><button class="btn" onclick="savePlanDay()">GUARDAR ENTRENAMIENTO</button><button class="btn secondary" onclick="cancelEdit()">CANCELAR</button></div>`}
+ if(!modalEdit){const p=plan[modalDay];if(justSaved)h+='<p class="notice" style="margin:0 0 10px;color:var(--green);font-weight:800">✓ Guardado exitoso</p>';h+='<div class="list">'+(p.ex||[]).filter(e=>e.n).map(e=>`<div class="rowitem"><div><strong>${escapeHtml(e.n)} <span class="muted small">· ${SHORT_T[e.t||'normal']}</span></strong><small>${exSum(e)}${+e.w?' · '+escapeHtml(e.w)+' kg':''}</small>${exViewA(e)?`<small>Hechas: ${exViewA(e)}</small>`:''}</div></div>`).join('')+'</div>';if(runHas(p.run))h+=runView(p.run);if(p.note)h+=`<p class="notice">${escapeHtml(p.note)}</p>`;h+=`<div class="actions"></div>`}
+ else{const lw=!draft.ex.some(e=>String(e.n).trim())&&!draft.run&&lastWeekDay(modalDay);h+=(lw?'<div class="actions" style="margin:0 0 10px"><button class="btn secondary" onclick="copyLast()">COPIAR DE LA SEMANA PASADA</button></div>':'')+draft.ex.map((e,i)=>{const t=e.t||'normal';const f=t==='cluster'?[['Series','s'],['Clusters','c'],['Reps/cluster','r'],['Pausa (s)','rest'],['Kg','w']]:[['Series','s'],['Reps','r'],['Kg','w']];return `<div class="exb"><div class="exn"><input value="${escapeHtml(e.n)}" placeholder="Press banca" id="exin${i}" autocomplete="off" oninput="draft.ex[${i}].n=this.value;exHelpDeb(${i},this.value)"><select onchange="setExType(${i},this.value)">${Object.entries(SHORT_T).map(([k,l])=>`<option value="${k}" ${t===k?'selected':''}>${l}</option>`).join('')}</select><button class="btn secondary smallbtn" onclick="delEx(${i})" aria-label="Quitar">×</button></div>${draft.ex.length>1?`<div class="exMv"><span>Mover:</span>${i>0?`<button class="btn secondary smallbtn" type="button" onclick="moveEx(${i},'top')">⤒ INICIO</button><button class="btn secondary smallbtn" type="button" onclick="moveEx(${i},-1)" aria-label="Subir">▲</button>`:''}${i<draft.ex.length-1?`<button class="btn secondary smallbtn" type="button" onclick="moveEx(${i},1)" aria-label="Bajar">▼</button>`:''}</div>`:''}<div class="exh" id="exh${i}"></div><div class="exf" style="--n:${f.length}">${f.map(([l,k])=>`<label>${l}<input type="number" min="0" step="${k==='w'?'0.5':'1'}" value="${escapeHtml(e[k])}" oninput="exSet(${i},'${k}',this.value)"></label>`).join('')}</div><div id="exr${i}">${exBoxesHtml(i)}</div><small class="muted" id="exs${i}">${exSumFull(e)}</small></div>`}).join('')+`<div class="actions"><button class="btn secondary" onclick="addEx()">＋ AGREGAR EJERCICIO</button></div>`+runEdit()+`<div class="field" style="margin-top:12px"><label>Nota del día (opcional)</label><input value="${escapeHtml(draft.note)}" oninput="draft.note=this.value"></div><div class="actions"><button class="btn" onclick="savePlanDay()">GUARDAR ENTRENAMIENTO</button><button class="btn secondary" onclick="cancelEdit()">CANCELAR</button></div>`}
  document.getElementById('dayCard').innerHTML=h;justSaved=false;if(modalEdit)draft.ex.forEach((e,i)=>{if(e.n)exHelp(i,e.n)})}
 function addEx(){draft.ex.push(defRow());renderModal()}
 function syncRuns(i,run){const src=doneWeek+':'+i;runs=runs.filter(r=>r.src!==src);if(run){const d=new Date(doneWeek+'T12:00:00');d.setDate(d.getDate()+i);const min=parseTime(run.time),km=+run.km||0,wt=+profile.weight||70;runs.unshift({id:Date.now(),src,date:isoDate(d),type:run.type,km,min,hr:+run.hr||0,elev:+run.elev||0,feel:run.feel,note:run.note,kcal:km?Math.round(wt*km):Math.round(min*wt*0.14)})}persistHealth()}
-function savePlanDay(){draft.ex=draft.ex.filter(e=>String(e.n).trim());if(draft.run&&!runHas(draft.run))draft.run=null;if(!draft.ex.length&&!draft.run){delete plan[modalDay];syncRuns(modalDay,null);localStorage.setItem('jc_plan',JSON.stringify(plan));cloudSavePlan();renderRoutine();closeDay();showToast('Día vacío.');return}delete draft.type;plan[modalDay]=draft;syncRuns(modalDay,draft.run);localStorage.setItem('jc_plan',JSON.stringify(plan));cloudSavePlan();modalEdit=false;justSaved=true;renderModal();renderRoutine();showToast('Guardado exitoso ✓');celebrate(routineFeedback(modalDay))}
+function savePlanDay(){draft.ex=draft.ex.filter(e=>String(e.n).trim());draft.ex.forEach(e=>{if(exHasA(e))exFixA(e);else delete e.a});if(draft.run&&!runHas(draft.run))draft.run=null;if(!draft.ex.length&&!draft.run){delete plan[modalDay];syncRuns(modalDay,null);localStorage.setItem('jc_plan',JSON.stringify(plan));cloudSavePlan();renderRoutine();closeDay();showToast('Día vacío.');return}delete draft.type;plan[modalDay]=draft;syncRuns(modalDay,draft.run);localStorage.setItem('jc_plan',JSON.stringify(plan));cloudSavePlan();modalEdit=false;justSaved=true;renderModal();renderRoutine();showToast('Guardado exitoso ✓');celebrate(routineFeedback(modalDay))}
 function progWeeks(){const map={};const mk=k=>({k,done:0,ses:0,vol:0,groups:{},ex:{},km:0,min:0,runs:0,hr:0,hrN:0,elev:0});const get=k=>map[k]||(map[k]=mk(k));
- Object.entries(planWeeks()).forEach(([k,pl])=>{const e=get(k);Object.values(pl).forEach(p=>{if(!planHas(p))return;e.done++;(p.ex||[]).forEach(x=>{const nm=String(x.n||'').trim();if(!nm)return;const t=x.t||p.type||'normal',s=+x.s||0,r=repsOf({t,c:x.c,r:x.r}),w=+x.w||0;e.groups[t]=(e.groups[t]||0)+1;e.ses++;e.vol+=s*r*w;const id=nm.toLowerCase();const c=e.ex[id]||(e.ex[id]={name:nm,w:0,r:0});c.w=Math.max(c.w,w);c.r=Math.max(c.r,r)})})});
+ Object.entries(planWeeks()).forEach(([k,pl])=>{const e=get(k);Object.values(pl).forEach(p=>{if(!planHas(p))return;e.done++;(p.ex||[]).forEach(x=>{const nm=String(x.n||'').trim();if(!nm)return;const t=x.t||p.type||'normal',s=+x.s||0,r=repsOf({t,c:x.c,r:x.r}),w=+x.w||0;e.groups[t]=(e.groups[t]||0)+1;e.ses++;e.vol+=exTotReps({...x,t})*w;const id=nm.toLowerCase();const c=e.ex[id]||(e.ex[id]={name:nm,w:0,r:0});c.w=Math.max(c.w,w);c.r=Math.max(c.r,exHasA(x)?exMaxA(x):r)})})});
  runs.forEach(r=>{if(!r.date)return;const e=get(weekKey(r.date));e.km+=+r.km||0;e.min+=+r.min||0;e.runs++;if(+r.hr){e.hr+=+r.hr;e.hrN++}e.elev+=+r.elev||0});
  const keys=Object.keys(map).sort();if(!keys.length)return [];const out=[];const last=new Date(keys[keys.length-1]+'T12:00:00');
  for(let d=new Date(keys[0]+'T12:00:00');d<=last;d.setDate(d.getDate()+7)){const k=isoDate(d);const e=map[k]||mk(k);e.n=out.length+1;e.label=k.slice(8)+'/'+k.slice(5,7);out.push(e)}return progLim?out.slice(-progLim):out}
