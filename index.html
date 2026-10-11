@@ -511,6 +511,7 @@
           <div class="field"><label>Nivel</label><select id="pLevel"><option>Principiante</option><option>Intermedio</option><option>Avanzado</option></select></div>
         </div>
         <div class="actions"><button class="btn" onclick="saveProfileUI()">GUARDAR PERFIL</button><button class="btn secondary" type="button" id="signOutBtn2">CERRAR SESIÓN</button></div>
+        <div class="actions"><button class="btn secondary" type="button" onclick="jcUpdateCheck(true)">🔄 BUSCAR ACTUALIZACIÓN</button></div><p class="notice" id="updNote"></p>
         <p class="notice">Los datos personales se usan para mostrar tu perfil y tus métricas. Evita introducir información que no quieras guardar.</p>
       </div>
       <div class="card" id="adminCard" style="display:none;margin-top:14px"><div class="eyebrow">🛡️ ADMIN</div><p class="notice" id="adminInfo">Usuarios registrados.</p><div class="actions"><button class="btn secondary smallbtn" type="button" onclick="loadAdminUsers()">↻ ACTUALIZAR</button></div><div id="adminList"></div><details id="adminArchWrap" style="display:none;margin-top:16px"><summary class="eyebrow" style="cursor:pointer;margin:0;padding:6px 0" id="adminArchTitle">🗄️ CUENTAS ARCHIVADAS</summary><p class="notice" style="margin:6px 0 0">Las cuentas archivadas no pueden entrar. Desde aquí puedes restaurarlas o eliminarlas definitivamente.</p><div id="adminArchList"></div></details></div>
@@ -1640,6 +1641,31 @@ function renderProgWeight(body){
 
 init();
 initFirebase();
+/* ===== ACTUALIZAR APP ===== */
+async function jcCurSW(){try{return (await caches.keys()).filter(k=>k.indexOf('jc-training-')===0)[0]||''}catch(e){return ''}}
+async function jcLatestSW(){const r=await fetch('./sw.js?'+Date.now(),{cache:'no-store'});const t=await r.text();const m=t.match(/CACHE\s*=\s*'([^']+)'/);return m?m[1]:''}
+function jcUpdateAvail(){if(document.getElementById('updBanner'))return;const d=document.createElement('div');d.id='updBanner';d.style.cssText='position:fixed;left:12px;right:12px;bottom:76px;z-index:9998;background:#0b1111;border:1px solid var(--green);border-radius:14px;padding:12px;display:flex;gap:10px;align-items:center;justify-content:space-between;box-shadow:0 8px 30px #000a;color:var(--text)';d.innerHTML='<span style="font-size:13px">🆕 Hay una nueva versión de la app.</span><button class="btn smallbtn" type="button" onclick="jcUpdateNow()">ACTUALIZAR</button>';document.body.appendChild(d)}
+async function jcUpdateNow(){showToast('Actualizando…');try{const reg=await navigator.serviceWorker.getRegistration();if(reg)await reg.update()}catch(e){}try{for(const k of await caches.keys())await caches.delete(k)}catch(e){}location.reload()}
+let jcUpdLast=0;
+async function jcUpdateCheck(manual){
+  const n=document.getElementById('updNote');jcUpdLast=Date.now();
+  if(manual&&n)n.textContent='Buscando…';
+  try{
+    const cur=await jcCurSW(),last=await jcLatestSW();
+    if(last&&cur&&last!==cur){jcUpdateAvail();if(manual&&n)n.textContent='🆕 Hay una nueva versión. Pulsa ACTUALIZAR.';return}
+    if(manual&&n)n.textContent='✅ Ya tienes la última versión'+(cur?' ('+cur.replace('jc-training-','')+').':'.');
+  }catch(e){if(manual&&n)n.textContent='No se pudo buscar. Revisa tu internet.'}
+}
+(function(){
+  if(!location.protocol.startsWith('http'))return;
+  const native=!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
+  window.addEventListener('load',()=>{
+    setTimeout(()=>jcUpdateCheck(false),5000);
+    const n=document.getElementById('updNote');
+    if(n&&!native&&location.hostname.endsWith('.github.io')){const repo=location.pathname.split('/')[1],owner=location.hostname.split('.')[0],u=repo?'https://github.com/'+owner+'/'+repo+'/releases/latest/download/JC-Training.apk':'';if(u)n.innerHTML='📲 <a href="'+u+'" style="color:var(--green)">Descargar la app para Android (APK)</a>'}
+  });
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now()-jcUpdLast>600000)jcUpdateCheck(false)});
+})();
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
   const hadController=!!navigator.serviceWorker.controller; let reloaded=false;
   navigator.serviceWorker.addEventListener('controllerchange',()=>{ if(!hadController||reloaded) return; reloaded=true; location.reload(); });
