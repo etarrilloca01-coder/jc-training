@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <script>
 /* JC Training · arranque seguro (móvil): si el navegador bloquea localStorage (p. ej. archivo abierto desde el celular), la app sigue cargando */
 (function(){
@@ -225,7 +225,7 @@
     .askGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
 
     /* ===== Tipografía v27 · Unbounded (títulos y números) + Sora (texto) ===== */
-    :root{--fd:'Anton','Impact','Arial Narrow',sans-serif;--fb:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif}
+    :root{--fd:'Outfit','Inter',system-ui,-apple-system,'Segoe UI',sans-serif;--fb:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif}
     body,button,input,select,textarea{font-family:var(--fb)}
     body{font-size:16px;line-height:1.5}
     svg text{font-family:var(--fb);font-weight:700}
@@ -284,9 +284,9 @@
     .mvRow.top .mvBar{background:#0a0f0a2e}.mvRow.top .mvBar i{background:#0a0f0a}
     .mvRow.top .mvChip{background:#0a0f0a1f;border-color:#0a0f0a44;color:#0a0f0a}
 
-    /* ===== v28 · Anton (títulos y números) + Inter (texto) ===== */
+    /* ===== v29 · Outfit (títulos y números) + Inter (texto) ===== */
     body{font-family:var(--fb);font-size:16px}
-    h1,h2,h3,.logo,.coverJC,.coverTraining,.authLogo,.homeBanner h2,.alT,.alarmTime,.alarmLabel,.stat strong,.kpi strong,.wst strong,.dw strong,.dno b,.profileName,.cheerCard h2,.concHead h3,.coverTag,.coverBtn,.alarmStop,.btn,.htile strong,.eyebrow,.hw span,.cheerBtn,.mnum,.chip,.pchip,.kchip,.mvHead b,.mvN,.toggle button,.waterDay .wd,.waterDay .wb,.rcT,.wverdict::before,.nav button{font-family:var(--fd)!important;font-weight:400!important;font-style:normal!important}
+    h1,h2,h3,.logo,.coverJC,.coverTraining,.authLogo,.homeBanner h2,.alT,.alarmTime,.alarmLabel,.stat strong,.kpi strong,.wst strong,.dw strong,.dno b,.profileName,.cheerCard h2,.concHead h3,.coverTag,.coverBtn,.alarmStop,.btn,.htile strong,.eyebrow,.hw span,.cheerBtn,.mnum,.chip,.pchip,.kchip,.mvHead b,.mvN,.toggle button,.waterDay .wd,.waterDay .wb,.rcT,.wverdict::before,.nav button{font-family:var(--fd)!important;font-weight:700!important;font-style:normal!important}
     h1,h2,h3{letter-spacing:.6px}
     .logo{font-size:32px;letter-spacing:1px}.logo span{font-size:19px;letter-spacing:1px}
     .coverJC{font-size:clamp(84px,27vw,136px);letter-spacing:2px}.coverTraining{font-size:clamp(34px,10vw,54px);letter-spacing:3px}
@@ -319,12 +319,27 @@
     .redConc li.ok i{color:#0a8a2a}.redConc li.no i{color:#c1121f}.redConc li.nt i{color:#666}.redConc li.td i{color:#b36b00}.redConc li.sum i{color:#c1121f}
     .redConc li.sum{font-size:15px;padding-bottom:9px;border-bottom:1px solid #ffffff40}
     .redConc b{color:#fff}
+
+    /* ===== v29 · ajustes de letra + logo ===== */
+    h1,h2,h3{letter-spacing:0}
+    .homeTop h1,.sectionHead h2{letter-spacing:.2px}
+    .homeBanner h2{font-size:clamp(34px,10vw,48px);letter-spacing:.5px;font-weight:800!important}
+    .alT{font-size:32px;letter-spacing:0}.alarmTime{font-size:clamp(52px,18vw,80px);letter-spacing:0}.alarmLabel{font-size:22px}
+    .btn,.coverBtn,.cheerBtn,.alarmStop{letter-spacing:.4px}.coverBtn{font-size:19px;letter-spacing:1px}.alarmStop{font-size:24px}
+    .stat strong{font-size:26px}.kpi strong{font-size:23px}.wst strong{font-size:23px}.dw strong{font-size:19px}.mvN{font-size:30px}.mvHead b{font-size:18px;letter-spacing:.3px}
+    .nav button{font-size:11px;letter-spacing:.2px}.toggle button{font-size:13.5px;letter-spacing:.2px}
+    .eyebrow{letter-spacing:1.2px}.hw span{font-size:17px}.cheerCard h2{font-size:26px;letter-spacing:0}.htile strong{font-size:15px;letter-spacing:.2px}
+    .pchip,.chip,.kchip{letter-spacing:.2px}.waterDay .wd{font-size:13.5px}.waterDay .wb{font-size:14.5px}
+    .coverTag{font-size:20px;letter-spacing:.5px}.coverTag b{font-size:24px;font-weight:800!important}
+    .coverImg{width:min(88vw,430px);height:auto;display:block;filter:drop-shadow(0 6px 28px #a8ff0040)}
+    .authImg{width:min(70%,230px);height:auto;display:block;margin:0 0 6px}
+    .logo{display:flex;flex-direction:column;align-items:flex-start;letter-spacing:0}.headImg{height:34px;width:auto;display:block}.logo .sub{font-family:var(--fb)!important;font-weight:700!important;letter-spacing:1.2px;margin-top:3px}
   </style>
 </head>
 <body>
 <section class="coverScreen" id="coverScreen">
   <div class="coverInner">
-    <div class="coverLogo"><div class="coverJC">JC</div><div class="coverTraining">TRAINING</div><div class="coverSub">Registro de entrenamiento</div></div>
+    <div class="coverLogo"><img class="coverImg" src="logo.png" alt="JC Training"><div class="coverSub">Registro de entrenamiento</div></div>
     <div class="coverBottom">
       <div class="coverTag">TU PROGRESO<b>TU MEJOR VERSIÓN</b></div>
       <button type="button" class="coverBtn" id="coverStart">COMENZAR</button>
@@ -333,7 +348,7 @@
 </section>
 <section class="authScreen" id="authScreen" style="display:none">
   <div class="authCard">
-    <div class="authLogo">JC<span> TRAINING</span></div>
+    <img class="authImg" src="logo.png" alt="JC Training">
     <div class="eyebrow" style="margin-top:8px">TU PROGRESO, TU MEJOR VERSIÓN</div>
     <h1 id="authTitle">Inicia sesión</h1>
     <p id="authDescription">Accede para guardar tus rutinas, medidas y evolución en tu cuenta personal.</p>
@@ -357,7 +372,7 @@
 <div class="modal" id="askBox" onclick="if(event.target===this)closeAsk()"><div class="mcard" id="askCard"></div></div>
 <div class="app onHome" id="mainApp" style="display:none">
   <header>
-    <div class="brand"><div class="logo">JC<span> TRAINING</span><div class="sub">REGISTRO DE ENTRENAMIENTO</div></div></div>
+    <div class="brand"><div class="logo"><img class="headImg" src="logo.png" alt="JC Training"><div class="sub">REGISTRO DE ENTRENAMIENTO</div></div></div>
     <div class="accountTools"><span class="accountEmail" id="accountEmail"></span><button class="btn secondary smallbtn" id="signOutBtn" type="button">Salir</button><button class="avatar" onclick="showSection('perfil')" title="Mi perfil" id="avatar">J</button></div>
   </header>
 
@@ -627,7 +642,7 @@ function applyScreens(){
   auth.style.display = (coverDismissed && !currentUser) ? 'grid' : 'none';
   main.style.display = (coverDismissed && currentUser) ? 'block' : 'none';
 }
-document.getElementById('coverStart').addEventListener('click',()=>{coverDismissed=true;applyScreens();window.scrollTo(0,0);});
+document.getElementById('coverStart').addEventListener('click',()=>{coverDismissed=true;applyScreens();window.scrollTo(0,0);try{if(!localStorage.getItem('jc_perm_auto')){localStorage.setItem('jc_perm_auto','1');setTimeout(()=>{try{askAllPerms()}catch(e){}},500)}}catch(e){}});
 applyScreens();
 
 function initFirebase(){
@@ -1427,11 +1442,9 @@ const AL=()=>remind.alarms||(remind.alarms=[]);
 const LN=()=>(window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.LocalNotifications)||null;
 const isNative=()=>!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
 const DLAB=['L','M','X','J','V','S','D'];
-let audioCtx=null,sirenT=null,alarmVib=null,alarmAuto=null,alarmWake=null,alarmOn=false;const firedKeys={};
+let audioCtx=null,alarmVib=null,alarmAuto=null,alarmWake=null,alarmOn=false;const firedKeys={};
 function audioUnlock(){try{sndPrime()}catch(e){}try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;if(!audioCtx)audioCtx=new AC();if(audioCtx.state==='suspended')audioCtx.resume()}catch(e){}}
 ['touchstart','click','keydown'].forEach(ev=>document.addEventListener(ev,audioUnlock,{passive:true}));
-function sirenStart(){audioUnlock();if(!audioCtx||sirenT)return;try{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='square';g.gain.value=.95;o.connect(g);g.connect(audioCtx.destination);o.start();let hi=false;const tick=()=>{try{o.frequency.setValueAtTime(hi?988:740,audioCtx.currentTime)}catch(e){}hi=!hi};tick();sirenT={o,g,iv:setInterval(tick,360)}}catch(e){console.error(e)}}
-function sirenStop(){if(!sirenT)return;clearInterval(sirenT.iv);try{sirenT.o.stop();sirenT.o.disconnect()}catch(e){}sirenT=null}
 async function ringAlarm(a){if(alarmOn)return;alarmOn=true;const ov=document.getElementById('alarmOv');if(!ov)return;document.getElementById('alarmTime').textContent=a.time||'';document.getElementById('alarmLabel').textContent=a.label||'Alarma';ov.style.display='flex';
   soundStart();try{navigator.vibrate&&navigator.vibrate([600,200,600,200,900]);alarmVib=setInterval(()=>{try{navigator.vibrate([600,200,600,200,900])}catch(e){}},3000)}catch(e){}
   try{if(navigator.wakeLock)alarmWake=await navigator.wakeLock.request('screen')}catch(e){}
@@ -1451,8 +1464,8 @@ function delAlarm(id){remind.alarms=AL().filter(x=>x.id!==id);persistHealth();na
 function renderAlarms(){const el=document.getElementById('alarmList');if(!el)return;try{renderSoundChips()}catch(e){}
   el.innerHTML=AL().map(a=>`<div class="alRow ${a.on?'':'off'}"><div class="alT">${a.time}</div><div class="alM"><b>${escapeHtml(a.label||'Alarma')}</b><small>${alDaysTxt(a.days)}</small></div><label class="sw"><input type="checkbox" ${a.on?'checked':''} onchange="toggleAlarm(${a.id})"><span></span></label><button class="wDel" type="button" aria-label="Borrar" onclick="delAlarm(${a.id})">✕</button></div>`).join('')||'<div class="muted small">Aún no tienes alarmas.</div>';
   const st=document.getElementById('alarmStatus'),nt=document.getElementById('alarmNote');
-  if(st)st.textContent=isNative()&&LN()?'Alarmas del celular activas: suenan aunque la app esté cerrada.':'⚠️ Modo navegador: la alarma solo suena con la app abierta. Para que suene con el celular bloqueado o la app cerrada, usa el APK o descarga las alarmas al calendario (.ics).';
-  if(nt)nt.textContent=isNative()&&LN()?'Pulsa «Dar permisos» una vez: notificaciones, alarmas exactas y sonido. En Ajustes del celular quita el ahorro de batería para esta app y sube el volumen de alarmas.':'Un navegador no puede sonar con la pantalla apagada ni con la app cerrada. Solución: instala el APK (guía incluida) o usa «Descargar alarmas… (.ics)» y ábrelo con Google Calendar.'}
+  if(st)st.textContent=isNative()&&LN()?'Alarmas del celular activas: suenan aunque la app esté cerrada.':'🎵 Suena «La Mejor Alarma» con la app abierta. Con el celular bloqueado o la app cerrada, descarga las alarmas al calendario (.ics) y ábrelas con Google Calendar.';
+  if(nt)nt.textContent=isNative()&&LN()?'Pulsa «Dar permisos» una vez: notificaciones, alarmas exactas y sonido. En Ajustes del celular quita el ahorro de batería para esta app y sube el volumen de alarmas.':'Pulsa «Dar permisos» una vez para activar notificaciones, pantalla encendida y sonido. Una página web no puede sonar con la pantalla apagada: para eso usa «Descargar alarmas… (.ics)» y ábrelo con Google Calendar.'}
 const _rh=renderHealth;renderHealth=function(){_rh();renderAlarms();if(isNative()&&LN()){const b=document.getElementById('remindBtn'),rs=document.getElementById('remindStatus');if(b)b.textContent=remind.on?'DESACTIVAR NOTIFICACIONES':'ACTIVAR NOTIFICACIONES';if(rs)rs.textContent=remind.on?`Activas: te aviso cada ${remind.every} min entre ${remind.from} y ${remind.to}. Puedes responder desde la notificación.`:'Desactivadas.'}};
 async function askAllPerms(){audioUnlock();const ln=LN();let ok=false;
   try{if(ln&&isNative()){const r=await ln.requestPermissions();ok=r&&r.display==='granted';try{const e=await ln.checkExactNotificationSetting();if(e&&e.exact_alarm!=='granted')await ln.changeExactNotificationSetting()}catch(e){}}else if('Notification' in window){ok=(await Notification.requestPermission())==='granted'}}catch(e){console.error(e)}
@@ -1462,9 +1475,9 @@ async function askAllPerms(){audioUnlock();const ln=LN();let ok=false;
 function slotMins(){const o=[];for(let m=hm(remind.from);m<=hm(remind.to)&&o.length<48;m+=+remind.every||60)o.push(m);return o}
 async function nativeSync(){const ln=LN();if(!ln||!isNative())return;
   try{const pend=await ln.getPending();if(pend&&pend.notifications&&pend.notifications.length)await ln.cancel({notifications:pend.notifications.map(n=>({id:n.id}))});
-    try{await ln.createChannel({id:'jc-alarm',name:'Alarmas JC',description:'Alarmas de JC Training',importance:5,visibility:1,vibration:true,lights:true})}catch(e){}
+    try{await ln.deleteChannel({id:'jc-alarm'})}catch(e){}
     try{await ln.createChannel({id:'jc-alarm2',name:'Alarma JC · La Mejor Alarma',description:'Alarma con música',importance:5,visibility:1,sound:'alarma.mp3',vibration:true,lights:true})}catch(e){}
-    try{await ln.createChannel({id:'jc-alarm-mute',name:'Alarma JC · solo vibración',description:'Alarma sin sonido',importance:2,visibility:1,vibration:true})}catch(e){}
+    try{await ln.deleteChannel({id:'jc-alarm-mute'})}catch(e){}
     try{await ln.createChannel({id:'jc-water',name:'Agua y entrenamiento',description:'Recordatorios',importance:4,vibration:true})}catch(e){}
     try{await ln.registerActionTypes({types:[{id:'WATER',actions:[{id:'w250',title:'+250 ml'},{id:'w500',title:'+500 ml'},{id:'ask',title:'Registrar…'}]},{id:'TRAIN',actions:[{id:'trainYes',title:'Sí, entrené'},{id:'trainNo',title:'Hoy no'}]},{id:'ALARM',actions:[{id:'alarmSnooze',title:'Posponer 5 min'},{id:'alarmStop',title:'Detener'}]}]})}catch(e){}
     const list=[];
@@ -1494,9 +1507,9 @@ setTimeout(()=>{try{const ln=LN();if(ln&&isNative()){ln.addListener('localNotifi
 /* ===== SONIDO DE ALARMA (La Mejor Alarma · cambiable) ===== */
 const DEF_SND='alarma.mp3';
 let sndEl=null,sndUrl={default:null,custom:null},sndMeta={};
-const alCh=()=>{const p=sndPref();return p==='none'?'jc-alarm-mute':p==='siren'?'jc-alarm':'jc-alarm2'};
-const alSnd=()=>{const p=sndPref();return (p==='default'||p==='custom')?'alarma.mp3':undefined};
-function sndPref(){const p=remind.sound||'default';return p==='custom'&&!sndMeta.custom?'default':p}
+const alCh=()=>'jc-alarm2';
+const alSnd=()=>'alarma.mp3';
+function sndPref(){return remind.sound==='custom'&&sndMeta.custom?'custom':'default'}
 function sndSrc(){const p=sndPref();if(p==='custom'&&sndUrl.custom)return sndUrl.custom;return sndUrl.default||DEF_SND}
 function idbOpen(){return new Promise((res,rej)=>{try{const r=indexedDB.open('jc_audio',1);r.onupgradeneeded=()=>r.result.createObjectStore('s');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}catch(e){rej(e)}})}
 async function idbGet(k){try{const d=await idbOpen();return await new Promise(res=>{const q=d.transaction('s').objectStore('s').get(k);q.onsuccess=()=>res(q.result||null);q.onerror=()=>res(null)})}catch(e){return null}}
@@ -1508,16 +1521,17 @@ async function loadSounds(){
   const c=await idbGet('custom');if(c&&c.blob){if(sndUrl.custom)try{URL.revokeObjectURL(sndUrl.custom)}catch(e){}sndUrl.custom=URL.createObjectURL(c.blob);sndMeta.custom=c.name||'Mi música'}
   renderSoundChips()}
 function sndPrime(){try{if(!sndEl){sndEl=new Audio();sndEl.loop=true;sndEl.preload='auto'}if(sndEl.__p||sndEl.__ringing)return;sndEl.__p=1;sndEl.muted=true;sndEl.src=sndUrl.default||DEF_SND;const p=sndEl.play();if(p&&p.then)p.then(()=>{if(!sndEl.__ringing){sndEl.pause();sndEl.currentTime=0}sndEl.muted=false}).catch(()=>{sndEl.muted=false;sndEl.__p=0})}catch(e){}}
-function soundStart(){const p=sndPref();if(p==='none')return;if(p==='siren'){sirenStart();return}
-  try{if(!sndEl){sndEl=new Audio()}sndEl.__ringing=1;sndEl.muted=false;sndEl.loop=true;sndEl.volume=1;sndEl.src=sndSrc();const pr=sndEl.play();if(pr&&pr.catch)pr.catch(()=>{sndEl.__ringing=0;sirenStart()})}catch(e){sirenStart()}
+function soundRetry(){if(!alarmOn||!sndEl)return;try{sndEl.__ringing=1;sndEl.muted=false;const r=sndEl.play();if(r&&r.catch)r.catch(()=>{})}catch(e){}}
+function soundStart(){
+  try{if(!sndEl){sndEl=new Audio()}sndEl.__ringing=1;sndEl.muted=false;sndEl.loop=true;sndEl.volume=1;sndEl.src=sndSrc();const pr=sndEl.play();if(pr&&pr.catch)pr.catch(()=>{const f=()=>soundRetry();['touchstart','click'].forEach(ev=>document.addEventListener(ev,f,{once:true,passive:true}))})}catch(e){console.error(e)}
   try{if('mediaSession' in navigator){navigator.mediaSession.metadata=new MediaMetadata({title:(window.__alarmCur&&window.__alarmCur.label)||'Alarma',artist:'JC Training'});navigator.mediaSession.setActionHandler('pause',()=>alarmStop())}}catch(e){}}
-function soundStop(){try{if(sndEl){sndEl.__ringing=0;sndEl.pause();sndEl.currentTime=0}}catch(e){}sirenStop()}
-function setSound(k){remind.sound=k;persistHealth();nativeSync();renderSoundChips();showToast(k==='none'?'Alarma sin sonido (solo vibración)':'Sonido cambiado ✓',2500)}
+function soundStop(){try{if(sndEl){sndEl.__ringing=0;sndEl.pause();sndEl.currentTime=0}}catch(e){}}
+function setSound(k){remind.sound=k;persistHealth();nativeSync();renderSoundChips();showToast('Sonido cambiado ✓',2500)}
 function renderSoundChips(){const el=document.getElementById('soundChips');if(!el)return;const p=sndPref();
-  const o=[['default','🎵 La Mejor Alarma'],['siren','🚨 Sirena clásica']];if(sndMeta.custom)o.push(['custom','⭐ '+(sndMeta.custom.length>22?sndMeta.custom.slice(0,20)+'…':sndMeta.custom)]);o.push(['none','🔇 Sin sonido']);
+  const o=[['default','🎵 La Mejor Alarma']];if(sndMeta.custom)o.push(['custom','⭐ '+(sndMeta.custom.length>22?sndMeta.custom.slice(0,20)+'…':sndMeta.custom)]);
   el.innerHTML=o.map(([k,l])=>`<button type="button" class="${p===k?'on':''}" onclick="setSound('${k}')">${escapeHtml(l)}</button>`).join('');
   const d=document.getElementById('soundDel');if(d)d.style.display=sndMeta.custom?'':'none';
-  const n=document.getElementById('soundNote');if(n)n.textContent=isNative()&&LN()?'Con la pantalla apagada suena «La Mejor Alarma» desde el sistema del celular. Tu música subida suena cuando la app está abierta.':'Sube un MP3 propio con «Cambiar / subir música». Pulsa «Probar sonido» para escucharlo.'}
+  const n=document.getElementById('soundNote');if(n)n.textContent=isNative()&&LN()?'Con la pantalla apagada suena «La Mejor Alarma» desde el sistema del celular. Tu música subida suena cuando la app está abierta.':'Suena «La Mejor Alarma». Si quieres otra, sube tu música con «Cambiar / subir música», elígela aquí y pulsa «Probar sonido».'}
 function pickSoundFile(){const f=document.getElementById('soundFile');if(f){f.value='';f.click()}}
 async function onSoundFile(e){const f=e.target.files&&e.target.files[0];if(!f)return;
   if(f.size>15*1024*1024){showToast('El archivo es muy pesado (máx. 15 MB).');return}
