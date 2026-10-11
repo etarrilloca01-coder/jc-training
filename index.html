@@ -724,8 +724,8 @@ function firebaseErrorMessage(error){
   const code=error && error.code || '';
   const messages={
     'auth/invalid-email':'El correo electrónico no tiene un formato válido.',
-    'auth/user-not-found':'No existe una cuenta con ese correo.',
-    'auth/wrong-password':'La contraseña es incorrecta.',
+    'auth/user-not-found':'Correo o contraseña incorrectos.',
+    'auth/wrong-password':'Correo o contraseña incorrectos.',
     'auth/invalid-credential':'Correo o contraseña incorrectos.',
     'auth/email-already-in-use':'Ese correo ya tiene una cuenta. Inicia sesión.',
     'auth/weak-password':'La contraseña debe tener al menos 6 caracteres.',
@@ -788,7 +788,7 @@ document.getElementById('authForm').addEventListener('submit',async e=>{
     setAuthMessage('');
     ['authEmail','authPassword','authName'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});
     if(authMode==='register'){showToast('Cuenta creada. ¡Bienvenido, '+name+'!');authMode='login'}
-  } catch(err){console.error(err);setAuthMessage(firebaseErrorMessage(err)+' ['+((err&&err.code)||'sin-codigo')+']',true);}
+  } catch(err){console.error(err);setAuthMessage(firebaseErrorMessage(err),true);}
   finally{document.getElementById('authSubmit').disabled=false;}
 });
 document.getElementById('resetPassword').addEventListener('click',async()=>{
