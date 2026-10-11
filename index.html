@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800;900&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <script>
 /* JC Training · arranque seguro (móvil): si el navegador bloquea localStorage (p. ej. archivo abierto desde el celular), la app sigue cargando */
 (function(){
@@ -176,8 +176,8 @@
     .cheerBtn{margin-top:16px;width:100%;border:0;border-radius:14px;padding:15px 16px;font-size:16px;font-weight:900;background:linear-gradient(90deg,#d8ff5a,#a8ff00);color:#101500;box-shadow:0 8px 28px #a8ff0040}
     .cheerBtn:active{transform:scale(.98)}
     /* ===== Fuente y estilo ===== */
-    body,button,input,select,textarea{font-family:'Sora',system-ui,sans-serif}
-    svg text{font-family:'Sora',system-ui,sans-serif}
+    body,button,input,select,textarea{font-family:'Inter',system-ui,sans-serif}
+    svg text{font-family:'Inter',system-ui,sans-serif}
     h1,h2,h3{letter-spacing:-.3px}
     /* Peso: opciones */
     .wChips{display:flex;gap:8px;flex-wrap:wrap}
@@ -225,7 +225,7 @@
     .askGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
 
     /* ===== Tipografía v27 · Unbounded (títulos y números) + Sora (texto) ===== */
-    :root{--fd:'Unbounded','Sora',system-ui,sans-serif;--fb:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif}
+    :root{--fd:'Anton','Impact','Arial Narrow',sans-serif;--fb:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif}
     body,button,input,select,textarea{font-family:var(--fb)}
     body{font-size:16px;line-height:1.5}
     svg text{font-family:var(--fb);font-weight:700}
@@ -283,6 +283,42 @@
     .mvRow.top{background:linear-gradient(135deg,#a8ff00,#7fd600);border-color:#a8ff00;color:#0a0f0a;box-shadow:0 8px 28px #a8ff0033}
     .mvRow.top .mvBar{background:#0a0f0a2e}.mvRow.top .mvBar i{background:#0a0f0a}
     .mvRow.top .mvChip{background:#0a0f0a1f;border-color:#0a0f0a44;color:#0a0f0a}
+
+    /* ===== v28 · Anton (títulos y números) + Inter (texto) ===== */
+    body{font-family:var(--fb);font-size:16px}
+    h1,h2,h3,.logo,.coverJC,.coverTraining,.authLogo,.homeBanner h2,.alT,.alarmTime,.alarmLabel,.stat strong,.kpi strong,.wst strong,.dw strong,.dno b,.profileName,.cheerCard h2,.concHead h3,.coverTag,.coverBtn,.alarmStop,.btn,.htile strong,.eyebrow,.hw span,.cheerBtn,.mnum,.chip,.pchip,.kchip,.mvHead b,.mvN,.toggle button,.waterDay .wd,.waterDay .wb,.rcT,.wverdict::before,.nav button{font-family:var(--fd)!important;font-weight:400!important;font-style:normal!important}
+    h1,h2,h3{letter-spacing:.6px}
+    .logo{font-size:32px;letter-spacing:1px}.logo span{font-size:19px;letter-spacing:1px}
+    .coverJC{font-size:clamp(84px,27vw,136px);letter-spacing:2px}.coverTraining{font-size:clamp(34px,10vw,54px);letter-spacing:3px}
+    .coverTag{font-size:24px;letter-spacing:1px}.coverTag b{font-size:28px}.coverBtn{font-size:21px;letter-spacing:2px}
+    .authLogo{font-size:34px;letter-spacing:1px}.authLogo span{font-size:20px}
+    .homeTop h1{font-size:clamp(28px,8vw,38px);text-transform:uppercase;letter-spacing:1px;line-height:1.1}
+    .homeBanner h2{font-size:clamp(42px,13vw,60px);letter-spacing:1px}.homeBanner small{font-size:15px}
+    .htile strong{font-size:16px;letter-spacing:1px}
+    .sectionHead h2{font-size:clamp(26px,7.4vw,34px);text-transform:uppercase;letter-spacing:1px;line-height:1.1}
+    .hw span{font-size:19px}
+    .stat strong{font-size:30px}.kpi strong{font-size:26px}.wst strong{font-size:26px}.dw strong{font-size:21px}
+    .alT{font-size:38px;letter-spacing:1px}.alarmTime{font-size:clamp(60px,21vw,92px);letter-spacing:2px}.alarmLabel{font-size:26px}
+    .cheerCard h2{font-size:30px;letter-spacing:1px}
+    .eyebrow{font-size:13px;letter-spacing:1.6px}
+    .btn,.coverBtn,.cheerBtn,.alarmStop{letter-spacing:1px}.btn{font-size:15px}.btn.smallbtn{font-size:13px}.alarmStop{font-size:28px}
+    .toggle button{font-size:15px;letter-spacing:.8px}.pchip,.chip,.kchip{font-size:13px;letter-spacing:.6px}
+    .mvHead b{font-size:21px;letter-spacing:.8px}.mvN{font-size:34px}.mvN small{font-family:var(--fb)!important;font-size:12px;letter-spacing:0}
+    .nav button{font-size:12px;letter-spacing:.8px}
+    .waterDay .wd{font-size:15px}.waterDay .wb{font-size:16px}
+    input,select,textarea{font-family:var(--fb)}
+    /* ===== Cuadro rojo de conclusiones ===== */
+    .redConc,.wverdict,.wverdict.g,.wverdict.b{position:relative;padding:16px 16px 14px;border-radius:16px;background:linear-gradient(145deg,#dc1522,#8e0b14);border:1px solid #ff6a70;color:#fff;box-shadow:0 12px 34px #dc152240;margin:0 0 14px;font-size:14.5px;line-height:1.5}
+    .wverdict::before{content:'CONCLUSIONES';display:block;font-size:24px;letter-spacing:1.2px;margin-bottom:6px}
+    .wverdict b{color:#fff}
+    .rcT{font-size:26px;letter-spacing:1.2px;margin-bottom:8px;line-height:1}
+    .rcH{font-size:12.5px;opacity:.85;margin:-2px 0 10px}
+    .redConc ul{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+    .redConc li{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45}
+    .redConc li i{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:13px;font-weight:800;background:#fff;margin-top:1px;font-family:var(--fb)}
+    .redConc li.ok i{color:#0a8a2a}.redConc li.no i{color:#c1121f}.redConc li.nt i{color:#666}.redConc li.td i{color:#b36b00}.redConc li.sum i{color:#c1121f}
+    .redConc li.sum{font-size:15px;padding-bottom:9px;border-bottom:1px solid #ffffff40}
+    .redConc b{color:#fff}
   </style>
 </head>
 <body>
@@ -312,7 +348,7 @@
     <div class="authFoot">Tus datos se guardan en tu cuenta. No compartas tu contraseña. · Versión 27</div>
   </div>
 </section>
-<div class="accessBlock" id="accessBlock"><div><h2>Acceso no disponible</h2><p id="accessMsg"></p><button class="btn secondary" type="button" onclick="jcAuth.signOut()">CERRAR SESIÓN</button></div></div>
+<div class="accessBlock" id="accessBlock"><div><h2>Acceso no disponible</h2><p id="accessMsg"></p><button class="btn" type="button" style="width:100%;margin-bottom:10px" onclick="jcOnLogin(currentUser)">YA ME ACTIVARON · REVISAR</button><button class="btn secondary" type="button" onclick="jcAuth.signOut()">CERRAR SESIÓN</button></div></div>
 <div class="toast" id="toast"></div>
 <div class="cheer" id="cheer" onclick="closeCheer()"><canvas id="cheerCanvas"></canvas><div class="cheerCard" id="cheerCard"></div></div>
 <div class="modal" id="dayModal" onclick="if(event.target===this)closeDay()"><div class="mcard" id="dayCard"></div></div>
@@ -421,7 +457,7 @@
       <div class="card" style="margin-top:14px"><div class="eyebrow">🔔 RECORDATORIOS</div><p class="notice" id="remindStatus"></p>
         <div class="formgrid" style="margin:12px 0"><div class="field"><label>Avisar cada</label><select id="remEvery" onchange="setRemind('every',+this.value)"><option value="30">30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option><option value="120">120 min</option></select></div><div class="field"><label>Desde</label><input id="remFrom" type="time" onchange="setRemind('from',this.value)"></div><div class="field"><label>Hasta</label><input id="remTo" type="time" onchange="setRemind('to',this.value)"></div><div class="field"><label>Aviso de entrenamiento (opcional)</label><input id="remTrain" type="time" onchange="setRemind('train',this.value)"></div></div>
         <div class="actions"><button class="btn" id="remindBtn" onclick="toggleRemind()">ACTIVAR NOTIFICACIONES</button><button class="btn secondary" onclick="testNotif()">PROBAR AHORA</button></div>
-        <div class="actions"><button class="btn secondary" onclick="downloadICS()">DESCARGAR ALARMAS PARA EL CALENDARIO (.ics)</button></div>
+        <div class="actions"><button class="btn secondary" onclick="downloadICS()">DESCARGAR ALARMAS Y AGUA PARA EL CALENDARIO (.ics)</button></div>
         <p class="notice">Las notificaciones de la app llegan mientras la app esté abierta o en segundo plano (instálala en la pantalla de inicio). Con la app cerrada, el celular puede no entregarlas: por eso descarga las alarmas, ábrelas con tu calendario (Google Calendar, etc.) y sonarán siempre, todos los días.</p></div>
       <div class="card" style="margin-top:14px" id="alarmCard"><div class="eyebrow">⏰ ALARMAS</div><p class="notice" id="alarmStatus"></p>
         <div class="formgrid" style="margin:12px 0;grid-template-columns:1fr 1fr"><div class="field"><label>Hora</label><input id="alTime" type="time" value="06:00"></div><div class="field"><label>Nombre</label><input id="alLabel" maxlength="30" placeholder="Despertar, entrenar…"></div>
@@ -502,12 +538,12 @@ async function jcOnLogin(user){
   const ref=jcDb.collection('members').doc(user.uid),ts=()=>firebase.firestore.FieldValue.serverTimestamp();
   try{
     const snap=await ref.get();
-    if(!snap.exists){await ref.set({email:user.email||'',name:nameOf(user),active:true,createdAt:ts(),lastSeen:ts()})}
+    if(!snap.exists){const adm=isAdmin(user);await ref.set({email:user.email||'',name:nameOf(user),active:adm,pending:!adm,createdAt:ts(),lastSeen:ts()});if(!adm){jcBlock('Tu cuenta fue creada y está pendiente de aprobación. El administrador debe activarla para que puedas entrar.');return}}
     else{
       const d=snap.data(),until=d.accessUntil&&d.accessUntil.toDate?d.accessUntil.toDate():null;
       if(!isAdmin(user)){
-        if(d.active===false){jcBlock('Tu cuenta está desactivada. Contacta al administrador.');return}
-        if(until&&until<new Date()){jcBlock('Tu periodo de prueba terminó. Contacta al administrador.');return}
+        if(d.active===false){jcBlock(d.pending?'Tu cuenta está pendiente de aprobación. El administrador debe activarla para que puedas entrar.':'Tu cuenta está desactivada. Contacta al administrador.');return}
+        if(until&&until<new Date()){jcBlock('Tu tiempo de acceso terminó. Contacta al administrador para renovarlo.');return}
       }
       await ref.update({email:user.email||'',name:nameOf(user),lastSeen:ts()});
     }
@@ -537,7 +573,10 @@ async function exHelp(i,txt){const box=document.getElementById('exh'+i);if(!box)
  if(hit)html+='<div class="eximgs">'+hit.im.map(p=>'<img loading="lazy" alt="" src="'+base+p+'" onerror="this.style.display=\'none\'">').join('')+'</div><span class="exname">'+escapeHtml(hit.name)+'</span>';
  document.getElementById('exh'+i).innerHTML=html}
 
-function memStatus(m){const u=m.accessUntil&&m.accessUntil.toDate?m.accessUntil.toDate():null;if(m.active===false)return '<span class="tagRed">Desactivada</span>';if(u&&u<new Date())return '<span class="tagRed">Prueba vencida</span>';if(u)return '<span class="tagGreen">Prueba hasta '+u.toLocaleDateString('es')+'</span>';return '<span class="tagGreen">Activa</span>'}
+function memStatus(m){const u=m.accessUntil&&m.accessUntil.toDate?m.accessUntil.toDate():null;if(m.active===false&&m.pending)return '<span class="tagRed">⏳ Pendiente de aprobar</span>';if(m.active===false)return '<span class="tagRed">Desactivada</span>';if(u&&u<new Date())return '<span class="tagRed">Acceso vencido</span>';if(u)return '<span class="tagGreen">Acceso hasta '+u.toLocaleDateString('es')+'</span>';return '<span class="tagGreen">Activa · de por vida</span>'}
+function memCard(m,i,now){const ls=m.lastSeen&&m.lastSeen.toDate?m.lastSeen.toDate():null;const online=ls&&now-ls.getTime()<360000;const me=(m.email||'').toLowerCase()===ADMIN_EMAIL;
+  return `<div class="mem"><b><span class="${online?'dotOn':'dotOff'}"></span>${escapeHtml(m.name||'Sin nombre')}${me?' (admin)':''}</b><small>${escapeHtml(m.email||'')}</small><small>${memStatus(m)} · ${online?'En línea':(ls?'Visto '+ls.toLocaleString('es'):'Sin actividad')}</small>`+
+  (me?'':`<div class="row"><button class="btn secondary smallbtn" onclick="adminToggle(${i})">${m.active===false?'ACTIVAR':'DESACTIVAR'}</button><button class="btn secondary smallbtn" onclick="adminReset(${i})">NUEVA CONTRASEÑA</button></div><div class="row"><input id="gN${i}" type="number" min="1" value="1" inputmode="numeric" style="width:70px"><select id="gU${i}"><option value="d">días</option><option value="w">semanas</option><option value="m">meses</option><option value="y">años</option></select><button class="btn smallbtn" onclick="adminGrant(${i})">DAR ACCESO</button><button class="btn secondary smallbtn" onclick="adminUnlimited(${i})">DE POR VIDA</button></div>`)+`</div>`}
 async function loadAdminUsers(more){
   if(!isAdmin(currentUser))return;const box=document.getElementById('adminList');
   try{
@@ -545,17 +584,17 @@ async function loadAdminUsers(more){
     const q=await qq.limit(200).get(),rows=q.docs.map(d=>({id:d.id,...d.data()}));
     jcMembers=(more===true&&jcLast)?jcMembers.concat(rows):rows;if(q.docs.length)jcLast=q.docs[q.docs.length-1];jcMore=q.docs.length===200;
     const now=Date.now();const on=jcMembers.filter(m=>m.lastSeen&&m.lastSeen.toDate&&now-m.lastSeen.toDate().getTime()<360000).length;
-    document.getElementById('adminInfo').textContent=jcMembers.length+(jcMore?'+':'')+' usuarios · '+on+' conectados ahora';
-    box.innerHTML=jcMembers.map((m,i)=>{const ls=m.lastSeen&&m.lastSeen.toDate?m.lastSeen.toDate():null;const online=ls&&now-ls.getTime()<360000;const me=(m.email||'').toLowerCase()===ADMIN_EMAIL;
-      return `<div class="mem"><b><span class="${online?'dotOn':'dotOff'}"></span>${escapeHtml(m.name||'Sin nombre')}${me?' (admin)':''}</b><small>${escapeHtml(m.email||'')}</small><small>${memStatus(m)} · ${online?'En línea':(ls?'Visto '+ls.toLocaleString('es'):'Sin actividad')}</small>`+
-      (me?'':`<div class="row"><button class="btn secondary smallbtn" onclick="adminToggle(${i})">${m.active===false?'ACTIVAR':'DESACTIVAR'}</button><button class="btn secondary smallbtn" onclick="adminReset(${i})">NUEVA CONTRASEÑA</button></div><div class="row"><select id="trial${i}"><option value="1">1 día</option><option value="7">1 semana</option><option value="30">1 mes</option><option value="365">1 año</option></select><button class="btn smallbtn" onclick="adminTrial(${i})">DAR PRUEBA</button><button class="btn secondary smallbtn" onclick="adminUnlimited(${i})">SIN LÍMITE</button></div>`)+`</div>`}).join('')||'<p class="notice">Aún no hay usuarios.</p>';
+    const pend=jcMembers.map((m,i)=>[m,i]).filter(x=>x[0].active===false&&x[0].pending),rest=jcMembers.map((m,i)=>[m,i]).filter(x=>!(x[0].active===false&&x[0].pending));
+    document.getElementById('adminInfo').textContent=jcMembers.length+(jcMore?'+':'')+' usuarios · '+on+' conectados ahora · '+pend.length+' pendientes';
+    box.innerHTML=(pend.length?`<div class="eyebrow" style="margin:14px 0 4px;color:#ffb3b6">⏳ PENDIENTES DE APROBAR (${pend.length})</div>`+pend.map(x=>memCard(x[0],x[1],now)).join(''):'')+
+      (rest.length?`<div class="eyebrow" style="margin:14px 0 4px">USUARIOS</div>`+rest.map(x=>memCard(x[0],x[1],now)).join(''):'')||'<p class="notice">Aún no hay usuarios.</p>';
     if(jcMore)box.innerHTML+='<div class="actions"><button class="btn secondary smallbtn" type="button" onclick="loadAdminUsers(true)">VER MÁS USUARIOS</button></div>';
   }catch(e){console.error(e);box.innerHTML='<p class="notice" style="color:var(--red)">No se pudo leer la lista ('+escapeHtml((e&&e.code)||'error')+'). Revisa las reglas de Firestore.</p>'}
 }
 async function adminUpd(i,data,msg){try{await jcDb.collection('members').doc(jcMembers[i].id).update(data);showToast(msg);loadAdminUsers()}catch(e){console.error(e);showToast('No se pudo guardar: '+((e&&e.code)||'error'))}}
-function adminToggle(i){const m=jcMembers[i];adminUpd(i,{active:m.active===false},m.active===false?'Cuenta activada.':'Cuenta desactivada.')}
-function adminTrial(i){const d=+document.getElementById('trial'+i).value;adminUpd(i,{active:true,accessUntil:firebase.firestore.Timestamp.fromDate(new Date(Date.now()+d*864e5))},'Prueba asignada.')}
-function adminUnlimited(i){adminUpd(i,{active:true,accessUntil:firebase.firestore.FieldValue.delete()},'Sin límite de tiempo.')}
+function adminToggle(i){const m=jcMembers[i];adminUpd(i,{active:m.active===false,pending:false},m.active===false?'Cuenta activada.':'Cuenta desactivada.')}
+function adminGrant(i){const n=Math.max(1,parseInt(document.getElementById('gN'+i).value)||1),u=document.getElementById('gU'+i).value,d=new Date();if(u==='d')d.setDate(d.getDate()+n);else if(u==='w')d.setDate(d.getDate()+n*7);else if(u==='m')d.setMonth(d.getMonth()+n);else d.setFullYear(d.getFullYear()+n);adminUpd(i,{active:true,pending:false,accessUntil:firebase.firestore.Timestamp.fromDate(d)},'Acceso hasta '+d.toLocaleDateString('es')+' ✓')}
+function adminUnlimited(i){adminUpd(i,{active:true,pending:false,accessUntil:firebase.firestore.FieldValue.delete()},'Acceso de por vida ✓')}
 async function adminReset(i){const m=jcMembers[i];if(!m.email||!confirm('¿Enviar a '+m.email+' un correo para crear una contraseña nueva?'))return;try{await jcAuth.sendPasswordResetEmail(m.email);showToast('Correo enviado a '+m.email)}catch(e){showToast('No se pudo enviar: '+((e&&e.code)||'error'))}}
 </script>
 <script>
@@ -783,9 +822,9 @@ const EXM_AUTO=[
 ];
 let exm={};try{exm=JSON.parse(localStorage.getItem('jc_exmuscle')||'{}')||{}}catch(e){exm={}}
 let exmCloud=false,mvNames=[],mvDraft=null,mvKey='';
-function exNorm(n){return ' '+String(n||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim()+' '}
-function exKey(n){return exNorm(n).trim()}
-function musclesOf(name){const k=exKey(name);if(Object.prototype.hasOwnProperty.call(exm,k))return exm[k];const t=exNorm(name);for(const [re,ms] of EXM_AUTO)if(re.test(t))return ms;return null}
+function mvNorm(n){return ' '+String(n||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim()+' '}
+function mvKey2(n){return mvNorm(n).trim()}
+function musclesOf(name){const k=mvKey2(name);if(Object.prototype.hasOwnProperty.call(exm,k))return exm[k];const t=mvNorm(name);for(const [re,ms] of EXM_AUTO)if(re.test(t))return ms;return null}
 function exmSave(){localStorage.setItem('jc_exmuscle',JSON.stringify(exm));try{saveCloudDoc('settings','exmuscle',{map:exm}).catch(()=>{})}catch(e){}}
 async function exmLoadCloud(){if(exmCloud)return;try{if(typeof currentUser==='undefined'||!currentUser||typeof userCollection!=='function')return;exmCloud=true;const sn=await userCollection('settings').doc('exmuscle').get();if(sn.exists&&sn.data().map){exm={...sn.data().map,...exm};localStorage.setItem('jc_exmuscle',JSON.stringify(exm));renderVolume()}}catch(e){exmCloud=false}}
 function muscleVol(wks){const M={},U={};MUSC.forEach(m=>M[m]={sets:0,ex:{}});
@@ -804,8 +843,8 @@ function renderVolume(){const box=document.getElementById('mvBox');if(!box)retur
   const us=Object.entries(U);if(us.length)h+=`<div class="mvRow unk"><div class="mvHead"><b>❓ Sin clasificar</b><span class="mvN" style="font-size:12px">toca para elegir músculo</span></div><div class="mvEx">${us.map(([n,v])=>chip(n,v,false)).join('')}</div></div>`;
   h+=`<p class="notice">${mode==='avg'?'Promedio de series por semana ('+wks.length+(wks.length===1?' semana':' semanas')+'). ':''}Cada serie cuenta para todos los músculos que trabaja el ejercicio. Toca un ejercicio para cambiar su músculo.</p>`;
   box.innerHTML=h}
-function openExM(i){const n=mvNames[i];if(n==null)return;mvKey=exKey(n);const cur=musclesOf(n);mvDraft=new Set(cur||[]);drawExM(n)}
-function drawExM(n){const c=document.getElementById('askCard');if(!c)return;n=n||(mvNames.find(x=>exKey(x)===mvKey)||'');
+function openExM(i){const n=mvNames[i];if(n==null)return;mvKey=mvKey2(n);const cur=musclesOf(n);mvDraft=new Set(cur||[]);drawExM(n)}
+function drawExM(n){const c=document.getElementById('askCard');if(!c)return;n=n||(mvNames.find(x=>mvKey2(x)===mvKey)||'');
   c.innerHTML=`<div class="eyebrow">💪 ¿QUÉ MÚSCULOS TRABAJA?</div><h2 style="margin:8px 0 12px;font-size:19px">${escapeHtml(n)}</h2><div class="wChips">${MUSC.map(m=>`<button type="button" class="${mvDraft.has(m)?'on':''}" onclick="mvTog('${m}')">${m}</button>`).join('')}</div><div class="askGrid"><button class="btn" type="button" onclick="mvSave()">GUARDAR</button><button class="btn secondary" type="button" onclick="mvAuto()">AUTOMÁTICO</button></div><button class="btn secondary" type="button" style="width:100%;margin-top:10px" onclick="closeAsk()">CANCELAR</button>`;document.getElementById('askBox').style.display='flex'}
 function mvTog(m){if(!mvDraft)return;mvDraft.has(m)?mvDraft.delete(m):mvDraft.add(m);drawExM()}
 function mvSave(){exm[mvKey]=MUSC.filter(m=>mvDraft.has(m));exmSave();closeAsk();renderVolume();showToast('Guardado ✓',2000)}
@@ -887,7 +926,7 @@ function hm(t){const a=String(t||'0:0').split(':').map(Number);return a[0]*60+(a
 function checkRemind(){if(!remind.on||!('Notification' in window)||Notification.permission!=='granted')return;const now=new Date(),m=now.getHours()*60+now.getMinutes(),today=isoDate(now);
  if(m>=hm(remind.from)&&m<=hm(remind.to)&&Date.now()-(remind.last||0)>=remind.every*60000){remind.last=Date.now();persistHealth(false);const ml=waterToday(),g=waterGoal();fireNotif('💧 Hora de tomar agua',ml>=g?'Ya llegaste a tu meta de hoy ('+(ml/1000).toFixed(2)+' L). ¡Buen trabajo!':'Llevas '+(ml/1000).toFixed(2)+' de '+(g/1000).toFixed(1)+' L. ¿Cuánta agua tomaste?','jc-water',[{action:'w250',title:'+250 ml'},{action:'w500',title:'+500 ml'}])}
  const p=plan[(now.getDay()+6)%7];if(remind.train&&p&&p.ex&&p.ex.length&&remind.trainDay!==today&&m>=hm(remind.train)&&m<hm(remind.train)+120){remind.trainDay=today;persistHealth(false);fireNotif('🏋️ Hoy toca entrenar','¿Ya hiciste tu entrenamiento? '+p.ex.slice(0,3).map(e=>e.n).join(', ')+(p.ex.length>3?'…':''),'jc-train',[{action:'trainYes',title:'Sí, entrené'},{action:'trainNo',title:'Hoy no'}])}}
-function downloadICS(){const pad=n=>String(n).padStart(2,'0'),d=new Date(),day=`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`,slots=[];for(let m=hm(remind.from);m<=hm(remind.to)&&slots.length<48;m+=+remind.every)slots.push(m);let o='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//JC Training//ES\r\nCALSCALE:GREGORIAN\r\n';slots.forEach((m,i)=>{o+=`BEGIN:VEVENT\r\nUID:jc-agua-${i}@jctraining\r\nDTSTAMP:${day}T000000Z\r\nDTSTART:${day}T${pad(Math.floor(m/60))}${pad(m%60)}00\r\nDURATION:PT5M\r\nRRULE:FREQ=DAILY\r\nSUMMARY:💧 Tomar agua\r\nBEGIN:VALARM\r\nTRIGGER:PT0M\r\nACTION:DISPLAY\r\nDESCRIPTION:Toma un vaso de agua\r\nEND:VALARM\r\nEND:VEVENT\r\n`});o+='END:VCALENDAR';const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([o],{type:'text/calendar'}));a.download='jc-training-agua.ics';document.body.appendChild(a);a.click();a.remove();showToast(slots.length+' alarmas diarias descargadas. Ábrelas con tu calendario.')}
+function downloadICS(){const pad=n=>String(n).padStart(2,'0'),d=new Date(),day=`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`,slots=[];for(let m=hm(remind.from);m<=hm(remind.to)&&slots.length<48;m+=+remind.every)slots.push(m);let o='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//JC Training//ES\r\nCALSCALE:GREGORIAN\r\n';slots.forEach((m,i)=>{o+=`BEGIN:VEVENT\r\nUID:jc-agua-${i}@jctraining\r\nDTSTAMP:${day}T000000Z\r\nDTSTART:${day}T${pad(Math.floor(m/60))}${pad(m%60)}00\r\nDURATION:PT5M\r\nRRULE:FREQ=DAILY\r\nSUMMARY:💧 Tomar agua\r\nBEGIN:VALARM\r\nTRIGGER:PT0M\r\nACTION:DISPLAY\r\nDESCRIPTION:Toma un vaso de agua\r\nEND:VALARM\r\nEND:VEVENT\r\n`});const BD=['MO','TU','WE','TH','FR','SA','SU'];AL().forEach((al,ai)=>{if(!al.on)return;const [H,M]=String(al.time).split(':').map(Number);const by=al.days&&al.days.length&&al.days.length<7?';BYDAY='+al.days.slice().sort().map(x=>BD[x]).join(','):'';o+=`BEGIN:VEVENT\r\nUID:jc-alarma-${al.id||ai}@jctraining\r\nDTSTAMP:${day}T000000Z\r\nDTSTART:${day}T${pad(H)}${pad(M)}00\r\nDURATION:PT5M\r\nRRULE:FREQ=${by?'WEEKLY'+by:'DAILY'}\r\nSUMMARY:⏰ ${String(al.label||'Alarma').replace(/[,;\n]/g,' ')}\r\nBEGIN:VALARM\r\nTRIGGER:PT0M\r\nACTION:DISPLAY\r\nDESCRIPTION:${String(al.label||'Alarma').replace(/[,;\n]/g,' ')}\r\nEND:VALARM\r\nEND:VEVENT\r\n`});o+='END:VCALENDAR';const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([o],{type:'text/calendar'}));a.download='jc-training-agua.ics';document.body.appendChild(a);a.click();a.remove();showToast(slots.length+' alarmas diarias descargadas. Ábrelas con tu calendario.')}
 setInterval(checkRemind,30000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkRemind()});
 
 const TYPES={normal:['Repeticiones normales','#a8ff00'],'5x5':['5×5','#4cc9f0'],cluster:['Cluster','#ff9f1c'],otro:['Otro','#c77dff']};
@@ -1205,14 +1244,20 @@ function anaMeasures(ms){if(!ms.length)return null;
 
 /* --- Pintar --- */
 function progAnalysis(t){try{if(t==='medidas')return anaMeasures(msList());const ws=progWeeks();return t==='rutina'?anaRoutine(ws):t==='running'?anaRunning(ws):anaEx(ws)}catch(e){console.error('análisis',e);return null}}
-function anaTop(A,sep){return `<div class="ana"><div class="eyebrow">📊 ANÁLISIS DE LA SEMANA</div>${A.head?`<div class="anaHead">${A.head}</div>`:''}${A.notes.length?`<ul class="anaList">${A.notes.map(n=>`<li class="${n.t}">${n.x}</li>`).join('')}</ul>`:''}${A.todo.length?`<div class="anaTodo"><b>🎯 Necesitas mejorar</b><ul>${A.todo.map(x=>`<li>${x}</li>`).join('')}</ul></div>`:''}</div><div class="eyebrow anaSep">${sep||'DETALLE SEMANA A SEMANA'}</div>`}
-function anaBottom(A){const c=A&&A.c;if(!c)return '';const M={great:100,good:78,mixed:55,flat:42,bad:22,none:12};let tx=String(c.text||''),pr='';const k=tx.indexOf('Prioridad:');if(k>=0){pr=tx.slice(k+10).trim();tx=tx.slice(0,k).trim()}
- return `<div class="anaConc ${c.lv}"><div class="concHead"><span class="concIcon">${LV_ICON[c.lv]}</span><div><small>CONCLUSIÓN</small><h3>${c.title}</h3></div></div><div class="concMeter"><i style="width:${M[c.lv]||40}%"></i></div><p>${tx}</p>${pr?`<div class="concTodo"><b>🎯 Prioridad</b><span>${pr}</span></div>`:''}</div>`}
+const RC_MARK={ok:'✔',no:'✖',nt:'•',td:'➜',sum:'★'};
+function redBox(rows,head){return `<div class="redConc"><div class="rcT">CONCLUSIONES</div>${head?`<div class="rcH">${head}</div>`:''}<ul>${rows.map(([k,x,go])=>`<li class="${k}"${go?` style="cursor:pointer" onclick="${go}"`:''}><i>${RC_MARK[k]||'•'}</i><span>${x}</span></li>`).join('')}</ul></div>`}
+function anaTop(A,sep){if(!A)return '';const rows=[],c=A.c;
+  if(c){let tx=String(c.text||''),pr='';const k=tx.indexOf('Prioridad:');if(k>=0){pr=tx.slice(k+10).trim();tx=tx.slice(0,k).trim()}rows.push(['sum',`<b>${c.title}.</b> ${tx}`]);(A.notes||[]).forEach(n=>rows.push([n.t==='g'?'ok':n.t==='b'?'no':'nt',n.x]));(A.todo||[]).forEach(x=>rows.push(['td',x]));if(pr&&!(A.todo||[]).length)rows.push(['td','Prioridad: '+pr])}
+  else{(A.notes||[]).forEach(n=>rows.push([n.t==='g'?'ok':n.t==='b'?'no':'nt',n.x]));(A.todo||[]).forEach(x=>rows.push(['td',x]))}
+  return redBox(rows,A.head)+`<div class="eyebrow anaSep">${sep||'DETALLE SEMANA A SEMANA'}</div>`}
+function anaBottom(){return ''}
+
 function renderHomeBrief(){setHomePhrase();const el=document.getElementById('homeBrief');if(!el)return;const sf=f=>{try{return f()}catch(e){return null}};
   const rows=[['⚖️','Peso diario',"showSection('peso')",sf(anaWeight)],['🏋️','Rutina',"setProgTab('rutina');showSection('comparar')",progAnalysis('rutina')],['🏃','Running',"setProgTab('running');showSection('comparar')",progAnalysis('running')],['📏','Medidas',"setProgTab('medidas');showSection('comparar')",progAnalysis('medidas')]].filter(x=>x[3]&&x[3].c);
   if(!rows.length){el.style.display='none';return}
   el.style.display='block';
-  el.innerHTML='<div class="eyebrow">📊 TU RESUMEN SEMANAL</div>'+rows.map(([i,n,go,a])=>`<div class="brow" style="cursor:pointer" onclick="${go}"><span class="bi">${i}</span><div><b>${n} · ${LV_ICON[a.c.lv]} ${a.c.title}</b><small>${a.c.short}</small></div></div>`).join('')+'<div class="actions"><button class="btn secondary smallbtn" type="button" onclick="setProgTab(\'rutina\');showSection(\'comparar\')">VER ANÁLISIS COMPLETO</button></div>'}
+  el.className='';el.style.marginTop='16px';
+  el.innerHTML=redBox(rows.map(([i,n,go,a])=>[a.c.lv==='great'||a.c.lv==='good'?'ok':a.c.lv==='bad'?'no':'nt',`<b>${n}:</b> ${a.c.title}. ${a.c.short}`,go]),'Resumen de tu semana · toca una línea para ver el detalle')+'<div class="actions"><button class="btn secondary smallbtn" type="button" onclick="setProgTab(\'rutina\');showSection(\'comparar\')">VER ANÁLISIS COMPLETO</button></div>'}
 
 
 /* ===== SIN LÍMITES: semanas de medidas, rango de peso y de progreso ===== */
@@ -1406,8 +1451,8 @@ function delAlarm(id){remind.alarms=AL().filter(x=>x.id!==id);persistHealth();na
 function renderAlarms(){const el=document.getElementById('alarmList');if(!el)return;try{renderSoundChips()}catch(e){}
   el.innerHTML=AL().map(a=>`<div class="alRow ${a.on?'':'off'}"><div class="alT">${a.time}</div><div class="alM"><b>${escapeHtml(a.label||'Alarma')}</b><small>${alDaysTxt(a.days)}</small></div><label class="sw"><input type="checkbox" ${a.on?'checked':''} onchange="toggleAlarm(${a.id})"><span></span></label><button class="wDel" type="button" aria-label="Borrar" onclick="delAlarm(${a.id})">✕</button></div>`).join('')||'<div class="muted small">Aún no tienes alarmas.</div>';
   const st=document.getElementById('alarmStatus'),nt=document.getElementById('alarmNote');
-  if(st)st.textContent=isNative()&&LN()?'Alarmas del celular activas: suenan aunque la app esté cerrada.':'Modo navegador: la alarma suena mientras la app esté abierta en pantalla.';
-  if(nt)nt.textContent=isNative()&&LN()?'Pulsa «Dar permisos» una vez: notificaciones, alarmas exactas y sonido. En Ajustes del celular quita el ahorro de batería para esta app y sube el volumen de alarmas.':'Para que suene con la app cerrada, instala la versión APK con notificaciones nativas (o usa las alarmas del calendario .ics de arriba).'}
+  if(st)st.textContent=isNative()&&LN()?'Alarmas del celular activas: suenan aunque la app esté cerrada.':'⚠️ Modo navegador: la alarma solo suena con la app abierta. Para que suene con el celular bloqueado o la app cerrada, usa el APK o descarga las alarmas al calendario (.ics).';
+  if(nt)nt.textContent=isNative()&&LN()?'Pulsa «Dar permisos» una vez: notificaciones, alarmas exactas y sonido. En Ajustes del celular quita el ahorro de batería para esta app y sube el volumen de alarmas.':'Un navegador no puede sonar con la pantalla apagada ni con la app cerrada. Solución: instala el APK (guía incluida) o usa «Descargar alarmas… (.ics)» y ábrelo con Google Calendar.'}
 const _rh=renderHealth;renderHealth=function(){_rh();renderAlarms();if(isNative()&&LN()){const b=document.getElementById('remindBtn'),rs=document.getElementById('remindStatus');if(b)b.textContent=remind.on?'DESACTIVAR NOTIFICACIONES':'ACTIVAR NOTIFICACIONES';if(rs)rs.textContent=remind.on?`Activas: te aviso cada ${remind.every} min entre ${remind.from} y ${remind.to}. Puedes responder desde la notificación.`:'Desactivadas.'}};
 async function askAllPerms(){audioUnlock();const ln=LN();let ok=false;
   try{if(ln&&isNative()){const r=await ln.requestPermissions();ok=r&&r.display==='granted';try{const e=await ln.checkExactNotificationSetting();if(e&&e.exact_alarm!=='granted')await ln.changeExactNotificationSetting()}catch(e){}}else if('Notification' in window){ok=(await Notification.requestPermission())==='granted'}}catch(e){console.error(e)}

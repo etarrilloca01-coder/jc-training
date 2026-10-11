@@ -1,0 +1,28 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isAdmin()  { return signedIn() && request.auth.token.email == 'eulertcc@gmail.com'; }
+    function approved() {
+      let m = get(/databases/$(database)/documents/members/$(request.auth.uid)).data;
+      return m.active == true && (!('accessUntil' in m) || m.accessUntil > request.time);
+    }
+
+    // Lista de usuarios: solo el admin la ve completa y cambia permisos.
+    match /members/{uid} {
+      allow read:   if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow create: if signedIn() && request.auth.uid == uid
+                    && (isAdmin() || request.resource.data.active == false);
+      allow update: if isAdmin()
+                    || (signedIn() && request.auth.uid == uid
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastSeen','email','name']));
+      allow delete: if isAdmin();
+    }
+
+    // Datos de cada usuario: solo si su cuenta está aprobada y vigente.
+    match /users/{uid}/{document=**} {
+      allow read, write: if signedIn() && request.auth.uid == uid && (isAdmin() || approved());
+    }
+  }
+}
