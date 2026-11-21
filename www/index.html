@@ -27,7 +27,7 @@
 })();
 </script>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#050707">
   <meta name="description" content="JC Training: rutinas, medidas corporales y progreso de entrenamiento.">
   <link rel="manifest" href="manifest.json">
@@ -386,6 +386,27 @@
       .nav{padding-top:4px;padding-bottom:calc(4px + env(safe-area-inset-bottom))}.nav button .navico{display:none}
       .coverInner{padding-top:12px;padding-bottom:12px}.coverBtn{margin-top:10px;padding:12px}
     }
+
+    /* ===== v44 · sin zoom + sin desplazamiento lateral ===== */
+    html,body{touch-action:pan-x pan-y;overflow-x:hidden;overflow-x:clip}
+    .wprog,.dtable,.list,.mvTable,.cmpWrap,.measureRows,.wsts{grid-template-columns:minmax(0,1fr)}
+    .wsts{grid-template-columns:repeat(2,minmax(0,1fr))}
+    #progBody,#mvBox,.pchartBox,.pwrap{min-width:0;max-width:100%}
+    #progBody{overflow-x:clip}
+    .toggle{max-width:100%}
+    .rowitem,.drow,.waterDay,.mvRow,.cmpR{max-width:100%;overflow-wrap:anywhere}
+    .mvEx{min-width:0}
+
+    /* ===== v45 · visor del administrador ===== */
+    .admV{position:fixed;inset:0;z-index:250;background:var(--bg);display:none;flex-direction:column}
+    .admV.show{display:flex;animation:cheerIn .2s ease-out}
+    .admVTop{display:flex;align-items:center;gap:10px;padding:max(10px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left));border-bottom:1px solid var(--line);background:#070a0a}
+    .admVTop .t{flex:1;min-width:0}.admVTop b{display:block;font-family:var(--fd);font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.admVTop small{display:block;color:var(--muted);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .admVX{flex:none;width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:#121a1b;color:#fff;font-size:24px;line-height:1}
+    .admVTabs{padding:8px max(12px,env(safe-area-inset-left)) 0}.admVTabs:empty{display:none}
+    .admVBody{flex:1;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:12px max(12px,env(safe-area-inset-left)) calc(28px + env(safe-area-inset-bottom))}
+    .admVC{max-width:760px;margin:0 auto}
+    .mem .eyeBtn{padding:6px 12px}
   </style>
 </head>
 <body>
@@ -514,7 +535,8 @@
     </section>
 
     <section class="section" id="volumen">
-      <div class="sectionHead"><div><h2>Volumen de entrenamiento</h2><p>Series por músculo, sumando todos tus ejercicios.</p></div><div class="field"><label>Periodo</label><select id="volumePeriod" onchange="renderVolume()"><option value="week">Esta semana</option><option value="last">Semana pasada</option><option value="avg">Promedio semanal</option></select></div></div>
+      <div class="sectionHead"><div><h2>Volumen de entrenamiento</h2><p>Series por músculo, sumando todos tus ejercicios.</p></div><div class="field"><label>Periodo</label><select id="volumePeriod" onchange="renderVolume()"><option value="week">Esta semana</option><option value="last">Semana pasada</option><option value="avg">Promedio semanal</option><option value="range">Rango de fechas</option><option value="month">Un mes</option><option value="year">Un año</option></select></div></div>
+      <div class="card" id="volCustom" style="display:none;margin-bottom:12px"></div>
       <div class="card" id="mvBox"></div>
     </section>
 
@@ -555,9 +577,8 @@
         </div>
         <div class="actions"><button class="btn" onclick="saveProfileUI()">GUARDAR PERFIL</button><button class="btn secondary" type="button" id="signOutBtn2">CERRAR SESIÓN</button></div>
         <div class="actions"><button class="btn secondary" type="button" onclick="jcUpdateCheck(true)">🔄 BUSCAR ACTUALIZACIÓN</button></div><p class="notice" id="updNote"></p>
-        <p class="notice">Los datos personales se usan para mostrar tu perfil y tus métricas. Evita introducir información que no quieras guardar.</p>
       </div>
-      <div class="card" id="adminCard" style="display:none;margin-top:14px"><div class="eyebrow">🛡️ ADMIN</div><p class="notice" id="adminInfo">Usuarios registrados.</p><div class="actions"><button class="btn secondary smallbtn" type="button" onclick="loadAdminUsers()">↻ ACTUALIZAR</button></div><div id="adminList"></div><details id="adminArchWrap" style="display:none;margin-top:16px"><summary class="eyebrow" style="cursor:pointer;margin:0;padding:6px 0" id="adminArchTitle">🗄️ CUENTAS ARCHIVADAS</summary><p class="notice" style="margin:6px 0 0">Las cuentas archivadas no pueden entrar. Desde aquí puedes restaurarlas o eliminarlas definitivamente.</p><div id="adminArchList"></div></details></div>
+      <div class="card" id="adminCard" style="display:none;margin-top:14px"><div class="eyebrow">🛡️ ADMIN</div><p class="notice" id="adminInfo">Usuarios registrados.</p><div class="actions"><button class="btn secondary smallbtn" type="button" onclick="loadAdminUsers()">↻ ACTUALIZAR</button><button class="btn secondary smallbtn" type="button" onclick="adminNotify()">📣 AVISAR ACTUALIZACIÓN</button></div><div id="adminList"></div><details id="adminArchWrap" style="display:none;margin-top:16px"><summary class="eyebrow" style="cursor:pointer;margin:0;padding:6px 0" id="adminArchTitle">🗄️ CUENTAS ARCHIVADAS</summary><p class="notice" style="margin:6px 0 0">Las cuentas archivadas no pueden entrar. Desde aquí puedes restaurarlas o eliminarlas definitivamente.</p><div id="adminArchList"></div></details></div>
     </section>
   </main>
 </div>
@@ -642,7 +663,7 @@ function memStatus(m){if(m.archived)return '<span class="tagRed">🗄️ Archiva
 function memArch(m,i){const ar=m.archivedAt&&m.archivedAt.toDate?m.archivedAt.toDate():null;return `<div class="mem"><b>${escapeHtml(m.name||'Sin nombre')}</b><small>${escapeHtml(m.email||'')}</small><small>${memStatus(m)}${ar?' · desde '+ar.toLocaleDateString('es'):''}</small><div class="row"><button class="btn secondary smallbtn" onclick="adminRestore(${i})">RESTAURAR</button><button class="btn smallbtn" style="background:var(--red);border-color:var(--red);color:#fff" onclick="adminDelete(${i})">ELIMINAR</button></div></div>`}
 function memCard(m,i,now){const ls=m.lastSeen&&m.lastSeen.toDate?m.lastSeen.toDate():null;const online=ls&&now-ls.getTime()<360000;const me=(m.email||'').toLowerCase()===ADMIN_EMAIL;
   return `<div class="mem"><b><span class="${online?'dotOn':'dotOff'}"></span>${escapeHtml(m.name||'Sin nombre')}${me?' (admin)':''}</b><small>${escapeHtml(m.email||'')}</small><small>${memStatus(m)} · ${online?'En línea':(ls?'Visto '+ls.toLocaleString('es'):'Sin actividad')}</small>`+
-  (me?'':`<div class="row"><button class="btn secondary smallbtn" onclick="adminToggle(${i})">${m.active===false?'ACTIVAR':'DESACTIVAR'}</button><button class="btn secondary smallbtn" onclick="adminReset(${i})">NUEVA CONTRASEÑA</button><button class="btn secondary smallbtn" onclick="adminArchive(${i})">🗄️ ARCHIVAR</button></div><div class="row"><input id="gN${i}" type="number" min="1" value="1" inputmode="numeric" style="width:70px"><select id="gU${i}"><option value="d">días</option><option value="w">semanas</option><option value="m">meses</option><option value="y">años</option></select><button class="btn smallbtn" onclick="adminGrant(${i})">DAR ACCESO</button><button class="btn secondary smallbtn" onclick="adminUnlimited(${i})">DE POR VIDA</button></div>`)+`</div>`}
+  (me?'':`<div class="row"><button class="btn smallbtn eyeBtn" onclick="adminView(${i})" aria-label="Ver progreso de este cliente">👁️ VER</button><button class="btn secondary smallbtn" onclick="adminToggle(${i})">${m.active===false?'ACTIVAR':'DESACTIVAR'}</button><button class="btn secondary smallbtn" onclick="adminReset(${i})">NUEVA CONTRASEÑA</button><button class="btn secondary smallbtn" onclick="adminArchive(${i})">🗄️ ARCHIVAR</button></div><div class="row"><input id="gN${i}" type="number" min="1" value="1" inputmode="numeric" style="width:70px"><select id="gU${i}"><option value="d">días</option><option value="w">semanas</option><option value="m">meses</option><option value="y">años</option></select><button class="btn smallbtn" onclick="adminGrant(${i})">DAR ACCESO</button><button class="btn secondary smallbtn" onclick="adminUnlimited(${i})">DE POR VIDA</button></div>`)+`</div>`}
 function renderAdmin(){
   const box=document.getElementById('adminList');if(!box)return;const now=Date.now();
   const all=jcMembers.map((m,i)=>[m,i]),arch=all.filter(x=>x[0].archived),act=all.filter(x=>!x[0].archived);
@@ -966,21 +987,39 @@ function mvKey2(n){return mvNorm(n).trim()}
 function musclesOf(name){const k=mvKey2(name);if(Object.prototype.hasOwnProperty.call(exm,k))return exm[k];const t=mvNorm(name);for(const [re,ms] of EXM_AUTO)if(re.test(t))return ms;return null}
 function exmSave(){localStorage.setItem('jc_exmuscle',JSON.stringify(exm));try{saveCloudDoc('settings','exmuscle',{map:exm}).catch(()=>{})}catch(e){}}
 async function exmLoadCloud(){if(exmCloud)return;try{if(typeof currentUser==='undefined'||!currentUser||typeof userCollection!=='function')return;exmCloud=true;const sn=await userCollection('settings').doc('exmuscle').get();if(sn.exists&&sn.data().map){exm={...sn.data().map,...exm};localStorage.setItem('jc_exmuscle',JSON.stringify(exm));renderVolume()}}catch(e){exmCloud=false}}
-function muscleVol(wks){const M={},U={};MUSC.forEach(m=>M[m]={sets:0,ex:{}});
-  wks.forEach(wk=>{const pl0=planWeeks()[wk];if(!pl0)return;const pl=Object.fromEntries(Object.entries(pl0).filter(([di])=>dayCounts(wk,+di)));Object.values(pl).forEach(p=>(p.ex||[]).forEach(e=>{const nm=String(e.n||'').trim();if(!nm)return;const sets=+e.s||0;if(!sets)return;const ms=musclesOf(nm);if(ms===null){U[nm]=(U[nm]||0)+sets;return}ms.forEach(m=>{if(!M[m])return;M[m].sets+=sets;M[m].ex[nm]=(M[m].ex[nm]||0)+sets})}))});return {M,U}}
+function volCounts(k,i){return k===doneWeek?true:dayCounts(k,i)}
+function muscleVol(wks,from,to){const M={},U={};MUSC.forEach(m=>M[m]={sets:0,ex:{}});const pw=planWeeks();
+  wks.forEach(wk=>{const pl0=pw[wk];if(!pl0)return;Object.entries(pl0).forEach(([di,p])=>{if(!volCounts(wk,+di))return;if(from&&to){const dt=addDaysStr(wk,+di);if(dt<from||dt>to)return}(p.ex||[]).forEach(e=>{const nm=String(e.n||'').trim();if(!nm)return;const sets=+e.s||0;if(!sets)return;const ms=musclesOf(nm);if(ms===null){U[nm]=(U[nm]||0)+sets;return}ms.forEach(m=>{if(!M[m])return;M[m].sets+=sets;M[m].ex[nm]=(M[m].ex[nm]||0)+sets})})})});return {M,U}}
+let volFrom='',volTo='',volMonth='',volYear=0,volShown='';
+function volDefaults(){const cur=weekKey(new Date());if(!volFrom)volFrom=cur;if(!volTo)volTo=addDaysStr(cur,6);if(!volMonth)volMonth=isoDate(new Date()).slice(0,7);if(!volYear)volYear=new Date().getFullYear()}
+function volCtl(mode){const c=document.getElementById('volCustom');if(!c||mode===volShown)return;volShown=mode;volDefaults();
+  if(mode==='range')c.innerHTML=`<div class="formgrid" style="grid-template-columns:repeat(2,minmax(0,1fr))"><div class="field"><label>Desde</label><input type="date" id="volFrom" value="${volFrom}" onchange="volFrom=this.value;renderVolume()"></div><div class="field"><label>Hasta</label><input type="date" id="volTo" value="${volTo}" onchange="volTo=this.value;renderVolume()"></div></div>`;
+  else if(mode==='month')c.innerHTML=`<div class="field"><label>Mes</label><input type="month" id="volMonth" value="${volMonth}" onchange="volMonth=this.value;renderVolume()"></div>`;
+  else if(mode==='year')c.innerHTML=`<div class="field"><label>Año</label><input type="number" id="volYear" inputmode="numeric" min="2000" max="2100" value="${volYear}" onchange="volYear=+this.value;renderVolume()"></div>`;
+  c.style.display=(mode==='range'||mode==='month'||mode==='year')?'':'none'}
 function renderVolume(){const box=document.getElementById('mvBox');if(!box)return;exmLoadCloud();
-  const mode=(document.getElementById('volumePeriod')||{}).value||'week',cur=weekKey(new Date());let wks=[cur],div=1;
+  const mode=(document.getElementById('volumePeriod')||{}).value||'week',cur=weekKey(new Date());volCtl(mode);let wks=[cur],div=1,from='',to='';const pw=planWeeks();
+  const hasEx=(k,di,x)=>volCounts(k,+di)&&(!from||(addDaysStr(k,+di)>=from&&addDaysStr(k,+di)<=to))&&(x.ex||[]).some(e=>String(e.n||'').trim()&&+e.s);
+  const msg=t=>{box.innerHTML='<p class="muted" style="margin:0">'+t+'</p>'};
   if(mode==='last')wks=[addDaysStr(cur,-7)];
-  if(mode==='avg'){wks=Object.keys(planWeeks()).filter(k=>{const p=planWeeks()[k];return p&&Object.entries(p).some(([di,x])=>dayCounts(k,+di)&&(x.ex||[]).some(e=>String(e.n||'').trim()&&+e.s))});div=Math.max(1,wks.length)}
-  const {M,U}=muscleVol(wks);mvNames=[];const nmI=n=>{let i=mvNames.indexOf(n);if(i<0){mvNames.push(n);i=mvNames.length-1}return i};
+  if(mode==='avg'){wks=Object.keys(pw).filter(k=>{const p=pw[k];return p&&Object.entries(p).some(([di,x])=>hasEx(k,di,x))});div=Math.max(1,wks.length)}
+  if(mode==='range'||mode==='month'||mode==='year'){volDefaults();
+    if(mode==='range'){from=volFrom;to=volTo;if(!from||!to||from>to){msg('Elige una fecha <b>desde</b> y otra <b>hasta</b> (la primera no puede ser mayor que la segunda).');return}}
+    else if(mode==='month'){const y=+volMonth.slice(0,4),mo=+volMonth.slice(5,7);if(!y||!mo){msg('Elige un mes.');return}from=volMonth+'-01';to=volMonth+'-'+String(new Date(y,mo,0).getDate()).padStart(2,'0')}
+    else{const y=+volYear;if(!y||y<2000||y>2100){msg('Escribe un año válido, por ejemplo '+new Date().getFullYear()+'.');return}from=y+'-01-01';to=y+'-12-31'}
+    wks=Object.keys(pw).filter(k=>addDaysStr(k,6)>=from&&k<=to)}
+  const {M,U}=muscleVol(wks,from,to);mvNames=[];const nmI=n=>{let i=mvNames.indexOf(n);if(i<0){mvNames.push(n);i=mvNames.length-1}return i};
   const f=x=>{const v=x/div;return Number.isInteger(v)?v:Math.round(v*10)/10};
   const rows=MUSC.map(m=>({m,sets:M[m].sets,ex:Object.entries(M[m].ex).sort((a,b)=>b[1]-a[1])})).sort((a,b)=>b.sets-a.sets);
   const mx=rows[0].sets,total=rows.reduce((s,r)=>s+r.sets,0);
-  if(!total&&!Object.keys(U).length){box.innerHTML='<p class="muted" style="margin:0">'+(mode==='avg'?'Aún no tienes ejercicios con series guardadas.':'No hay ejercicios con series en este periodo. Planifica tus días en <b>Rutina</b>.')+'</p>';return}
+  if(!total&&!Object.keys(U).length){msg(mode==='avg'?'Aún no tienes ejercicios con series guardadas.':'No hay ejercicios con series en este periodo. Planifica tus días en <b>Rutina</b> (solo hay datos de las semanas que guardaste).');return}
   const chip=(n,v,top)=>`<button type="button" class="mvChip ${top?'t':''}" onclick="openExM(${nmI(n)})">${escapeHtml(n)} · ${f(v)}</button>`;
   let h='<div class="mvTable">'+rows.map(r=>{const top=mx>0&&r.sets===mx;return `<div class="mvRow ${top?'top':''} ${r.sets?'':'zero'}"><div class="mvHead"><b>${r.m}</b><span class="mvN">${f(r.sets)}<small>${r.sets/div===1?'serie':'series'}</small></span></div>${r.sets?`<div class="mvBar"><i style="width:${Math.max(4,r.sets/mx*100)}%"></i></div><div class="mvEx">${r.ex.map(([n,v])=>chip(n,v,top)).join('')}</div>`:''}</div>`}).join('')+'</div>';
   const us=Object.entries(U);if(us.length)h+=`<div class="mvRow unk"><div class="mvHead"><b>❓ Sin clasificar</b><span class="mvN" style="font-size:12px">toca para elegir músculo</span></div><div class="mvEx">${us.map(([n,v])=>chip(n,v,false)).join('')}</div></div>`;
-  h+=`<p class="notice">${mode==='avg'?'Promedio de series por semana ('+wks.length+(wks.length===1?' semana':' semanas')+'). ':''}Cada serie cuenta para todos los músculos que trabaja el ejercicio. Toca un ejercicio para cambiar su músculo.</p>`;
+  let pre='';if(mode==='avg')pre='Promedio de series por semana ('+wks.length+(wks.length===1?' semana':' semanas')+'). ';
+  else if(from){const nw=wks.filter(k=>Object.entries(pw[k]||{}).some(([di,x])=>hasEx(k,di,x))).length;pre='Total de series del '+fdate(from)+' al '+fdate(to)+' ('+nw+(nw===1?' semana':' semanas')+' con entrenamiento). '}
+  else if(mode==='week')pre='Cuenta todos los ejercicios que planeaste esta semana. ';
+  h+=`<p class="notice">${pre}Cada serie cuenta para todos los músculos que trabaja el ejercicio. Toca un ejercicio para cambiar su músculo.</p>`;
   box.innerHTML=h}
 function openExM(i){const n=mvNames[i];if(n==null)return;mvKey=mvKey2(n);const cur=musclesOf(n);mvDraft=new Set(cur||[]);drawExM(n)}
 function drawExM(n){const c=document.getElementById('askCard');if(!c)return;n=n||(mvNames.find(x=>mvKey2(x)===mvKey)||'');
@@ -1197,7 +1236,7 @@ function progDraw(){
   body.innerHTML=(A?anaTop(A):'')+mid+progCompare()+`<details class="ptd"><summary>📋 Ver tabla completa (todas las semanas)</summary>${tableHtml}</details>`+(A?anaBottom(A):'');
   const box=document.getElementById('pchartBox');if(box)box.scrollLeft=box.scrollWidth;
   if(multi)progTip(Math.max(0,pLastIdx(S)));else{const s=S[progCur.sel],last=[];s.vals.forEach((v,i)=>{if(v!=null)last.push(i)});progTip(last.length?last[last.length-1]:cols.length-1)}}
-function renderProgress(){const body=document.getElementById('progBody');if(!body)return;['medidas','rutina','ejercicios','running','agua','peso'].forEach(t=>{const b=document.getElementById('pt_'+t);if(b){b.classList.toggle('active',t===progTab);if(t===progTab&&b.scrollIntoView)try{b.scrollIntoView({inline:'center',block:'nearest'})}catch(e){}}});const pl=document.getElementById('progLim');if(pl&&pl.parentElement)pl.parentElement.style.display=(progTab==='agua'||progTab==='peso')?'none':'';if(progTab==='agua')return renderProgWater(body);if(progTab==='peso')return renderProgWeight(body);
+function renderProgress(){const body=document.getElementById('progBody');if(!body)return;['medidas','rutina','ejercicios','running','agua','peso'].forEach(t=>{const b=document.getElementById('pt_'+t);if(b){b.classList.toggle('active',t===progTab);if(t===progTab)try{const tg=b.parentElement;if(tg)tg.scrollLeft=b.offsetLeft-(tg.clientWidth-b.offsetWidth)/2;if(window.scrollX)window.scrollTo(0,window.scrollY)}catch(e){}}});const pl=document.getElementById('progLim');if(pl&&pl.parentElement)pl.parentElement.style.display=(progTab==='agua'||progTab==='peso')?'none':'';if(progTab==='agua')return renderProgWater(body);if(progTab==='peso')return renderProgWeight(body);
   const D=progData(progTab),empty=!D.n||(progTab==='ejercicios'?!D.ex.length:!D.S.length);
   if(empty){body.innerHTML=progTab==='medidas'?'<p class="muted">Aún no hay medidas guardadas. Guárdalas en la pestaña Medidas (Semana 1, Semana 2… hasta la 1000) y aquí verás cómo cambian.</p>':progTab==='ejercicios'?'<p class="muted">Registra ejercicios en Rutina para ver cómo cambian tus kilos y repeticiones.</p>':'<p class="muted">Aún no hay datos. Registra tus días en Rutina o tu running, y aquí verás cada semana.</p>';progCur=null;return}
   let tableHtml;
@@ -1779,6 +1818,12 @@ function renderProgWeight(body){
 init();
 initFirebase();
 
+/* ===== v44 · desactivar zoom y evitar que la pantalla se corra hacia un lado ===== */
+['gesturestart','gesturechange','gestureend'].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault(),{passive:false}));
+document.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
+document.addEventListener('wheel',e=>{if(e.ctrlKey)e.preventDefault()},{passive:false});
+window.addEventListener('scroll',()=>{if(window.scrollX)window.scrollTo(0,window.scrollY)},{passive:true});
+
 /* ===== v43 · re-ajuste automático al girar o cambiar el tamaño de pantalla ===== */
 (function(){let w0=window.innerWidth,tm;function fit(){const w=window.innerWidth;if(Math.abs(w-w0)<2)return;w0=w;try{if(typeof jcEditing==='function'&&jcEditing())return;const a=document.querySelector('.section.active');if(!a)return;if(a.id==='comparar')renderCompare();else if(a.id==='peso')renderWeight();else if(a.id==='volumen')renderVolume()}catch(e){}}
   const go=()=>{clearTimeout(tm);tm=setTimeout(fit,250)};window.addEventListener('resize',go);window.addEventListener('orientationchange',go)})();
@@ -1810,7 +1855,6 @@ async function jcUpdateCheck(manual){
   window.addEventListener('load',()=>{
     setTimeout(()=>jcUpdateCheck(false),5000);
     const n=document.getElementById('updNote');
-    if(n&&!native&&location.hostname.endsWith('.github.io')){const repo=location.pathname.split('/')[1],owner=location.hostname.split('.')[0],u=repo?'https://github.com/'+owner+'/'+repo+'/releases/latest/download/JC-Training.apk':'';if(u)n.innerHTML='📲 <a href="'+u+'" style="color:var(--green)">Descargar la app para Android (APK)</a>'}
   });
   document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now()-jcUpdLast>600000)jcUpdateCheck(false)});
 })();
@@ -1819,6 +1863,142 @@ if('serviceWorker' in navigator && location.protocol.startsWith('http')){
   navigator.serviceWorker.addEventListener('controllerchange',()=>{ if(!hadController||reloaded) return; reloaded=true; location.reload(); });
 }
 if('serviceWorker' in navigator && location.protocol.startsWith('http')) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(r=>{document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')r.update().catch(()=>{})})}).catch(console.warn));
+</script>
+<script>
+/* ===== v45 · ADMIN: ver progreso del cliente (👁️) y aviso de actualización por correo ===== */
+const ADM_LOGO=()=>new URL('logo.png',location.href).href;
+const ADM_APP=()=>location.href.split('#')[0].split('?')[0].replace(/[^\/]*$/,'');
+let adm={m:null,D:null,M:null,tab:'resumen',wk:''};
+const ADM_TABS=[['resumen','Resumen'],['rutina','Rutina'],['semanas','Semanas'],['meses','Meses'],['ejercicios','Ejercicios'],['medidas','Medidas'],['peso','⚖️ Peso'],['agua','💧 Agua y kcal']];
+function admShell(){let v=document.getElementById('admV');if(v)return v;v=document.createElement('div');v.id='admV';v.className='admV';
+  v.innerHTML='<div class="admVTop"><div class="t"><b id="admVT"></b><small id="admVS"></small></div><button type="button" class="admVX" aria-label="Cerrar" onclick="admClose()">×</button></div><div class="admVTabs" id="admVTabs"></div><div class="admVBody" id="admVB"><div id="admVC" class="admVC"></div></div>';
+  document.body.appendChild(v);return v}
+function admClose(){const v=document.getElementById('admV');if(v)v.classList.remove('show');adm.M=null}
+function admOpen(t,s){const v=admShell();v.classList.add('show');document.getElementById('admVT').textContent=t;document.getElementById('admVS').textContent=s||'';document.getElementById('admVB').scrollTop=0;return v}
+/* ---------- carga de datos ---------- */
+async function admLoad(uid){const U=jcDb.collection('users').doc(uid);let err=null;const T=p=>p.then(x=>x,e=>{err=e;return null});
+  const [prof,rou,pla,hea,wei,mea,wk]=await Promise.all([T(U.collection('profile').doc('main').get()),T(U.collection('settings').doc('routine').get()),T(U.collection('settings').doc('plan').get()),T(U.collection('settings').doc('health').get()),T(U.collection('settings').doc('weights').get()),T(U.collection('measurements').get()),T(U.collection('workouts').orderBy('date','desc').limit(40).get())]);
+  if(err&&[prof,rou,pla,hea,wei,mea].every(x=>!x))throw err;
+  const dd=s=>s&&s.exists?s.data():{};
+  return {profile:dd(prof),routine:dd(rou),plan:dd(pla),health:dd(hea),weights:Array.isArray(dd(wei).list)?dd(wei).list:[],meas:mea?mea.docs.map(d=>d.data()):[],workouts:wk?wk.docs.map(d=>d.data()):[]}}
+function admTargets(p){const w=+p.weight||0,h=+p.height||0,a=+p.age||0,male=p.sex!=='Mujer';const bmr=(w&&h&&a)?10*w+6.25*h-5*a+(male?5:-161):null;const adj={'Definición':-400,'Hipertrofia':300,'Fuerza':200}[p.goal]||0;return{water:w?Math.round(w*35/50)*50:2500,kcal:bmr?Math.round((bmr*1.55+adj)/50)*50:null}}
+function admModel(D){
+  const R=D.routine||{},P=D.plan||{},H=D.health||{},runs=Array.isArray(H.runs)?H.runs:[],water=H.water||{};
+  const pw={...(P.planLog||{})};const c0=R.doneWeek||P.planWeek||'';if(c0&&P.plan)pw[c0]=P.plan;
+  const keys=Object.keys(pw).filter(k=>pw[k]&&typeof pw[k]==='object').sort();
+  const nowK=weekKey(new Date());const cur=pw[nowK]?nowK:(keys[keys.length-1]||nowK);
+  const done=(k,i)=>{if(k===R.doneWeek)return !!(R.doneDays||{})[i+'-0'];const lg=(R.routineLog||{})[k];if(lg&&Object.values(lg).some(Boolean))return !!lg[i+'-0'];return null};
+  const counts=(k,i)=>{const d=done(k,i);return d===null?true:d};
+  const exOf=(p,e)=>({...e,t:e.t||p.type||'normal'});
+  const wkStats=k=>{const pl=pw[k]||{},o={k,planned:0,done:0,unk:false,sets:0,vol:0,km:0,min:0};
+    Object.entries(pl).forEach(([di,p])=>{if(!planHas(p))return;o.planned++;const d=done(k,+di);if(d===true)o.done++;else if(d===null)o.unk=true;if(!counts(k,+di))return;(p.ex||[]).forEach(e=>{if(!String(e.n||'').trim())return;const x=exOf(p,e);o.sets+=+x.s||0;o.vol+=exVol(x)})});
+    runs.forEach(r=>{if(r.date&&weekKey(r.date)===k){o.km+=+r.km||0;o.min+=+r.min||0}});return o};
+  const W=keys.map(wkStats).filter(w=>w.planned||w.km);
+  const weights=(D.weights||[]).filter(x=>x&&x.d&&+x.w).map(x=>({d:x.d,w:+x.w,n:x.n||''})).sort((a,b)=>a.d.localeCompare(b.d));
+  return {pw,keys,cur,done,counts,exOf,wkStats,W,weights,runs,water}}
+function admExProg(M){const map={};
+  M.keys.forEach(k=>{const pl=M.pw[k]||{},seen={};
+    Object.entries(pl).forEach(([di,p])=>{if(!planHas(p)||!M.counts(k,+di))return;(p.ex||[]).forEach(e=>{const nm=String(e.n||'').trim();if(!nm)return;const x=M.exOf(p,e),id=nm.toLowerCase(),w=exMaxKg(x),r=exHasA(x)?exMaxA(x):repsOf(x);const c=seen[id]||(seen[id]={name:nm,w:0,r:0});c.w=Math.max(c.w,w);c.r=Math.max(c.r,r)})});
+    Object.entries(seen).forEach(([id,c])=>{(map[id]=map[id]||{name:c.name,pts:[]}).pts.push({k,w:c.w,r:c.r})})});
+  return Object.values(map)}
+/* ---------- utilidades de pantalla ---------- */
+const aDl=(a,b,u)=>{if(a==null||b==null)return '—';const d=Math.round((b-a)*10)/10;if(!d)return '＝ 0'+(u?' '+u:'');return `<b class="${d>0?'up':'dn'}">${d>0?'▲ +':'▼ '}${d}${u?' '+u:''}</b>`};
+const aTbl=(h,rows)=>`<div class="pwrap"><table class="ptable"><thead><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+const aStat=(l,v,e)=>`<div class="stat"><span class="label">${l}</span><strong>${v}</strong><em>${e||''}</em></div>`;
+const aEye=t=>`<div class="eyebrow" style="margin:18px 0 8px">${t}</div>`;
+const aEmpty=t=>`<p class="muted">${t}</p>`;
+const aMonth=k=>['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'][+k.slice(5,7)-1]+' '+k.slice(0,4);
+/* ---------- pestañas ---------- */
+function admTabResumen(M,D,m){const p=D.profile||{},Wt=M.weights,wf=Wt[0],wl=Wt[Wt.length-1],cw=M.wkStats(M.cur),tg=admTargets(p),ls=m.lastSeen&&m.lastSeen.toDate?m.lastSeen.toDate():null;
+  const chips=[p.goal,p.level,p.age?p.age+' años':'',p.sex,p.height?p.height+' cm':'',p.bodyFat?p.bodyFat+'% grasa':''].filter(Boolean).map(x=>`<span class="chip">${escapeHtml(x)}</span>`).join('');
+  const last4=M.W.slice(-4).reverse();
+  return `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">${chips||'<span class="muted small">Sin datos de perfil</span>'}</div>
+  <div class="stats">${aStat('Peso actual',wl?wl.w+' kg':(p.weight?p.weight+' kg':'—'),wf&&wl&&Wt.length>1?aDl(wf.w,wl.w,'kg')+' desde '+fdate(wf.d):'')}${aStat('Cumplimiento semana',cw.planned?cw.done+'/'+cw.planned+' días':'—',M.cur?'Semana del '+fdate(M.cur):'')}${aStat('Volumen semana',Math.round(cw.vol).toLocaleString('es')+' kg',cw.sets+' series')}${aStat('Semanas con rutina',M.W.filter(w=>w.planned).length,'registradas')}${aStat('Meta de agua',(tg.water/1000).toFixed(2)+' L','por día')}${aStat('Meta calórica',tg.kcal?tg.kcal+' kcal':'—','estimada')}</div>
+  <p class="notice">Última actividad: ${ls?ls.toLocaleString('es'):'sin actividad'} · Cuenta: ${m.active===false?'desactivada':'activa'}</p>
+  ${aEye('📅 ÚLTIMAS SEMANAS')}${last4.length?aTbl(['Semana','Hechos','Volumen','Cambio'],last4.map(w=>{const i=M.W.indexOf(w),pv=M.W[i-1];return [fdate(w.k),w.planned?(w.unk&&!w.done?'sin marcar':w.done+'/'+w.planned):'—',Math.round(w.vol).toLocaleString('es')+' kg',pv?aDl(Math.round(pv.vol),Math.round(w.vol),'kg'):'—']})):aEmpty('Todavía no tiene rutinas guardadas.')}`}
+function admTabRutina(M){
+  const ks=M.keys.slice().reverse();if(!ks.length)return aEmpty('Todavía no tiene rutinas guardadas.');
+  const k=(adm.wk&&M.pw[adm.wk])?adm.wk:M.cur,pl=M.pw[k]||{};
+  const sel=`<div class="field" style="margin-bottom:12px;max-width:300px"><label>Semana</label><select onchange="adm.wk=this.value;admRender()">${ks.map(x=>`<option value="${x}" ${x===k?'selected':''}>Semana del ${fdateY(x)}${x===M.cur?' (actual)':''}</option>`).join('')}</select></div>`;
+  const days=DAYS.map((nm,i)=>{const p=pl[i];const has=planHas(p),d=M.done(k,i);
+    const st=!has?'<span class="muted small">Sin plan</span>':d===true?'<span class="tagGreen">✅ Hecho</span>':d===false?'<span class="tagRed">⬜ Pendiente</span>':'<span class="muted small">sin marcar</span>';
+    let body='';if(has){body=(p.ex||[]).filter(e=>String(e.n||'').trim()).map(e=>{const x=M.exOf(p,e);return `<div class="rowitem" style="margin-top:8px"><div><strong>${escapeHtml(x.n)}</strong><small>${escapeHtml(exSumFull(x))}${+x.w?' · base '+x.w+' kg':''}</small>${exViewA(x)?`<small>${escapeHtml(exViewA(x))}</small>`:''}</div><div style="text-align:right"><b style="font-family:var(--fd)">${exMaxKg(x)} kg</b><br><small class="muted">${Math.round(exVol(x)).toLocaleString('es')} kg mov.</small></div></div>`}).join('');
+      if(runHas(p.run)){const r=p.run;body+=`<div class="rowitem" style="margin-top:8px"><div><strong>🏃 ${escapeHtml(r.type||'Running')}</strong><small>${r.km?rnd(+r.km)+' km':''}${r.time?' · '+escapeHtml(r.time):''}${r.hr?' · ♥ '+escapeHtml(r.hr)+' ppm':''}${r.feel&&r.feel!=='Sin indicar'?' · '+escapeHtml(r.feel):''}</small></div></div>`}
+      if(p.note)body+=`<p class="notice" style="margin:8px 0 0">📝 ${escapeHtml(p.note)}</p>`}
+    return `<div class="mem"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><b>${nm} · ${fdate(addDaysStr(k,i))}</b>${st}</div>${body}</div>`}).join('');
+  return sel+days}
+function admTabSemanas(M){if(!M.W.length)return aEmpty('Todavía no hay semanas registradas.');
+  const rows=M.W.map((w,i)=>{const pv=M.W[i-1];return [fdate(w.k),w.planned,w.planned?(w.unk&&!w.done?'—':w.done):'—',w.sets,Math.round(w.vol).toLocaleString('es')+' kg',pv?aDl(Math.round(pv.vol),Math.round(w.vol),'kg'):'—',w.km?rnd(w.km)+' km':'—']}).reverse();
+  return `<p class="notice" style="margin-top:0">Cada fila es una semana (lunes). "Hechos" = días de rutina que marcó como hechos. El volumen suma series × repeticiones × kilos.</p>`+aTbl(['Semana','Plan','Hechos','Series','Volumen','Cambio','Running'],rows)}
+function admTabMeses(M){if(!M.W.length)return aEmpty('Todavía no hay datos.');
+  const g={};M.W.forEach(w=>{const k=w.k.slice(0,7),o=g[k]||(g[k]={k,wk:0,planned:0,done:0,unk:false,sets:0,vol:0,km:0});o.wk++;o.planned+=w.planned;o.done+=w.done;if(w.unk&&!w.done)o.unk=true;o.sets+=w.sets;o.vol+=w.vol;o.km+=w.km});
+  const L=Object.values(g).sort((a,b)=>a.k.localeCompare(b.k));
+  const rows=L.map((o,i)=>{const pv=L[i-1];return [aMonth(o.k),o.wk,o.planned?o.done+'/'+o.planned:'—',o.sets,Math.round(o.vol).toLocaleString('es')+' kg',Math.round(o.vol/o.wk).toLocaleString('es')+' kg',pv?aDl(Math.round(pv.vol/pv.wk),Math.round(o.vol/o.wk),'kg'):'—',o.km?rnd(o.km)+' km':'—']}).reverse();
+  return `<p class="notice" style="margin-top:0">Resumen por mes (según el lunes de cada semana). "Cambio" compara el volumen promedio por semana con el mes anterior.</p>`+aTbl(['Mes','Semanas','Días hechos','Series','Volumen','Prom./sem','Cambio','Running'],rows)}
+function admTabEjercicios(M,D){const L=admExProg(M);let h='';
+  if(!L.length)h=aEmpty('Todavía no tiene ejercicios registrados en su rutina.');
+  else{const rows=L.map(e=>{const a=e.pts[0],b=e.pts[e.pts.length-1];return {e,a,b,dk:b.w-a.w,dr:b.r-a.r}}).sort((x,y)=>y.e.pts.length-x.e.pts.length||x.e.name.localeCompare(y.e.name));
+    const best=rows.filter(r=>r.dk>0).sort((x,y)=>y.dk-x.dk).slice(0,3);
+    if(best.length)h+=`<div class="anaConc"><div class="concHead"><div class="concIcon">🏆</div><div><small>MAYOR MEJORA</small><h3>${best.map(r=>escapeHtml(r.e.name)+' +'+rnd(r.dk)+' kg').join(' · ')}</h3></div></div></div>`;
+    h+=aTbl(['Ejercicio','Sem.','Inicio','Ahora','Kilos','Reps'],rows.map(r=>[escapeHtml(r.e.name),r.e.pts.length,r.a.w+' kg × '+r.a.r,r.b.w+' kg × '+r.b.r,r.e.pts.length>1?aDl(r.a.w,r.b.w,'kg'):'—',r.e.pts.length>1?aDl(r.a.r,r.b.r,''):'—']));
+    h+='<p class="notice">Compara la primera semana en que hizo el ejercicio con la más reciente (kilo más alto y repeticiones por serie).</p>'}
+  if((D.workouts||[]).length)h+=aEye('📝 REGISTROS MANUALES (últimos)')+aTbl(['Fecha','Ejercicio','Series','Reps','Kg'],D.workouts.slice(0,20).map(w=>[fdate(w.date),escapeHtml(w.exercise||''),w.sets||'',w.reps||'',w.weight||'']));
+  return h}
+function admTabMedidas(D){const ms=(D.meas||[]).filter(x=>x&&(x.weight||x.bodyFat||MEASUREMENTS.some(([n,k])=>x[k]))).sort((a,b)=>measNum(a.week)-measNum(b.week));
+  if(!ms.length)return aEmpty('Todavía no ha guardado medidas.');
+  const rowsDef=[['Peso (kg)','weight'],['Grasa (%)','bodyFat'],...MEASUREMENTS.map(([n,k])=>[n+' (cm)',k])];
+  const rows=rowsDef.map(([l,k])=>{const vs=ms.map(m=>m[k]===''||m[k]==null||isNaN(+m[k])?null:+m[k]),pts=vs.filter(x=>x!=null);return [l,pts.length>1?aDl(pts[0],pts[pts.length-1],''):'—',...vs.map(x=>x==null?'–':rnd(x))]}).filter(r=>r.slice(2).some(x=>x!=='–'));
+  const head=['Medida','Cambio',...ms.map(m=>String(m.week||'').replace('Semana ','Sem ')+(m.date?'<br><span class="dl">'+fdate(m.date)+'</span>':''))];
+  return `<p class="notice" style="margin-top:0">"Cambio" = primera medición → última. Desliza la tabla hacia los lados para ver todas las semanas.</p>`+aTbl(head,rows)}
+function admTabPeso(M){const L=M.weights;if(!L.length)return aEmpty('Todavía no registra su peso diario.');
+  const f=L[0],l=L[L.length-1],vs=L.map(x=>x.w),mn=Math.min(...vs),mx=Math.max(...vs);
+  const rows=L.slice().reverse().slice(0,30).map(x=>{const i=L.indexOf(x),pv=L[i-1];return [fdateY(x.d),x.w+' kg',pv?aDl(pv.w,x.w,'kg'):'—',escapeHtml(x.n||'')]});
+  return `<div class="stats">${aStat('Último peso',l.w+' kg',fdateY(l.d))}${aStat('Cambio total',aDl(f.w,l.w,'kg'),'desde '+fdateY(f.d))}${aStat('Mínimo',mn+' kg','')}${aStat('Máximo',mx+' kg','')}</div>${aEye('📅 ÚLTIMOS REGISTROS')}${aTbl(['Fecha','Peso','Cambio','Nota'],rows)}`}
+function admTabAgua(M,D){const p=D.profile||{},tg=admTargets(p),today=isoDate(new Date());
+  const minsOn=d=>M.runs.filter(r=>r.date===d).reduce((s,r)=>s+(+r.min||0),0),goalOn=d=>tg.water+Math.round(minsOn(d)*12/50)*50;
+  const days=[];for(let i=13;i>=0;i--){const d=addDaysStr(today,-i),ml=+M.water[d]||0,g=goalOn(d);days.push({d,ml,g,ok:ml>0&&ml>=g})}
+  const reg=days.filter(x=>x.ml>0),ok=days.filter(x=>x.ok).length,avg=reg.length?Math.round(reg.reduce((s,x)=>s+x.ml,0)/reg.length):0;
+  const list=days.slice().reverse().map(x=>`<div class="waterDay ${x.ok?'ok':'no'}"><div class="wd">${fdate(x.d)}<small>${SHORT[(new Date(x.d+'T12:00:00').getDay()+6)%7]}</small></div><div><div class="track" style="height:9px"><div class="${x.ok?'fill2':'fill1'}" style="width:${Math.min(100,x.g?x.ml/x.g*100:0)}%"></div></div></div><div class="wb">${x.ml?(x.ok?'✅':'❌'):'—'} ${(x.ml/1000).toFixed(2)} L<small>meta ${(x.g/1000).toFixed(1)} L</small></div></div>`).join('');
+  const rr=M.runs.filter(r=>r.date).slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,10);
+  return `<div class="stats">${aStat('Meta de agua',(tg.water/1000).toFixed(2)+' L','por día (≈35 ml/kg)')}${aStat('Metas cumplidas',ok+'/14','últimos 14 días')}${aStat('Promedio',(avg/1000).toFixed(2)+' L','días con registro')}${aStat('Meta calórica',tg.kcal?tg.kcal+' kcal':'—','estimada · '+(p.goal||'sin objetivo'))}</div>
+  ${aEye('💧 AGUA · ÚLTIMOS 14 DÍAS')}<div class="dtable">${list}</div>
+  ${aEye('🔥 CALORÍAS DEL RUNNING (últimos)')}${rr.length?aTbl(['Fecha','Km','Min','Kcal'],rr.map(r=>[fdate(r.date),r.km?rnd(+r.km):'—',r.min?rnd(+r.min):'—',r.kcal?Math.round(+r.kcal):'—'])):aEmpty('Sin carreras registradas.')}
+  <p class="notice">La app calcula la meta calórica según el perfil del cliente y las calorías que gasta corriendo. No registra lo que come.</p>`}
+function admTabs(){const t=document.getElementById('admVTabs');if(!t)return;t.innerHTML=`<div class="toggle">${ADM_TABS.map(([k,l])=>`<button type="button" class="${adm.tab===k?'active':''}" onclick="adm.tab='${k}';adm.wk='';admRender()">${l}</button>`).join('')}</div>`}
+function admRender(){admTabs();const c=document.getElementById('admVC');if(!c||!adm.D)return;const M=adm.M||(adm.M=admModel(adm.D)),D=adm.D;let h='';
+  try{h={resumen:()=>admTabResumen(M,D,adm.m),rutina:()=>admTabRutina(M),semanas:()=>admTabSemanas(M),meses:()=>admTabMeses(M),ejercicios:()=>admTabEjercicios(M,D),medidas:()=>admTabMedidas(D),peso:()=>admTabPeso(M),agua:()=>admTabAgua(M,D)}[adm.tab]()}catch(e){console.error(e);h='<p class="notice" style="color:var(--red)">No se pudo mostrar esta pestaña: '+escapeHtml(String(e&&e.message||e))+'</p>'}
+  const keep=document.getElementById('admVB').scrollTop;c.innerHTML=h;document.getElementById('admVB').scrollTop=keep}
+async function adminView(i){if(!isAdmin(currentUser))return;const m=jcMembers[i];if(!m)return;
+  adm={m,D:null,M:null,tab:'resumen',wk:''};admOpen(m.name||m.email||'Cliente',m.email||'');admTabs();document.getElementById('admVC').innerHTML='<p class="muted">Cargando datos del cliente…</p>';
+  try{adm.D=await admLoad(m.id);admRender()}catch(e){console.error(e);document.getElementById('admVC').innerHTML='<p class="notice" style="color:var(--red)">No se pudieron leer los datos ('+escapeHtml((e&&e.code)||'error')+'). Las reglas de Firestore deben permitir al administrador leer <b>users/{uid}</b> de sus clientes.</p>'}}
+/* ---------- aviso de actualización por correo ---------- */
+function admMailHtml(name,news){const G='#a8ff00',logo=ADM_LOGO(),app=ADM_APP();
+  const nw=news?`<tr><td style="padding:4px 28px 16px"><div style="background:#121c12;border:1px solid #315027;border-radius:14px;padding:14px 16px;color:#e9f3e3;font-size:14px;line-height:1.6"><b style="color:${G}">✨ Lo nuevo:</b><br>${escapeHtml(news).replace(/\n/g,'<br>')}</div></td></tr>`:'';
+  return `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0;padding:0;background:#050707"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#050707"><tr><td align="center" style="padding:24px 12px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#0d1314;border:1px solid #263233;border-radius:22px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;color:#f4f7f3">
+<tr><td align="center" style="padding:30px 28px 6px"><img src="${logo}" alt="JC Training" width="190" style="max-width:70%;height:auto;display:block;border:0"></td></tr>
+<tr><td align="center" style="padding:10px 28px 0"><span style="display:inline-block;background:#1a2a10;border:1px solid #4d7a22;color:${G};font-size:11px;letter-spacing:2px;font-weight:bold;padding:7px 14px;border-radius:99px">NUEVA ACTUALIZACIÓN</span></td></tr>
+<tr><td style="padding:20px 28px 6px"><h1 style="margin:0 0 12px;font-size:26px;line-height:1.2;color:#ffffff">¡Hay novedades en JC Training! 🚀</h1><p style="margin:0 0 12px;font-size:15px;line-height:1.65;color:#d6dfd9">Hola <b style="color:${G}">${escapeHtml(name)}</b>, tenemos una actualización nueva y está <b>muy interesante</b>. Seguimos mejorando la app para que entrenes con más claridad, sigas tu progreso con más facilidad y llegues más rápido a tu mejor versión.</p><p style="margin:0 0 6px;font-size:15px;line-height:1.65;color:#d6dfd9">Todo está pensado para ti: tu rutina, tus medidas, tu peso, tu agua y tu avance semana a semana, en un solo lugar y más cómodo que nunca. 💪</p></td></tr>
+${nw}
+<tr><td style="padding:6px 28px 18px"><div style="background:#0a1010;border:1px dashed #4d7a22;border-radius:14px;padding:16px 18px"><div style="color:${G};font-size:13px;letter-spacing:1.5px;font-weight:bold;margin-bottom:8px">📲 ASÍ DE FÁCIL SE ACTUALIZA</div><div style="font-size:14px;line-height:1.7;color:#e9f3e3">1. Entra a la app <b>JC Training</b>.<br>2. Toca el botón <b style="color:${G}">🔄 Actualizar</b>.<br>3. ¡Listo! Ya tienes la última versión.</div></div></td></tr>
+<tr><td align="center" style="padding:0 28px 24px"><a href="${app}" style="display:inline-block;background:${G};color:#101500;text-decoration:none;font-weight:bold;font-size:15px;letter-spacing:1px;padding:15px 30px;border-radius:12px">ABRIR JC TRAINING</a></td></tr>
+<tr><td style="padding:0 28px 26px;font-size:14px;line-height:1.6;color:#d6dfd9">¡Vamos con todo! Tu progreso es lo que más nos importa.<br><b style="color:#ffffff">— Jackson · JC Training</b></td></tr>
+<tr><td style="padding:16px 28px;border-top:1px solid #263233;font-size:11px;line-height:1.5;color:#7f8e89;text-align:center">Recibes este correo porque tienes una cuenta en JC Training.</td></tr>
+</table></td></tr></table></body></html>`}
+function admMailText(name,news){return `¡Hola ${name}!\n\nHay una nueva actualización de JC Training y está muy interesante. Seguimos mejorando la app para que entrenes con más claridad y sigas tu progreso con más facilidad.\n${news?'\nLo nuevo:\n'+news+'\n':''}\nPara actualizar: entra a la app y toca el botón "Actualizar".\n\n${ADM_APP()}\n\n¡Vamos con todo!\n— Jackson · JC Training`}
+function admRecipients(){const seen={};return (jcMembers||[]).filter(m=>m.email&&!m.archived&&m.active!==false&&String(m.email).toLowerCase()!==ADMIN_EMAIL&&!seen[String(m.email).toLowerCase()]&&(seen[String(m.email).toLowerCase()]=1))}
+const admNm=m=>m.name||String(m.email||'').split('@')[0];
+function admMailPrev(){const f=document.getElementById('admMailFr'),n=document.getElementById('admNews');if(f)f.srcdoc=admMailHtml('Nombre',(n&&n.value||'').trim())}
+function adminNotify(){if(!isAdmin(currentUser))return;const rec=admRecipients();adm={m:null,D:null,M:null,tab:'',wk:''};admOpen('📣 Aviso de actualización',rec.length+' usuario'+(rec.length===1?'':'s')+' recibirán el correo');document.getElementById('admVTabs').innerHTML='';
+  document.getElementById('admVC').innerHTML=`<div class="card"><div class="field"><label>¿Qué hay de nuevo? (opcional: se agrega al correo)</label><textarea id="admNews" rows="3" maxlength="600" placeholder="Ej.: Ahora puedes ver tu volumen por fechas y la app se ajusta mejor a tu celular." oninput="admMailPrev()" style="width:100%;background:#070b0b;border:1px solid var(--line);border-radius:9px;padding:11px;color:var(--text);outline:none;resize:vertical;font-size:16px"></textarea></div><p class="notice">Se envía un correo individual a cada usuario activo (el tuyo no). Cada uno lo recibe con su nombre.</p><div class="actions"><button class="btn" type="button" onclick="admSendMail()" ${rec.length?'':'disabled'}>ENVIAR A ${rec.length} USUARIO${rec.length===1?'':'S'}</button></div></div>${aEye('VISTA PREVIA DEL CORREO')}<iframe id="admMailFr" title="Vista previa" style="width:100%;height:640px;border:1px solid var(--line);border-radius:14px;background:#050707"></iframe>`;admMailPrev()}
+async function admSendMail(){if(!isAdmin(currentUser))return;const rec=admRecipients();if(!rec.length){showToast('No hay usuarios con correo para avisar.');return}
+  if(!confirm('¿Enviar el aviso de actualización a '+rec.length+' usuario'+(rec.length===1?'':'s')+'?'))return;
+  const news=((document.getElementById('admNews')||{}).value||'').trim(),subject='🔥 ¡Nueva actualización de JC Training!';let first=null;
+  try{showToast('Enviando…',3000);
+    for(let k=0;k<rec.length;k+=400){const b=jcDb.batch();rec.slice(k,k+400).forEach(m=>{const ref=jcDb.collection('mail').doc();if(!first)first=ref;b.set(ref,{to:String(m.email),message:{subject,text:admMailText(admNm(m),news),html:admMailHtml(admNm(m),news)},createdBy:currentUser.uid,createdAt:firebase.firestore.FieldValue.serverTimestamp()})});await b.commit()}
+    admClose();showToast('📨 Aviso puesto en cola para '+rec.length+' usuario'+(rec.length===1?'':'s')+'. Verificando envío…',6000);
+    setTimeout(async()=>{try{const d=(await first.get()).data()||{},st=d.delivery&&d.delivery.state;showToast(st==='SUCCESS'?'✅ Correos enviados.':st==='ERROR'?'⚠️ Error al enviar: '+((d.delivery.error)||'revisa la extensión Trigger Email'):st?'⏳ Enviando correos…':'⚠️ Los correos quedaron en cola pero Firebase aún no los envía. Revisa que la extensión «Trigger Email» esté instalada.',9000)}catch(e){}},12000)
+  }catch(e){console.error(e);const bcc=rec.map(m=>m.email).join(',');
+    if(confirm('No se pudo enviar automáticamente ('+((e&&e.code)||'error')+').\n\nFalta permitir/activar el envío de correos en Firebase.\n\n¿Quieres abrir tu app de correo con todos los usuarios en copia oculta (CCO) para enviarlo desde ahí?'))location.href='mailto:?bcc='+encodeURIComponent(bcc)+'&subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(admMailText('',news))}}
 </script>
 </body>
 </html>
