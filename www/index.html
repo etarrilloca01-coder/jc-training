@@ -407,6 +407,42 @@
     .admVBody{flex:1;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:12px max(12px,env(safe-area-inset-left)) calc(28px + env(safe-area-inset-bottom))}
     .admVC{max-width:760px;margin:0 auto}
     .mem .eyeBtn{padding:6px 12px}
+    /* ===== Volumen directo / indirecto ===== */
+    .mvTblWrap{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#0b1111}
+    .mvTbl{width:100%;border-collapse:collapse;font-size:14px}
+    .mvTbl th{padding:10px 8px;text-align:center;font-size:11px;letter-spacing:.6px;color:var(--muted);background:#0f1718;font-weight:700;text-transform:uppercase}
+    .mvTbl th:first-child{text-align:left;padding-left:14px}
+    .mvTbl td{padding:10px 8px;text-align:center;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+    .mvTbl td:first-child{text-align:left;padding-left:14px}
+    .mvTbl td:first-child b{display:block;font-size:14px}
+    .mvTbl td:last-child b{color:var(--green);font-size:16px}
+    .mvTbl tr.zero{opacity:.45}
+    .mvLv{display:inline-block;margin-top:3px;font-size:10px;font-weight:800;letter-spacing:.5px;padding:2px 7px;border-radius:99px;text-transform:uppercase;border:1px solid var(--line);color:var(--muted)}
+    .mvLv.l{color:#7fc8ff;border-color:#7fc8ff55}.mvLv.h{color:var(--green);border-color:#a8ff0066}.mvLv.m{color:#ffb020;border-color:#ffb02055}.mvLv.x{color:var(--red);border-color:#ff696966}
+    .mvTip{margin-top:10px}
+    .mvLab,.mvLab2{font-size:11px;font-weight:800;letter-spacing:.8px;color:var(--muted);margin:14px 0 8px}
+    .mvLab small{font-weight:600;letter-spacing:0;opacity:.75;margin-left:6px}
+    .mvLab2{margin:10px 0 6px;font-size:10px}
+    .mvRow.top .mvLab2{color:#0a0f0a99}
+    .mvChip.ind{border-style:dashed;opacity:.85}
+    /* ===== Rutina automática ===== */
+    .rtaOpt{display:block;width:100%;text-align:left;border:1px solid var(--line);background:#0b1111;color:var(--text);border-radius:12px;padding:12px 14px;margin-top:8px}
+    .rtaOpt b{display:block;font-size:14px}.rtaOpt small{display:block;margin-top:3px;color:var(--muted);font-size:12px;line-height:1.35}
+    .rtaOpt.on{border-color:var(--green);box-shadow:0 0 0 1px var(--green) inset;background:#101a12}
+    .rtaScroll{max-height:48vh;overflow:auto;margin-top:10px;padding-right:2px}
+    .rtaDay{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:8px;background:#0b1111}
+    .rtaDay b{font-size:13px}.rtaDay b span{color:var(--green);margin-left:6px}
+    .rtaDay ul{list-style:none;margin:6px 0 0;padding:0}
+    .rtaDay li{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:3px 0;color:var(--text)}
+    .rtaDay li em{font-style:normal;color:var(--muted);white-space:nowrap}
+    .rtaMus{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+    .rtaMus span{font-size:11px;font-weight:700;border:1px solid var(--line);border-radius:99px;padding:4px 9px;color:var(--muted)}
+    .rtaMus span b{color:var(--green)}
+    .rtaWarn{margin-top:10px;font-size:12px;color:#ffb020}
+    /* ===== Imágenes de ejercicios (carga) ===== */
+    .exsk{display:block;flex:1;height:120px;border-radius:10px;background:linear-gradient(90deg,#141c1d,#1e2a2b,#141c1d);background-size:200% 100%;animation:exsk 1.1s linear infinite}
+    @keyframes exsk{to{background-position:-200% 0}}
+
   </style>
 </head>
 <body>
@@ -483,6 +519,7 @@
       <div class="actions" style="margin-top:12px"><button class="btn secondary" type="button" onclick="wkOpen('repeat')">🔁 REPETIR RUTINA</button><button class="btn secondary" type="button" onclick="wkOpen('edit')">✏️ EDITAR RUTINA DE LA SEMANA</button></div>
       <div id="routineCard"></div>
       <div class="actions"><button class="btn secondary" onclick="setProgTab('rutina');showSection('comparar')">VER MI PROGRESO SEMANAL</button><button class="btn secondary" onclick="showSection('salud')">AGUA Y CALORÍAS</button></div>
+      <div class="actions"><button class="btn" type="button" onclick="rtaOpen()">⚡ CREAR RUTINA AUTOMÁTICA</button></div>
       <div style="display:none"><div class="sectionHead"><div><h2>Registro de entrenamiento</h2><p>Guarda cada ejercicio en tu historial.</p></div></div>
       <div class="card">
         <div class="formgrid">
@@ -535,7 +572,7 @@
     </section>
 
     <section class="section" id="volumen">
-      <div class="sectionHead"><div><h2>Volumen de entrenamiento</h2><p>Series por músculo, sumando todos tus ejercicios.</p></div><div class="field"><label>Periodo</label><select id="volumePeriod" onchange="renderVolume()"><option value="week">Esta semana</option><option value="last">Semana pasada</option><option value="avg">Promedio semanal</option><option value="range">Rango de fechas</option><option value="month">Un mes</option><option value="year">Un año</option></select></div></div>
+      <div class="sectionHead"><div><h2>Volumen de entrenamiento</h2><p>Series directas e indirectas por músculo.</p></div><div class="field"><label>Periodo</label><select id="volumePeriod" onchange="renderVolume()"><option value="week">Esta semana</option><option value="last">Semana pasada</option><option value="avg">Promedio semanal</option><option value="range">Rango de fechas</option><option value="month">Un mes</option><option value="year">Un año</option></select></div></div>
       <div class="card" id="volCustom" style="display:none;margin-bottom:12px"></div>
       <div class="card" id="mvBox"></div>
     </section>
@@ -961,35 +998,38 @@ function renderBody(){const g=v('bodyGender')==='Mujer'?'Mujer':'Hombre';const t
 /* ===== VOLUMEN POR MÚSCULO (series semanales) ===== */
 const MUSC=['Pecho','Espalda','Hombros','Bíceps','Tríceps','Abdomen','Cuádriceps','Femorales','Glúteos','Pantorrillas'];
 const EXM_AUTO=[
- [/hip ?thrust|puente.*gluteo|gluteo|glute|patada|donkey|kickback|abductor|abduccion/,['Glúteos']],
- [/curl (femoral|de pierna|de isquio|tumbado|acostado)|femoral|isquio|hamstring|nordic/,['Femorales']],
- [/peso muerto|rumano|rdl|buenos dias|good morning|stiff|deadlift/,['Femorales','Glúteos','Espalda']],
- [/extension de (pierna|cuadriceps)|cuadriceps|sissy|leg extension/,['Cuádriceps']],
- [/sentadilla|squat|prensa|leg press|hack|zancada|desplante|lunge|bulgara|step ?up|cajon/,['Cuádriceps','Glúteos']],
- [/gemelo|pantorrilla|calf|soleo/,['Pantorrillas']],
- [/abdominal|\babs\b|crunch|plancha|plank|elevacion(es)? de piernas|colgado|rueda|ab wheel|giro ruso|russian|core|oblicuo|bicicleta|mountain/,['Abdomen']],
- [/triceps|tricep|frances|rompecraneos|skull|copa|diamante|patada de triceps/,['Tríceps']],
- [/fondos|dips|paralelas/,['Pecho','Tríceps']],
- [/apertura|\bfly\b|flye|pec ?deck|contractora|cruce|cruces/,['Pecho']],
- [/press (banca|plano|inclinado|declinado|de pecho|pecho)|banca|bench|flexion|push ?up|lagartija|pecho|chest/,['Pecho','Tríceps']],
- [/biceps|bicep|martillo|predicador|scott|curl/,['Bíceps']],
- [/face ?pull/,['Hombros','Espalda']],
- [/pullover/,['Espalda']],
- [/shrug|encogimiento|trapecio|hiperextension|lumbar/,['Espalda']],
- [/dominada|pull ?up|chin ?up|jalon|remo|\brow\b|espalda|dorsal|\blat\b/,['Espalda','Bíceps']],
- [/press militar|militar|arnold|overhead|\bohp\b|press (de )?hombros?|shoulder press/,['Hombros','Tríceps']],
- [/hombro|shoulder|elevacion(es)? (lateral|frontal|posterior)|pajaros|vuelos|deltoide/,['Hombros']]
+ [/triceps|tricep|frances|rompecraneos|skull|copa|diamante/,['Tríceps'],[]],
+ [/fondos (en|de) banco|bench dips|fondos de triceps/,['Tríceps'],['Pecho','Hombros']],
+ [/fondos|dips|paralelas/,['Pecho'],['Tríceps','Hombros']],
+ [/hip ?thrust|puente.*gluteo|gluteo|glute|donkey|kickback|abductor|abduccion|patada/,['Glúteos'],[]],
+ [/curl (femoral|de pierna|de isquio|tumbado|acostado)|femoral|isquio|hamstring|nordic/,['Femorales'],[]],
+ [/peso muerto|rumano|rdl|buenos dias|good morning|stiff|deadlift/,['Femorales'],['Glúteos','Espalda']],
+ [/extension de (pierna|cuadriceps)|cuadriceps|sissy|leg extension/,['Cuádriceps'],[]],
+ [/sentadilla|squat|prensa|leg press|hack|zancada|desplante|lunge|bulgara|step ?up|cajon/,['Cuádriceps'],['Glúteos']],
+ [/gemelo|pantorrilla|calf|soleo|talones/,['Pantorrillas'],[]],
+ [/abdominal|\babs\b|crunch|plancha|plank|elevacion(es)? de piernas|colgado|rueda|ab wheel|giro ruso|russian|core|oblicuo|bicicleta|mountain/,['Abdomen'],[]],
+ [/face ?pull/,['Hombros'],['Espalda']],
+ [/pullover/,['Espalda'],['Pecho']],
+ [/shrug|encogimiento|trapecio|hiperextension|lumbar/,['Espalda'],[]],
+ [/dominada|pull ?up|chin ?up|jalon|remo|\brow\b|espalda|dorsal|\blat\b/,['Espalda'],['Bíceps']],
+ [/apertura|\bfly\b|flye|pec ?deck|mariposa|contractora|cruce|cruces/,['Pecho'],[]],
+ [/press (banca|plano|inclinado|declinado|de pecho|pecho|con mancuernas|mancuernas)|banca|bench|flexion|push ?up|lagartija|pecho|chest/,['Pecho'],['Tríceps','Hombros']],
+ [/press militar|militar|arnold|overhead|\bohp\b|press (de )?hombros?|shoulder press/,['Hombros'],['Tríceps']],
+ [/biceps|bicep|martillo|predicador|scott|curl/,['Bíceps'],[]],
+ [/hombro|shoulder|elevacion(es)? (lateral|frontal|posterior)|pajaros|vuelos|deltoide|laterales/,['Hombros'],[]]
 ];
-let exm={};try{exm=JSON.parse(localStorage.getItem('jc_exmuscle')||'{}')||{}}catch(e){exm={}}
-let exmCloud=false,mvNames=[],mvDraft=null,mvKey='';
+let exm={},exmI={};try{exm=JSON.parse(localStorage.getItem('jc_exmuscle')||'{}')||{}}catch(e){exm={}}
+try{exmI=JSON.parse(localStorage.getItem('jc_exmuscle_i')||'{}')||{}}catch(e){exmI={}}
+let exmCloud=false,mvNames=[],mvDraft=null,mvDraftI=null,mvKey='';
 function mvNorm(n){return ' '+String(n||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim()+' '}
 function mvKey2(n){return mvNorm(n).trim()}
-function musclesOf(name){const k=mvKey2(name);if(Object.prototype.hasOwnProperty.call(exm,k))return exm[k];const t=mvNorm(name);for(const [re,ms] of EXM_AUTO)if(re.test(t))return ms;return null}
-function exmSave(){localStorage.setItem('jc_exmuscle',JSON.stringify(exm));try{saveCloudDoc('settings','exmuscle',{map:exm}).catch(()=>{})}catch(e){}}
-async function exmLoadCloud(){if(exmCloud)return;try{if(typeof currentUser==='undefined'||!currentUser||typeof userCollection!=='function')return;exmCloud=true;const sn=await userCollection('settings').doc('exmuscle').get();if(sn.exists&&sn.data().map){exm={...sn.data().map,...exm};localStorage.setItem('jc_exmuscle',JSON.stringify(exm));renderVolume()}}catch(e){exmCloud=false}}
+function musclesDI(name){const k=mvKey2(name);if(Object.prototype.hasOwnProperty.call(exm,k))return {d:exm[k]||[],i:exmI[k]||[]};const t=mvNorm(name);for(const [re,d,ind] of EXM_AUTO)if(re.test(t))return {d,i:ind||[]};return null}
+function musclesOf(name){const x=musclesDI(name);return x?[...x.d,...x.i.filter(m=>!x.d.includes(m))]:null}
+function exmSave(){localStorage.setItem('jc_exmuscle',JSON.stringify(exm));localStorage.setItem('jc_exmuscle_i',JSON.stringify(exmI));try{saveCloudDoc('settings','exmuscle',{map:exm,ind:exmI}).catch(()=>{})}catch(e){}}
+async function exmLoadCloud(){if(exmCloud)return;try{if(typeof currentUser==='undefined'||!currentUser||typeof userCollection!=='function')return;exmCloud=true;const sn=await userCollection('settings').doc('exmuscle').get();if(sn.exists&&sn.data().map){const dt=sn.data();exm={...dt.map,...exm};localStorage.setItem('jc_exmuscle',JSON.stringify(exm));if(dt.ind){exmI={...dt.ind,...exmI};localStorage.setItem('jc_exmuscle_i',JSON.stringify(exmI))}renderVolume()}}catch(e){exmCloud=false}}
 function volCounts(k,i){return k===doneWeek?true:dayCounts(k,i)}
-function muscleVol(wks,from,to){const M={},U={};MUSC.forEach(m=>M[m]={sets:0,ex:{}});const pw=planWeeks();
-  wks.forEach(wk=>{const pl0=pw[wk];if(!pl0)return;Object.entries(pl0).forEach(([di,p])=>{if(!volCounts(wk,+di))return;if(from&&to){const dt=addDaysStr(wk,+di);if(dt<from||dt>to)return}(p.ex||[]).forEach(e=>{const nm=String(e.n||'').trim();if(!nm)return;const sets=+e.s||0;if(!sets)return;const ms=musclesOf(nm);if(ms===null){U[nm]=(U[nm]||0)+sets;return}ms.forEach(m=>{if(!M[m])return;M[m].sets+=sets;M[m].ex[nm]=(M[m].ex[nm]||0)+sets})})})});return {M,U}}
+function muscleVol(wks,from,to){const M={},U={};MUSC.forEach(m=>M[m]={d:0,i:0,exD:{},exI:{}});const pw=planWeeks();
+  wks.forEach(wk=>{const pl0=pw[wk];if(!pl0)return;Object.entries(pl0).forEach(([di,p])=>{if(!volCounts(wk,+di))return;if(from&&to){const dt=addDaysStr(wk,+di);if(dt<from||dt>to)return}(p.ex||[]).forEach(e=>{const nm=String(e.n||'').trim();if(!nm)return;const sets=+e.s||0;if(!sets)return;const x=musclesDI(nm);if(x===null){U[nm]=(U[nm]||0)+sets;return}x.d.forEach(m=>{if(!M[m])return;M[m].d+=sets;M[m].exD[nm]=(M[m].exD[nm]||0)+sets});x.i.forEach(m=>{if(!M[m]||x.d.includes(m))return;M[m].i+=sets;M[m].exI[nm]=(M[m].exI[nm]||0)+sets})})})});return {M,U}}
 let volFrom='',volTo='',volMonth='',volYear=0,volShown='';
 function volDefaults(){const cur=weekKey(new Date());if(!volFrom)volFrom=cur;if(!volTo)volTo=addDaysStr(cur,6);if(!volMonth)volMonth=isoDate(new Date()).slice(0,7);if(!volYear)volYear=new Date().getFullYear()}
 function volCtl(mode){const c=document.getElementById('volCustom');if(!c||mode===volShown)return;volShown=mode;volDefaults();
@@ -1009,24 +1049,33 @@ function renderVolume(){const box=document.getElementById('mvBox');if(!box)retur
     else{const y=+volYear;if(!y||y<2000||y>2100){msg('Escribe un año válido, por ejemplo '+new Date().getFullYear()+'.');return}from=y+'-01-01';to=y+'-12-31'}
     wks=Object.keys(pw).filter(k=>addDaysStr(k,6)>=from&&k<=to)}
   const {M,U}=muscleVol(wks,from,to);mvNames=[];const nmI=n=>{let i=mvNames.indexOf(n);if(i<0){mvNames.push(n);i=mvNames.length-1}return i};
-  const f=x=>{const v=x/div;return Number.isInteger(v)?v:Math.round(v*10)/10};
-  const rows=MUSC.map(m=>({m,sets:M[m].sets,ex:Object.entries(M[m].ex).sort((a,b)=>b[1]-a[1])})).sort((a,b)=>b.sets-a.sets);
-  const mx=rows[0].sets,total=rows.reduce((s,r)=>s+r.sets,0);
+  const fm=v=>{v=+v;return Number.isInteger(v)?v:Math.round(v*10)/10},f=x=>fm(x/div);
+  const nw=wks.filter(k=>Object.entries(pw[k]||{}).some(([di,x])=>hasEx(k,di,x))).length;
+  const wkN=(mode==='avg'||mode==='week'||mode==='last')?1:Math.max(1,nw);
+  const lvl=e=>e<=0?['Sin trabajo','z']:e<2?['Mínimo','m']:e<10?['Bajo','l']:e<=20?['Alto','h']:['Excesivo','x'];
+  const rows=MUSC.map(m=>({m,d:M[m].d/div,i:M[m].i/div,eff:(M[m].d+M[m].i*.5)/div,exD:Object.entries(M[m].exD).sort((a,b)=>b[1]-a[1]),exI:Object.entries(M[m].exI).sort((a,b)=>b[1]-a[1])})).sort((a,b)=>b.eff-a.eff);
+  const mx=rows[0].eff,total=rows.reduce((s,r)=>s+r.d+r.i,0);
   if(!total&&!Object.keys(U).length){msg(mode==='avg'?'Aún no tienes ejercicios con series guardadas.':'No hay ejercicios con series en este periodo. Planifica tus días en <b>Rutina</b> (solo hay datos de las semanas que guardaste).');return}
-  const chip=(n,v,top)=>`<button type="button" class="mvChip ${top?'t':''}" onclick="openExM(${nmI(n)})">${escapeHtml(n)} · ${f(v)}</button>`;
-  let h='<div class="mvTable">'+rows.map(r=>{const top=mx>0&&r.sets===mx;return `<div class="mvRow ${top?'top':''} ${r.sets?'':'zero'}"><div class="mvHead"><b>${r.m}</b><span class="mvN">${f(r.sets)}<small>${r.sets/div===1?'serie':'series'}</small></span></div>${r.sets?`<div class="mvBar"><i style="width:${Math.max(4,r.sets/mx*100)}%"></i></div><div class="mvEx">${r.ex.map(([n,v])=>chip(n,v,top)).join('')}</div>`:''}</div>`}).join('')+'</div>';
-  const us=Object.entries(U);if(us.length)h+=`<div class="mvRow unk"><div class="mvHead"><b>❓ Sin clasificar</b><span class="mvN" style="font-size:12px">toca para elegir músculo</span></div><div class="mvEx">${us.map(([n,v])=>chip(n,v,false)).join('')}</div></div>`;
-  let pre='';if(mode==='avg')pre='Promedio de series por semana ('+wks.length+(wks.length===1?' semana':' semanas')+'). ';
-  else if(from){const nw=wks.filter(k=>Object.entries(pw[k]||{}).some(([di,x])=>hasEx(k,di,x))).length;pre='Total de series del '+fdate(from)+' al '+fdate(to)+' ('+nw+(nw===1?' semana':' semanas')+' con entrenamiento). '}
+  const chip=(n,v,top,ind)=>`<button type="button" class="mvChip ${top?'t':''} ${ind?'ind':''}" onclick="openExM(${nmI(n)})">${ind?'↳ ':''}${escapeHtml(n)} · ${f(v)}</button>`;
+  let h=`<div class="mvTblWrap"><table class="mvTbl"><thead><tr><th>Músculo</th><th>Directo</th><th>Indirecto</th><th>Efectivo</th></tr></thead><tbody>`+rows.map(r=>{const [lt,lc]=lvl(r.eff/wkN);return `<tr class="${r.eff?'':'zero'}"><td><b>${r.m}</b><span class="mvLv ${lc}">${lt}</span></td><td>${fm(r.d)}</td><td>${fm(r.i)}</td><td><b>${fm(r.eff)}</b></td></tr>`}).join('')+`</tbody></table></div>`;
+  const zero=rows.filter(r=>!r.eff).map(r=>r.m);if(zero.length&&zero.length<MUSC.length)h+=`<p class="notice mvTip">💡 Sin series: ${zero.join(', ')}.</p>`;
+  const pe=(rows.find(r=>r.m==='Pecho')||{}).eff||0,es=(rows.find(r=>r.m==='Espalda')||{}).eff||0;
+  if(pe>0&&es>0&&pe/es>1.5)h+=`<p class="notice mvTip">💡 Haces bastante más pecho que espalda. Sube las series de espalda para equilibrar los hombros.</p>`;
+  else if(pe>0&&es>0&&es/pe>2.2)h+=`<p class="notice mvTip">💡 Haces mucha más espalda que pecho; revisa si quieres equilibrarlo.</p>`;
+  h+=`<div class="eyebrow" style="margin:18px 0 8px">DETALLE POR EJERCICIO</div><div class="mvTable">`+rows.filter(r=>r.d||r.i).map(r=>{const top=mx>0&&r.eff===mx;return `<div class="mvRow ${top?'top':''}"><div class="mvHead"><b>${r.m}</b><span class="mvN">${fm(r.eff)}<small>efectivas</small></span></div><div class="mvBar"><i style="width:${Math.max(4,mx?r.eff/mx*100:0)}%"></i></div>${r.exD.length?`<div class="mvLab2">DIRECTO</div><div class="mvEx">${r.exD.map(([n,v])=>chip(n,v,top,false)).join('')}</div>`:''}${r.exI.length?`<div class="mvLab2">INDIRECTO</div><div class="mvEx">${r.exI.map(([n,v])=>chip(n,v,top,true)).join('')}</div>`:''}</div>`}).join('')+'</div>';
+  const us=Object.entries(U);if(us.length)h+=`<div class="mvRow unk"><div class="mvHead"><b>❓ Sin clasificar</b><span class="mvN" style="font-size:12px">toca para elegir músculo</span></div><div class="mvEx">${us.map(([n,v])=>chip(n,v,false,false)).join('')}</div></div>`;
+  let pre='';if(mode==='avg')pre='Promedio por semana ('+wks.length+(wks.length===1?' semana':' semanas')+'). ';
+  else if(from)pre='Total del '+fdate(from)+' al '+fdate(to)+' ('+nw+(nw===1?' semana':' semanas')+' con entrenamiento). ';
   else if(mode==='week')pre='Cuenta todos los ejercicios que planeaste esta semana. ';
-  h+=`<p class="notice">${pre}Cada serie cuenta para todos los músculos que trabaja el ejercicio. Toca un ejercicio para cambiar su músculo.</p>`;
+  h+=`<p class="notice">${pre}<b>Directo</b> = el músculo principal del ejercicio (curl → bíceps). <b>Indirecto</b> = músculos que ayudan (dominadas o remo → bíceps). <b>Efectivo</b> = directas + ½ indirectas. Nivel por semana: Bajo 2–10 · Alto 10–20. Toca un ejercicio para cambiar sus músculos.</p>`;
   box.innerHTML=h}
-function openExM(i){const n=mvNames[i];if(n==null)return;mvKey=mvKey2(n);const cur=musclesOf(n);mvDraft=new Set(cur||[]);drawExM(n)}
+function openExM(i){const n=mvNames[i];if(n==null)return;mvKey=mvKey2(n);const cur=musclesDI(n);mvDraft=new Set(cur?cur.d:[]);mvDraftI=new Set(cur?cur.i:[]);drawExM(n)}
 function drawExM(n){const c=document.getElementById('askCard');if(!c)return;n=n||(mvNames.find(x=>mvKey2(x)===mvKey)||'');
-  c.innerHTML=`<div class="eyebrow">💪 ¿QUÉ MÚSCULOS TRABAJA?</div><h2 style="margin:8px 0 12px;font-size:19px">${escapeHtml(n)}</h2><div class="wChips">${MUSC.map(m=>`<button type="button" class="${mvDraft.has(m)?'on':''}" onclick="mvTog('${m}')">${m}</button>`).join('')}</div><div class="askGrid"><button class="btn" type="button" onclick="mvSave()">GUARDAR</button><button class="btn secondary" type="button" onclick="mvAuto()">AUTOMÁTICO</button></div><button class="btn secondary" type="button" style="width:100%;margin-top:10px" onclick="closeAsk()">CANCELAR</button>`;document.getElementById('askBox').style.display='flex'}
-function mvTog(m){if(!mvDraft)return;mvDraft.has(m)?mvDraft.delete(m):mvDraft.add(m);drawExM()}
-function mvSave(){exm[mvKey]=MUSC.filter(m=>mvDraft.has(m));exmSave();closeAsk();renderVolume();showToast('Guardado ✓',2000)}
-function mvAuto(){delete exm[mvKey];exmSave();closeAsk();renderVolume();showToast('Vuelve a automático',2000)}
+  const row=(S,k)=>`<div class="wChips">${MUSC.map(m=>`<button type="button" class="${S.has(m)?'on':''}" onclick="mvTog('${m}',${k})">${m}</button>`).join('')}</div>`;
+  c.innerHTML=`<div class="eyebrow">💪 ¿QUÉ MÚSCULOS TRABAJA?</div><h2 style="margin:8px 0 12px;font-size:19px">${escapeHtml(n)}</h2><div class="mvLab">DIRECTO <small>músculo principal</small></div>${row(mvDraft,0)}<div class="mvLab">INDIRECTO <small>músculos que ayudan</small></div>${row(mvDraftI,1)}<div class="askGrid"><button class="btn" type="button" onclick="mvSave()">GUARDAR</button><button class="btn secondary" type="button" onclick="mvAuto()">AUTOMÁTICO</button></div><button class="btn secondary" type="button" style="width:100%;margin-top:10px" onclick="closeAsk()">CANCELAR</button>`;document.getElementById('askBox').style.display='flex'}
+function mvTog(m,k){if(!mvDraft)return;const A=k?mvDraftI:mvDraft,B=k?mvDraft:mvDraftI;if(A.has(m))A.delete(m);else{A.add(m);B.delete(m)}drawExM()}
+function mvSave(){exm[mvKey]=MUSC.filter(m=>mvDraft.has(m));exmI[mvKey]=MUSC.filter(m=>mvDraftI.has(m));exmSave();closeAsk();renderVolume();showToast('Guardado ✓',2000)}
+function mvAuto(){delete exm[mvKey];delete exmI[mvKey];exmSave();closeAsk();renderVolume();showToast('Vuelve a automático',2000)}
 function buildCompareSelectors(){const a=document.getElementById('compareA'),b=document.getElementById('compareB');if(!a||!b)return;const opts=Array.from({length:12},(_,i)=>`<option>Semana ${i+1}</option>`).join('');a.innerHTML=opts;b.innerHTML=opts;a.value='Semana 1';b.value='Semana 2'}
 function weekKey(d){const x=typeof d==='string'?new Date(d+'T12:00:00'):new Date(d);x.setHours(12,0,0,0);x.setDate(x.getDate()-((x.getDay()+6)%7));return isoDate(x)}
 function rollWeek(){const cur=weekKey(new Date());if(!doneWeek){doneWeek=cur}else if(doneWeek!==cur){if(Object.values(doneDays).some(Boolean))routineLog[doneWeek]={...doneDays};if(Object.keys(plan).length)planLog[doneWeek]=plan;plan=rtRepeatPlan(cur);localStorage.setItem('jc_plan',JSON.stringify(plan));localStorage.setItem('jc_plan_log',JSON.stringify(planLog));cloudSavePlan();doneDays={};doneWeek=cur;cloudSaveRoutine();rtAfterRoll()}localStorage.setItem('jc_done_week',doneWeek);localStorage.setItem('jc_done_days',JSON.stringify(doneDays));localStorage.setItem('jc_routine_log',JSON.stringify(routineLog))}
@@ -1999,6 +2048,123 @@ async function admSendMail(){if(!isAdmin(currentUser))return;const rec=admRecipi
     setTimeout(async()=>{try{const d=(await first.get()).data()||{},st=d.delivery&&d.delivery.state;showToast(st==='SUCCESS'?'✅ Correos enviados.':st==='ERROR'?'⚠️ Error al enviar: '+((d.delivery.error)||'revisa la extensión Trigger Email'):st?'⏳ Enviando correos…':'⚠️ Los correos quedaron en cola pero Firebase aún no los envía. Revisa que la extensión «Trigger Email» esté instalada.',9000)}catch(e){}},12000)
   }catch(e){console.error(e);const bcc=rec.map(m=>m.email).join(',');
     if(confirm('No se pudo enviar automáticamente ('+((e&&e.code)||'error')+').\n\nFalta permitir/activar el envío de correos en Firebase.\n\n¿Quieres abrir tu app de correo con todos los usuarios en copia oculta (CCO) para enviarlo desde ahí?'))location.href='mailto:?bcc='+encodeURIComponent(bcc)+'&subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(admMailText('',news))}}
+</script>
+<script>
+/* ===================== IMÁGENES DE EJERCICIOS (más rápidas y completas) ===================== */
+const EX_ES_EN={press:'press',banca:'bench',inclinado:'incline',inclinada:'incline',declinado:'decline',plano:'flat',mancuerna:'dumbbell',mancuernas:'dumbbell',barra:'barbell',polea:'cable',poleas:'cable',remo:'row',jalon:'pulldown',dominada:'pullups',dominadas:'pullups',sentadilla:'squat',sentadillas:'squat',prensa:'leg press',zancada:'lunge',zancadas:'lunge',curl:'curl',femoral:'leg curl',gemelo:'calf raise',gemelos:'calf raise',pantorrilla:'calf raise',pantorrillas:'calf raise',abdominal:'crunch',abdominales:'crunch',plancha:'plank',lateral:'lateral raise',laterales:'lateral raise',frontal:'front raise',frontales:'front raise',pajaros:'reverse flyes',hombro:'shoulder press',hombros:'shoulder press',apertura:'flyes',aperturas:'flyes',cruce:'crossover',cruces:'crossover',flexion:'pushups',flexiones:'pushups',fondos:'dips',gluteo:'glute',gluteos:'glute',patada:'kickback',extension:'extension',extensiones:'extension',muerto:'deadlift',rumano:'romanian',encogimiento:'shrug',encogimientos:'shrug',hiperextension:'back extension',hiperextensiones:'back extension',martillo:'hammer',predicador:'preacher',frances:'skullcrusher',maquina:'machine',sentado:'seated',sentada:'seated',tumbado:'lying',acostado:'lying',unilateral:'one arm',mariposa:'butterfly',abduccion:'abductor',aduccion:'adductor',cuadriceps:'leg extension',isquios:'leg curl',pierna:'leg',piernas:'leg',pecho:'chest',espalda:'back',antebrazo:'wrist curl',trapecio:'shrug',lumbar:'back extension',cadera:'hip',puente:'bridge',thrust:'hip thrust',militar:'military press',arnold:'arnold press',bulgara:'split squat',hack:'hack squat',rueda:'ab roller',colgado:'hanging',triceps:'triceps',biceps:'biceps',face:'face',pull:'pull',peso:'',de:'',del:'',con:'',en:'',al:'',la:'',el:'',los:'',las:'',a:'',una:'',un:'',mano:'',pie:'standing',alterno:'alternate'};
+function exTr(txt){const seen=new Set(),out=[];exNorm(txt).split(' ').filter(Boolean).forEach(t=>{const m=Object.prototype.hasOwnProperty.call(EX_ES_EN,t)?EX_ES_EN[t]:t;String(m).split(' ').filter(Boolean).forEach(w=>{if(!seen.has(w)){seen.add(w);out.push(w)}})});return out.join(' ')}
+async function exFind(enq){const db=await exDB();const toks=exNorm(enq).split(' ').filter(Boolean);if(!toks.length||!db.length)return null;let best=null,bs=0;const need=Math.max(1,Math.ceil(toks.length*.6));
+ db.forEach(x=>{let sc=0;toks.forEach(t=>{const st=t.length>3?t.replace(/s$/,''):t;if(x.n.includes(st))sc++});if(sc>bs||(sc===bs&&best&&x.n.length<best.n.length)){bs=sc;best=x}});return bs>=need?best:null}
+async function exCommons(q){try{const u='https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrlimit=5&gsrsearch='+encodeURIComponent(q+' exercise')+'&prop=imageinfo&iiprop=url&iiurlwidth=420&format=json&origin=*';const r=await fetch(u);if(!r.ok)return null;const j=await r.json();const pg=Object.values((j.query&&j.query.pages)||{}).sort((a,b)=>(a.index||0)-(b.index||0));const toks=exNorm(q).split(' ').filter(t=>t.length>2);
+ for(const p of pg){const ii=p.imageinfo&&p.imageinfo[0];if(!ii||!/\.(jpe?g|png|gif|webp)$/i.test(p.title||''))continue;const t=exNorm(p.title||'');const hit=toks.filter(w=>t.includes(w)).length;if(hit>=Math.max(1,Math.ceil(toks.length*.6)))return {name:(p.title||'').replace(/^File:/,'').replace(/\.[a-z]+$/i,''),urls:[ii.thumburl||ii.url]}}}catch(e){}return null}
+let exImgC={};try{exImgC=JSON.parse(localStorage.getItem('jc_eximg2')||'{}')||{}}catch(e){exImgC={}}
+function exImgSave(){try{const ks=Object.keys(exImgC);if(ks.length>300)ks.slice(0,ks.length-300).forEach(k=>delete exImgC[k]);localStorage.setItem('jc_eximg2',JSON.stringify(exImgC))}catch(e){}}
+async function exResolve(txt,top){const key=exNorm(txt);if(exImgC[key])return exImgC[key];const base='https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/';const tr=exTr(txt);const qs=[];if(top)qs.push(top.e[1]);if(tr&&qs.indexOf(tr)<0)qs.push(tr);qs.push(txt);
+ for(const q of qs){const h=await exFind(q);if(h){const r={name:h.name,urls:h.im.map(p=>base+p)};exImgC[key]=r;exImgSave();return r}}
+ const c=await exCommons(tr||txt);if(c){exImgC[key]=c;exImgSave();return c}return null}
+async function exHelp(i,txt){const box=document.getElementById('exh'+i);if(!box)return;const q=exNorm(txt);if(q.length<3){box.innerHTML='';return}
+ const c=exCands(q),top=c[0];let html='';const alt=c.filter(x=>x.kind!=='exact');
+ if(alt.length&&!(top&&top.kind==='exact'))html+='<div class="exchips">¿Quisiste decir? '+alt.map(x=>'<button type="button" class="chip" onclick="exPick('+i+','+x.idx+')">'+escapeHtml(x.e[0])+'</button>').join('')+'</div>';
+ const cached=exImgC[q];box.innerHTML=html+(cached?'':'<div class="eximgs"><i class="exsk"></i><i class="exsk"></i></div>');
+ const hit=cached||await exResolve(txt,top);const cur=draft&&draft.ex&&draft.ex[i];if(!cur||exNorm(cur.n)!==q||!document.getElementById('exh'+i))return;
+ if(hit)html+='<div class="eximgs">'+hit.urls.map(p=>'<img loading="lazy" decoding="async" alt="" src="'+p+'" onerror="this.style.display=\'none\'">').join('')+'</div><span class="exname">'+escapeHtml(hit.name)+'</span>';
+ document.getElementById('exh'+i).innerHTML=html}
+window.addEventListener('load',()=>setTimeout(()=>{try{exDB()}catch(e){}},2500));
+
+/* ===================== RUTINA AUTOMÁTICA ===================== */
+const RTA_POOL={
+ 'Pecho':{c:['Press banca','Press inclinado con mancuernas','Fondos en paralelas','Flexiones'],i:['Aperturas con mancuernas','Cruce de poleas','Mariposa (pec deck)']},
+ 'Espalda':{c:['Dominadas','Remo con barra','Jalón al pecho','Remo en polea baja','Remo con mancuerna'],i:['Pullover en polea','Encogimientos']},
+ 'Hombros':{c:['Press militar','Press Arnold'],i:['Elevaciones laterales','Elevaciones frontales']},
+ 'Hombros*':{c:[],i:['Pájaros','Face pull']},
+ 'Bíceps':{c:[],i:['Curl con barra','Curl martillo','Curl predicador','Curl con mancuernas']},
+ 'Tríceps':{c:['Fondos en banco'],i:['Extensión de tríceps en polea','Press francés','Patada de tríceps']},
+ 'Cuádriceps':{c:['Sentadilla','Prensa de piernas','Sentadilla búlgara','Zancadas','Sentadilla hack'],i:['Extensión de piernas']},
+ 'Femorales':{c:['Peso muerto rumano','Buenos días'],i:['Curl femoral tumbado','Curl femoral sentado']},
+ 'Glúteos':{c:['Hip thrust'],i:['Patada de glúteo en polea','Abducción de cadera','Puente de glúteo']},
+ 'Pantorrillas':{c:[],i:['Gemelos de pie','Gemelos sentado']},
+ 'Abdomen':{c:[],i:['Crunch abdominal','Elevación de piernas colgado','Rueda abdominal','Crunch en polea']}
+};
+const RTA_D={
+ push:{t:'Push · Empuje',m:['Pecho','Hombros','Tríceps']},
+ pull:{t:'Pull · Tirón',m:['Espalda','Hombros*','Bíceps']},
+ legs:{t:'Leg · Pierna',m:['Cuádriceps','Femorales','Glúteos','Pantorrillas','Abdomen']},
+ upper:{t:'Torso',m:['Pecho','Espalda','Hombros','Bíceps','Tríceps']},
+ lower:{t:'Pierna',m:['Cuádriceps','Femorales','Glúteos','Pantorrillas','Abdomen']},
+ fullA:{t:'Full body A',m:['Pecho','Espalda','Cuádriceps','Hombros','Tríceps','Abdomen','Pantorrillas']},
+ fullB:{t:'Full body B',m:['Espalda','Pecho','Femorales','Glúteos','Bíceps','Pantorrillas','Abdomen']},
+ fullC:{t:'Full body C',m:['Pecho','Espalda','Cuádriceps','Glúteos','Hombros','Bíceps','Tríceps','Abdomen']},
+ chestTri:{t:'Pecho + Tríceps',m:['Pecho','Tríceps']},
+ backBi:{t:'Espalda + Bíceps',m:['Espalda','Hombros*','Bíceps']},
+ shAbs:{t:'Hombros + Abdomen',m:['Hombros','Hombros*','Abdomen','Pantorrillas']},
+ chestBack:{t:'Pecho + Espalda',m:['Pecho','Espalda']},
+ arms:{t:'Hombros y brazos',m:['Hombros','Hombros*','Bíceps','Tríceps']}
+};
+const RTA_SPLITS={
+ 2:[{id:'f2',n:'Full body ×2',d:'Todo el cuerpo en cada sesión. Ideal si tienes poco tiempo.',days:['fullA','fullB']},{id:'tp2',n:'Torso / Pierna',d:'Un día de torso y otro de pierna.',days:['upper','lower']}],
+ 3:[{id:'f3',n:'Full body ×3',d:'Cuerpo completo tres veces por semana.',days:['fullA','fullB','fullC']},{id:'tpf',n:'Torso / Pierna / Full body',d:'Torso, pierna y un día de cuerpo completo.',days:['upper','lower','fullC']},{id:'ppl3',n:'Push / Pull / Leg',d:'Empuje, tirón y pierna, una vez cada uno.',days:['push','pull','legs']}],
+ 4:[{id:'ul4',n:'Torso / Pierna ×2',d:'Upper / Lower dos veces por semana.',days:['upper','lower','upper','lower']},{id:'bro4',n:'Por grupos',d:'Pecho+tríceps, espalda+bíceps, pierna, hombros+abdomen.',days:['chestTri','backBi','lower','shAbs']},{id:'ppl4',n:'Push / Pull / Leg + Torso',d:'Push, pull y pierna, más un día de torso.',days:['push','pull','legs','upper']}],
+ 5:[{id:'pplul',n:'Push / Pull / Leg + Torso / Pierna',d:'Primero push-pull-leg y luego torso-pierna.',days:['push','pull','legs','upper','lower']},{id:'ulppl',n:'Torso / Pierna + Push / Pull / Leg',d:'Primero torso-pierna y luego push-pull-leg.',days:['upper','lower','push','pull','legs']},{id:'ul5',n:'Upper / Lower + Brazos',d:'Torso y pierna dos veces, y un día de hombros y brazos.',days:['upper','lower','upper','lower','arms']}],
+ 6:[{id:'ppl6',n:'Push / Pull / Leg ×2',d:'Cada grupo dos veces por semana.',days:['push','pull','legs','push','pull','legs']},{id:'ul6',n:'Torso / Pierna ×3',d:'Upper / Lower tres veces por semana.',days:['upper','lower','upper','lower','upper','lower']},{id:'arn6',n:'Arnold',d:'Pecho+espalda, hombros+brazos y pierna, dos veces.',days:['chestBack','arms','lower','chestBack','arms','lower']}]
+};
+const RTA_DAYIDX={2:[0,3],3:[0,2,4],4:[0,1,3,4],5:[0,1,2,4,5],6:[0,1,2,3,4,5]};
+/* series semanales EFECTIVAS por músculo: [volumen bajo (2–10), volumen alto (10–20)] */
+const RTA_T={'Pecho':[8,16],'Espalda':[8,16],'Hombros':[6,14],'Bíceps':[5,12],'Tríceps':[5,12],'Abdomen':[4,12],'Cuádriceps':[8,16],'Femorales':[6,12],'Glúteos':[6,12],'Pantorrillas':[4,12]};
+const RTA_F={'Pecho':[5,11],'Espalda':[7,14],'Hombros':[5,12],'Bíceps':[4,11],'Tríceps':[4,11],'Abdomen':[5,12],'Cuádriceps':[8,16],'Femorales':[8,14],'Glúteos':[10,18],'Pantorrillas':[4,12]};
+function rtaDI(n){const t=mvNorm(n);for(const [re,d,i] of EXM_AUTO)if(re.test(t))return {d,i:i||[]};return null}
+function rtaBuild(o,T,sp){
+ const days=sp.days.map(k=>({k,t:RTA_D[k].t,keys:RTA_D[k].m,ex:[]}));
+ MUSC.forEach(m=>{
+  const occ=[];days.forEach((d,di)=>d.keys.forEach(kk=>{if(kk.replace('*','')===m)occ.push([di,kk])}));if(!occ.length)return;
+  const nUse=Math.max(1,Math.min(occ.length,Math.max(Math.floor(T[m]/3),Math.ceil(T[m]/8))));
+  for(let j=0;j<nUse;j++){
+   const oi=nUse===1?0:Math.round(j*(occ.length-1)/(nUse-1)),[di,kk]=occ[oi],d=days[di],pool=RTA_POOL[kk];
+   let S=Math.round(T[m]*(j+1)/nUse)-Math.round(T[m]*j/nUse);if(S<2)S=2;
+   const size=pool.c.length+pool.i.length;let k=S<=4?1:S<=8?2:S<=12?3:4;k=Math.min(k,size);if(S>6*k)S=6*k;
+   let nc=pool.c.length?(k<=2?1:2):0,ni=k-nc;if(nc>pool.c.length)nc=pool.c.length;if(ni>pool.i.length){ni=pool.i.length;nc=Math.min(pool.c.length,k-ni)}
+   const take=(arr,n,start)=>{const out=[];for(let q=0;q<arr.length&&out.length<n;q++){const nm=arr[(start+q)%arr.length];if(!d.ex.some(e=>e.n===nm)&&!out.includes(nm))out.push(nm)}return out};
+   const chosen=[...take(pool.c,nc,j*Math.max(1,nc)).map(n=>[n,1]),...take(pool.i,ni,j*Math.max(1,ni)).map(n=>[n,0])];
+   const kk2=chosen.length||1;chosen.forEach(([n,isC],q)=>{const base=Math.floor(S/kk2)+(q<S%kk2?1:0);d.ex.push({n,s:Math.max(2,base),r:isC?8:(m==='Abdomen'||m==='Pantorrillas')?15:12,_m:m,_c:isC,_k:d.keys.indexOf(kk)})})
+  }
+ });
+ const effOf=()=>{const E={};MUSC.forEach(m=>E[m]=0);days.forEach(d=>d.ex.forEach(e=>{const x=rtaDI(e.n);if(!x)return;x.d.forEach(m=>E[m]+=e.s);x.i.forEach(m=>{if(!x.d.includes(m))E[m]+=e.s*.5})}));return E};
+ for(let it=0;it<20;it++){const E=effOf();let ch=false;MUSC.forEach(m=>{const diff=T[m]-E[m];if(Math.abs(diff)<1)return;const own=[];days.forEach(d=>d.ex.forEach(e=>{if(e._m===m)own.push(e)}));if(!own.length)return;own.sort((a,b)=>diff>0?a.s-b.s:b.s-a.s);const e=own[0];if(diff>=1&&e.s<7){e.s++;ch=true}else if(diff<=-1&&e.s>2){e.s--;ch=true}else if(diff<=-2&&e.s<=2){days.forEach(d=>{const ix=d.ex.indexOf(e);if(ix>=0)d.ex.splice(ix,1)});ch=true}});if(!ch)break}
+ days.forEach(d=>{d.ex=d.ex.map((e,i)=>({...e,_i:i})).sort((a,b)=>(a._c===b._c?0:a._c?-1:1)||a._k-b._k||a._i-b._i)});
+ return {days,E:effOf()}
+}
+function rtaGen(o){
+ const sp=(RTA_SPLITS[o.n]||[]).find(s=>s.id===o.split)||RTA_SPLITS[o.n][0];
+ const lo=o.vol==='alto'?1:0,TT=o.sex==='Mujer'?RTA_F:RTA_T,T0={};MUSC.forEach(m=>T0[m]=TT[m][lo]);
+ const floor=lo?10:3,dayCap=lo?40:30;let sc=1,res=null,note='';
+ for(let it=0;it<8;it++){const T={};MUSC.forEach(m=>T[m]=Math.max(floor,Math.round(T0[m]*sc)));res=rtaBuild(o,T,sp);const mx=Math.max(...res.days.map(d=>d.ex.reduce((a,e)=>a+e.s,0)));if(mx<=dayCap||MUSC.every(m=>T[m]<=floor))break;sc*=Math.max(.7,dayCap/mx)}
+ if(sc<.97)note='Con '+res.days.length+' días ajusté un poco el volumen para que cada sesión sea realista.';
+ return {days:res.days,E:res.E,note,sp,idx:RTA_DAYIDX[o.n]}
+}
+let rtW={step:1,sex:'',n:0,split:'',vol:''};
+function rtaOpen(){const sx=(typeof profile!=='undefined'&&profile)?profile.sex:'';rtW={step:1,sex:sx==='Mujer'?'Mujer':sx==='Hombre'?'Hombre':'',n:0,split:'',vol:''};rtaDraw()}
+function rtaSet(k,v){rtW[k]=v;if(k==='n')rtW.split='';rtaDraw()}
+function rtaGo(d){const s=rtW.step+d;if(s<1)return;rtW.step=s;rtaDraw()}
+function rtaDraw(){const c=document.getElementById('askCard');if(!c)return;const s=rtW.step;
+ const head=`<div class="eyebrow">⚡ RUTINA AUTOMÁTICA${s<5?' · PASO '+s+' DE 4':''}</div>`;
+ const ok=s===1?rtW.sex:s===2?rtW.n:s===3?rtW.split:s===4?rtW.vol:true;
+ const chips=(arr,key,fmt)=>`<div class="wChips">${arr.map(x=>`<button type="button" class="${rtW[key]===x?'on':''}" onclick="rtaSet('${key}',${typeof x==='number'?x:"'"+x+"'"})">${fmt?fmt(x):x}</button>`).join('')}</div>`;
+ let b='';
+ if(s===1)b=`<h2 style="margin:8px 0 12px;font-size:19px">¿Eres hombre o mujer?</h2>${chips(['Hombre','Mujer'],'sex')}`;
+ else if(s===2)b=`<h2 style="margin:8px 0 12px;font-size:19px">¿Cuántos días a la semana vas a entrenar?</h2>${chips([2,3,4,5,6],'n',x=>x+' días')}`;
+ else if(s===3)b=`<h2 style="margin:8px 0 4px;font-size:19px">Elige el tipo de rutina</h2><div class="muted small">Para ${rtW.n} días por semana</div>${RTA_SPLITS[rtW.n].map(p=>`<button type="button" class="rtaOpt ${rtW.split===p.id?'on':''}" onclick="rtaSet('split','${p.id}')"><b>${p.n}</b><small>${p.d}</small></button>`).join('')}`;
+ else if(s===4)b=`<h2 style="margin:8px 0 4px;font-size:19px">¿Qué volumen quieres?</h2><div class="muted small">Series por grupo muscular a la semana</div><button type="button" class="rtaOpt ${rtW.vol==='bajo'?'on':''}" onclick="rtaSet('vol','bajo')"><b>Volumen bajo</b><small>De 2 a 10 series por músculo. Sesiones más cortas y recuperación fácil.</small></button><button type="button" class="rtaOpt ${rtW.vol==='alto'?'on':''}" onclick="rtaSet('vol','alto')"><b>Volumen alto</b><small>De 10 a 20 series por músculo. Más trabajo para crecer más; exige más recuperación.</small></button>`;
+ else{const g=rtaGen(rtW),has=Object.values(plan||{}).some(p=>planHas(p));
+  b=`<h2 style="margin:8px 0 2px;font-size:19px">${g.sp.n}</h2><div class="muted small">${rtW.sex} · ${rtW.n} días · volumen ${rtW.vol}</div><div class="rtaScroll">${g.days.map((d,i)=>`<div class="rtaDay"><b>${DAYS[g.idx[i]]}<span>${d.t}</span></b><ul>${d.ex.map(e=>`<li>${escapeHtml(e.n)}<em>${e.s} × ${e.r}</em></li>`).join('')}</ul></div>`).join('')}<div class="rtaMus">${MUSC.map(m=>`<span>${m} <b>${Math.round(g.E[m]*10)/10}</b></span>`).join('')}</div><div class="muted small" style="margin-top:6px">Series efectivas por semana (directas + ½ indirectas).</div></div>${g.note?`<div class="rtaWarn">${g.note}</div>`:''}${has?`<div class="rtaWarn">Esto reemplaza lo que tienes planeado esta semana (tus carreras se mantienen).</div>`:''}`}
+ const foot=s<5?`<div class="askGrid"><button class="btn secondary" type="button" ${s===1?'disabled':''} onclick="rtaGo(-1)">ATRÁS</button><button class="btn" type="button" ${ok?'':'disabled style="opacity:.45"'} onclick="rtaGo(1)">${s===4?'VER RUTINA':'SIGUIENTE'}</button></div><button class="btn secondary" type="button" style="width:100%;margin-top:10px" onclick="closeAsk()">CANCELAR</button>`
+  :`<div class="askGrid"><button class="btn secondary" type="button" onclick="rtaGo(-1)">CAMBIAR</button><button class="btn" type="button" onclick="rtaApply()">APLICAR</button></div><button class="btn secondary" type="button" style="width:100%;margin-top:10px" onclick="closeAsk()">CANCELAR</button>`;
+ c.innerHTML=head+b+foot;document.getElementById('askBox').style.display='flex'}
+function rtaApply(){const g=rtaGen(rtW);try{rollWeek()}catch(e){}
+ const np={};g.days.forEach((d,i)=>{np[g.idx[i]]={ex:d.ex.map(e=>({n:e.n,t:'normal',s:e.s,r:e.r,w:0})),run:null,note:d.t}});
+ Object.entries(plan||{}).forEach(([di,p])=>{if(p&&runHas(p.run)){np[di]=np[di]||{ex:[],run:null,note:''};np[di].run=p.run}});
+ plan=np;try{localStorage.setItem('jc_plan',JSON.stringify(plan))}catch(e){}
+ try{cloudSavePlan()}catch(e){}
+ closeAsk();renderRoutine();showToast('Rutina creada ✓ Ponle tus pesos y ya cuenta en tu volumen.',5000)}
+
 </script>
 </body>
 </html>
