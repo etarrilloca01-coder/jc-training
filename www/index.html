@@ -341,6 +341,51 @@
     .coverImg{width:min(88vw,430px);height:auto;display:block;filter:drop-shadow(0 6px 28px #a8ff0040)}
     .authImg{width:min(70%,230px);height:auto;display:block;margin:0 0 6px}
     .logo{display:flex;flex-direction:column;align-items:flex-start;letter-spacing:0}.headImg{height:40px;width:auto;display:block}.logo .sub{font-family:var(--fb)!important;font-weight:700!important;letter-spacing:1.2px;margin-top:3px}
+
+    /* ===== v43 · Ajuste automático a cualquier pantalla (celulares, tablets, giro de pantalla) ===== */
+    html{-webkit-text-size-adjust:100%;text-size-adjust:100%;max-width:100%;overflow-x:hidden}
+    body{max-width:100%;overflow-x:hidden;min-height:100vh;min-height:100dvh}
+    .app{width:100%;min-height:100vh;min-height:100dvh;padding-left:max(18px,env(safe-area-inset-left));padding-right:max(18px,env(safe-area-inset-right));padding-bottom:calc(104px + env(safe-area-inset-bottom))}
+    img{max-width:100%}
+    .card,.stat,.tile,.field,.rowitem>div,.measureRow label,.dmain,.alM,.cmpR,.kpi,.wst,.mvRow,.homeBanner,.htile>div,.profileVal{min-width:0}
+    .rowitem strong,.dmain b,.alM b,.sectionHead h2,.homeTop h1,.mem b{overflow-wrap:anywhere}
+    .exf{grid-template-columns:repeat(var(--n),minmax(0,1fr))}
+    .mcard{max-height:88vh;max-height:88dvh}
+    .authScreen{min-height:100vh;min-height:100dvh}
+    @media(max-width:760px){
+      .app{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}
+      input,select,textarea{font-size:16px!important} /* evita el zoom automático del iPhone al tocar un campo */
+      .measureRow input{width:84px}
+      .formgrid,.stats,.tiles,.homeTiles,.profileGrid,.wsts,.askGrid,.cmpSel{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .week,.homeWeek,.dstrip{grid-template-columns:repeat(7,minmax(0,1fr))}
+      .drow{grid-template-columns:48px minmax(0,1fr) auto 30px;gap:8px}
+      .alRow{grid-template-columns:auto minmax(0,1fr) auto 30px;gap:8px}
+      .waterDay{grid-template-columns:44px minmax(0,1fr) auto}
+      .compareRow{grid-template-columns:78px minmax(0,1fr) 40px}
+      .kpis{grid-template-columns:repeat(auto-fill,minmax(132px,1fr))}
+      .modal{padding:8px}.mcard{padding:14px}
+      .authScreen{padding:16px}.authCard{padding:22px 18px}
+      .toast{max-width:calc(100vw - 24px)}
+      .homeBanner{min-height:164px;padding:16px}.homeBanner p{max-width:62%}
+      .nav{gap:2px;padding-left:max(6px,env(safe-area-inset-left));padding-right:max(6px,env(safe-area-inset-right))}
+      .nav button{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+      .sectionHead{flex-wrap:wrap}
+    }
+    @media(max-width:380px){
+      .exrow{grid-template-columns:minmax(0,1fr) 42px 42px 46px 30px;gap:4px}
+      .exn select{width:78px}
+      .nav button{font-size:10px;padding:6px 1px}.nav button .navico{font-size:16px}
+      .stat strong{font-size:22px}.kpi strong{font-size:20px}.wst strong{font-size:20px}.mvN{font-size:26px}
+      .btn{padding:11px 12px;font-size:14px}.btn.smallbtn{font-size:12px;padding:8px 10px}
+      .homeBanner h2{font-size:clamp(28px,10vw,38px)}
+      .htile{padding:12px 10px;gap:8px}.htile svg{width:26px;height:26px}.htile strong{font-size:13.5px}
+      .hw span{width:32px;height:32px;font-size:15px}
+      .measureRow{gap:8px}.measureRow input{width:76px}
+    }
+    @media(max-height:480px) and (orientation:landscape){
+      .nav{padding-top:4px;padding-bottom:calc(4px + env(safe-area-inset-bottom))}.nav button .navico{display:none}
+      .coverInner{padding-top:12px;padding-bottom:12px}.coverBtn{margin-top:10px;padding:12px}
+    }
   </style>
 </head>
 <body>
@@ -442,7 +487,9 @@
         <div class="field"><label>Semana</label><select id="measureWeek"></select></div>
         <div class="field" style="display:none"><label>Vista corporal</label><select id="bodyGender" onchange="renderBody()"><option>Hombre</option><option>Mujer</option></select></div>
         <div class="field"><label>Fecha de medición</label><input type="date" id="measureDate"></div>
-      </div></div>
+      </div>
+      <div class="actions" style="margin-top:12px"><button class="btn secondary smallbtn" type="button" onclick="measNewWeek()">＋ NUEVA SEMANA</button><button class="btn secondary smallbtn" type="button" onclick="measCurrentWeek()">SEMANA ACTUAL</button></div>
+      <p class="notice" id="measureStatus"></p></div>
       <div class="measureLayout">
         <div class="card" id="measureListCard">
           <div class="gtog"></div><div id="listFig"></div><p class="notice" id="listInfo">Toca un número del cuerpo para ver cómo medir esa zona. Mide siempre el mismo lado, a la misma hora y con la cinta pegada a la piel, sin apretar.</p><div class="eyebrow" style="margin-top:14px">MEDICIONES EN CM</div><div class="measureRows" id="measureFields"></div>
@@ -709,7 +756,7 @@ function startLiveSync(){stopLiveSync();const u=currentUser;if(!u||!firebaseRead
   sub(st.doc('health'),sn=>{if(!sn.exists)return;const h=sn.data();if(J([h.water||{},h.runs||[],h.playlists||[]])===J([water,runs,playlists]))return;water=h.water||water;runs=h.runs||runs;playlists=h.playlists||playlists;remind={...remind,...(h.remind||{})};persistHealth(false);jcRefreshUI()});
   sub(st.doc('weights'),sn=>{if(!sn.exists)return;const l=sn.data().list||[];if(J(l)===J(weights))return;weights=l;try{localStorage.setItem('jc_weights',JSON.stringify(weights))}catch(e){}jcRefreshUI()});
   sub(base.collection('profile').doc('main'),sn=>{if(!sn.exists)return;const d=sn.data(),np={...profile,...d};if(J(np)===J(profile))return;profile=np;try{localStorage.setItem('jc_profile',JSON.stringify(profile))}catch(e){}try{updateProfile()}catch(e){}jcRefreshUI()});
-  sub(base.collection('measurements'),sn=>{const m=sn.docs.map(x=>x.data()).sort((a,b)=>(a.week||'').localeCompare(b.week||''));if(!m.length||J(m)===J(measurements))return;measurements=m;try{localStorage.setItem('jc_measurements',JSON.stringify(measurements))}catch(e){}try{buildMeasureWeeks()}catch(e){}jcRefreshUI()});
+  sub(base.collection('measurements'),sn=>{const m=sn.docs.map(x=>x.data()).sort((a,b)=>(a.week||'').localeCompare(b.week||''));if(!m.length||J(m)===J(measurements))return;measurements=m;try{localStorage.setItem('jc_measurements',JSON.stringify(measurements))}catch(e){}try{buildMeasureWeeks();measAutoWeek()}catch(e){}jcRefreshUI()});
 }
 async function jcHandleUser(user){
   stopLiveSync();
@@ -852,7 +899,7 @@ async function loadCloudData(){
     localStorage.setItem('jc_profile',JSON.stringify(profile));
     localStorage.setItem('jc_done_days',JSON.stringify(doneDays));
     ['pName','pAge','pSex','pHeight','pWeight','pFat','pGoal','pLevel'].forEach(id=>{const key={pName:'name',pAge:'age',pSex:'sex',pHeight:'height',pWeight:'weight',pFat:'bodyFat',pGoal:'goal',pLevel:'level'}[id];if(profile[key]!==undefined)document.getElementById(id).value=profile[key]});
-    if(planSnap.exists)jcApplyPlanDoc(planSnap.data());if(healthSnap.exists){const h=healthSnap.data();water=h.water||water;runs=h.runs||runs;playlists=h.playlists||playlists;remind={...remind,...(h.remind||{})};persistHealth(false)}if(weightSnap.exists){weights=weightSnap.data().list||weights;localStorage.setItem('jc_weights',JSON.stringify(weights))}else if(weights.length)persistWeights();updateProfile();renderAll();renderRoutine();buildMeasureWeeks();loadMeasureForm();
+    if(planSnap.exists)jcApplyPlanDoc(planSnap.data());if(healthSnap.exists){const h=healthSnap.data();water=h.water||water;runs=h.runs||runs;playlists=h.playlists||playlists;remind={...remind,...(h.remind||{})};persistHealth(false)}if(weightSnap.exists){weights=weightSnap.data().list||weights;localStorage.setItem('jc_weights',JSON.stringify(weights))}else if(weights.length)persistWeights();updateProfile();renderAll();renderRoutine();buildMeasureWeeks();measAutoWeek();
   } finally {cloudLoadInProgress=false;}
 }
 function cloudSaveWorkout(w){if(!currentUser)return;const id=w.id||('w_'+Date.now()+'_'+Math.random().toString(36).slice(2,8));w.id=id;saveCloudDoc('workouts',id,w).catch(e=>{console.error(e);showToast('Se guardó localmente, pero falló la nube.');});}
@@ -865,7 +912,7 @@ function init(){
   const today = new Date(); document.getElementById('workDate').value = isoDate(today); document.getElementById('measureDate').value = isoDate(today);
   document.getElementById('measureFields').innerHTML = MEASUREMENTS.map(([label,key],i)=>`<div class="measureRow"><label for="m_${key}"><b class="mnum">${i+1}</b>${label}<small>${MEAS_GUIDE[key][2]}</small></label><input id="m_${key}" type="number" min="0" step="0.1" placeholder="cm"></div>`).join('');
   ['pName','pAge','pSex','pHeight','pWeight','pFat','pGoal','pLevel'].forEach(id=>{const key={pName:'name',pAge:'age',pSex:'sex',pHeight:'height',pWeight:'weight',pFat:'bodyFat',pGoal:'goal',pLevel:'level'}[id];if(profile[key]!==undefined)document.getElementById(id).value=profile[key]});
-  buildWeek(); renderRoutine(); renderBody(); buildCompareSelectors(); updateProfile(); renderAll(); buildMeasureWeeks(); loadMeasureForm(); restoreWorkoutDraft();
+  buildWeek(); renderRoutine(); renderBody(); buildCompareSelectors(); updateProfile(); renderAll(); buildMeasureWeeks(); measAutoWeek(); restoreWorkoutDraft();
 }
 function isoDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function showSection(id){document.getElementById('mainApp').classList.toggle('onHome',id==='inicio');document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active',s.id===id));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.section===id));if(id==='volumen')renderVolume();if(id==='salud')renderHealth();if(id==='comparar')renderCompare();if(id==='inicio')renderHomeBrief();if(id==='peso')renderWeight();window.scrollTo({top:0,behavior:'smooth'})}
@@ -974,19 +1021,20 @@ function autoSaveMeasures(){ if(!currentUser)return; const d=collectMeasure(); i
 function loadMeasureForm(){ const w=v('measureWeek'); const m=measurements.find(x=>x.week===w)||{};
   const set=(id,val)=>{const el=document.getElementById(id); if(el) el.value=(val==null?'':val);};
   set('mWeight',m.weight); set('mFat',m.bodyFat); MEASUREMENTS.forEach(([l,k])=>set('m_'+k,m[k])); set('measureDate',m.date||isoDate(new Date()));
-  if(m.bodyView){set('bodyGender',m.bodyView); renderBody();} }
+  if(m.bodyView){set('bodyGender',m.bodyView); renderBody();}
+  try{measHints(w);measStatus()}catch(e){} }
 const DRAFT_IDS=['workGroup','workExercise','workSets','workReps','workWeight','workNotes'];
 function saveWorkoutDraft(){ const d={}; DRAFT_IDS.forEach(id=>d[id]=v(id)); localStorage.setItem('jc_draft_workout',JSON.stringify(d)); }
 function restoreWorkoutDraft(){ try{ const d=JSON.parse(localStorage.getItem('jc_draft_workout')||'null'); if(!d)return; DRAFT_IDS.forEach(id=>{const el=document.getElementById(id); if(el&&d[id]!==undefined) el.value=d[id];}); }catch(e){} }
 ['input','change'].forEach(ev=>document.addEventListener(ev,e=>{
   const t=e.target; if(!t||!t.id) { if(t&&t.closest&&t.closest('#measureFields')) scheduleAuto('measures',autoSaveMeasures); return; }
   if(['pName','pAge','pSex','pHeight','pWeight','pFat','pGoal','pLevel'].includes(t.id)) scheduleAuto('profile',autoSaveProfile);
-  else if(['mWeight','mFat','measureDate','bodyGender'].includes(t.id) || (t.closest&&t.closest('#measureFields'))) scheduleAuto('measures',autoSaveMeasures);
+  else if(['mWeight','mFat','measureDate','bodyGender'].includes(t.id) || (t.closest&&t.closest('#measureFields'))) {measTouched=true;scheduleAuto('measures',autoSaveMeasures);}
   else if(DRAFT_IDS.includes(t.id)) saveWorkoutDraft();
 }));
 (function(){ const sel=document.getElementById('measureWeek'); if(!sel)return;
   ['pointerdown','focus'].forEach(ev=>sel.addEventListener(ev,flushAuto));
-  sel.addEventListener('change',loadMeasureForm); })();
+  sel.addEventListener('change',()=>{measTouched=true;loadMeasureForm()}); })();
 document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') flushAuto(); });
 window.addEventListener('pagehide',flushAuto);
 function cloudSavePlan(){nativeSyncSoon();if(!currentUser)return;saveCloudDoc('settings','plan',{plan,planLog,routines,planWeek:doneWeek||''},true).catch(cloudFail)}
@@ -1085,8 +1133,9 @@ const PDEFS='<defs><linearGradient id="pgA" x1="0" y1="0" x2="0" y2="1"><stop of
 function pGrid(cols,mn,mx,fm,step,ml,mr,mt,mb,H,W,intTicks){const ph=H-mt-mb,sy=v=>mt+ph-(v-mn)*ph/(mx-mn),sx=i=>ml+step*(i+.5);let g='';for(let k=0;k<=4;k++){const v=mn+(mx-mn)*k/4,y=sy(v);g+=`<line x1="${ml}" x2="${W-mr}" y1="${y.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#ffffff14" stroke-dasharray="3 5"/><text x="${ml-7}" y="${(y+4).toFixed(1)}" text-anchor="end" font-size="10" fill="#7f8e89">${intTicks?Math.round(v):fm(v)}</text>`}
   cols.forEach((c,i)=>{g+=`<text x="${sx(i)}" y="${H-mb+16}" text-anchor="middle" font-size="11" font-weight="700" fill="#d6dfd9">${escapeHtml(c[0])}</text><text x="${sx(i)}" y="${H-mb+30}" text-anchor="middle" font-size="9.5" fill="#7f8e89">${escapeHtml(c[1]||'')}</text>`});return g}
 function pHit(n,step,ml,mt,ph){let h='';for(let i=0;i<n;i++)h+=`<rect x="${(ml+step*i).toFixed(1)}" y="${mt-10}" width="${step}" height="${ph+10}" fill="transparent" style="cursor:pointer" onclick="progTip(${i})"/>`;return h}
+function pAvail(){const a=document.querySelector('.app'),w=(a&&a.clientWidth)||window.innerWidth||360;return Math.max(240,Math.min(560,w-56))}
 function pChartSvg(cols,s){
-  const n=cols.length,step=Math.max(48,Math.min(110,Math.floor(300/Math.max(1,n)))),ml=46,mr=16,mt=26,mb=40,H=250,W=ml+mr+n*step,ph=H-mt-mb;
+  const n=cols.length,step=Math.max(48,Math.min(110,Math.floor((pAvail()-62)/Math.max(1,n)))),ml=46,mr=16,mt=26,mb=40,H=250,W=ml+mr+n*step,ph=H-mt-mb;
   const vs=s.vals.filter(v=>v!=null);let mn=Math.min(...vs),mx=Math.max(...vs);
   if(s.type==='bar'){mn=0;mx=mx*1.18||1}else{const pad=(mx-mn)*.18||Math.max(1,Math.abs(mx)*.05);mn-=pad;mx+=pad}
   const sy=v=>mt+ph-(v-mn)*ph/(mx-mn),sx=i=>ml+step*(i+.5),fm=v=>s.f?s.f(v):rnd(v);
@@ -1105,7 +1154,7 @@ function pChartSvg(cols,s){
 function pChartMulti(cols,S,hide){
   const vis=S.filter(s=>!hide[s.label]),all=[];vis.forEach(s=>s.vals.forEach(v=>{if(v!=null)all.push(v)}));
   if(!all.length)return '<p class="notice" style="padding:22px">Activa al menos un ejercicio en la leyenda de arriba.</p>';
-  const n=cols.length,step=Math.max(56,Math.min(110,Math.floor(300/Math.max(1,n)))),ml=46,mr=24,mt=26,mb=40,H=280,W=ml+mr+n*step,ph=H-mt-mb;
+  const n=cols.length,step=Math.max(56,Math.min(110,Math.floor((pAvail()-70)/Math.max(1,n)))),ml=46,mr=24,mt=26,mb=40,H=280,W=ml+mr+n*step,ph=H-mt-mb;
   let mn=Math.min(...all),mx=Math.max(...all);const pad=(mx-mn)*.16||Math.max(1,Math.abs(mx)*.1);mn=Math.max(0,mn-pad);mx+=pad;
   const sy=v=>mt+ph-(v-mn)*ph/(mx-mn),sx=i=>ml+step*(i+.5);
   let body='';
@@ -1473,7 +1522,27 @@ function renderHomeBrief(){setHomePhrase();const el=document.getElementById('hom
 
 /* ===== SIN LÍMITES: semanas de medidas, rango de peso y de progreso ===== */
 let wRange=30,progLim=0,measN=0;
-function buildMeasureWeeks(){const sel=document.getElementById('measureWeek');if(!sel)return;const mx=Math.max(0,...measurements.map(m=>parseInt(String(m.week||'').replace(/\D/g,''))||0)),N=1000;if(N===measN&&sel.options.length===N)return;const cur=sel.value;measN=N;sel.innerHTML=Array.from({length:N},(_,i)=>`<option>Semana ${i+1}</option>`).join('');if(cur)sel.value=cur}
+/* ===== MEDIDAS · semana nueva automática (v43) ===== */
+let measTouched=false,measWk='';
+function measNum(w){return parseInt(String(w||'').replace(/\D/g,''))||0}
+function measHas(m){return !!m&&!!(m.weight||m.bodyFat||MEASUREMENTS.some(([n,k])=>m[k]))}
+function measSaved(){return measurements.filter(measHas).sort((a,b)=>measNum(a.week)-measNum(b.week))}
+function measPrev(n){const l=measSaved().filter(m=>measNum(m.week)<n);return l[l.length-1]||null}
+function measSuggest(){const l=measSaved();if(!l.length)return 'Semana 1';const last=l[l.length-1],n=measNum(last.week);let nw=false;try{if(/^\d{4}-\d{2}-\d{2}$/.test(last.date||''))nw=weekKey(new Date())!==weekKey(last.date)}catch(e){}return 'Semana '+(nw?n+1:n)}
+function measGoWeek(w){const sel=document.getElementById('measureWeek');if(!sel)return;if(Array.prototype.some.call(sel.options,o=>o.value===w))sel.value=w;loadMeasureForm()}
+function measAutoWeek(){if(measTouched){try{measStatus()}catch(e){}return}try{measWk=weekKey(new Date())}catch(e){}measGoWeek(measSuggest())}
+function measCurrentWeek(){try{flushAuto()}catch(e){}measTouched=false;measAutoWeek();showToast('Mostrando '+v('measureWeek')+'.')}
+function measNewWeek(){try{flushAuto()}catch(e){}const l=measSaved(),nx='Semana '+((l.length?measNum(l[l.length-1].week):0)+1);measTouched=true;measGoWeek(nx);showToast(nx+' lista: escribe tus medidas nuevas.');const f=document.getElementById('measureFields');if(f)f.scrollIntoView({block:'start',behavior:'smooth'})}
+function measHints(w){const p=measPrev(measNum(w)),ph=(id,val,def)=>{const el=document.getElementById(id);if(el)el.placeholder=(val!==undefined&&val!==null&&val!=='')?String(val):def};ph('mWeight',p&&p.weight,'78');ph('mFat',p&&p.bodyFat,'25');MEASUREMENTS.forEach(([l,k])=>ph('m_'+k,p&&p[k],'cm'))}
+function measStatus(){const el=document.getElementById('measureStatus');if(!el)return;const w=v('measureWeek'),n=measNum(w),cur=measurements.find(m=>m.week===w),has=measHas(cur),p=measPrev(n),fd=d=>d?String(d).slice(5).split('-').reverse().join('/'):'';
+  let t=has?`✅ <b>${w}</b> ya tiene medidas guardadas${cur.date?' ('+fd(cur.date)+')':''}. Si las cambias, se actualizan solas.`:`🆕 <b>${w}</b> está vacía: escribe tus medidas nuevas.`;
+  if(p)t+=` Última medición: <b>${p.week}</b>${p.date?' · '+fd(p.date):''}.${has?'':' Los números en gris son los de esa semana.'}`;
+  el.innerHTML=t}
+function buildMeasureWeeks(){const sel=document.getElementById('measureWeek');if(!sel)return;const N=1000,have=new Set(measSaved().map(m=>m.week));
+  if(measN!==N||sel.options.length!==N){const cur=sel.value;sel.innerHTML=Array.from({length:N},(_,i)=>`<option value="Semana ${i+1}">Semana ${i+1}</option>`).join('');measN=N;if(cur)sel.value=cur}
+  for(let i=0;i<sel.options.length;i++){const o=sel.options[i],t=o.value+(have.has(o.value)?' ✓':'');if(o.textContent!==t)o.textContent=t}
+  try{measStatus()}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState!=='visible')return;try{if(measWk&&weekKey(new Date())!==measWk){measTouched=false;measAutoWeek()}}catch(e){}});
 function wInRange(){if(!weights.length||!wRange)return weights;const a=addDaysStr(weights[weights.length-1].d,-wRange);return weights.filter(x=>x.d>a)}
 function wToggle(){return '<div class="toggle" style="margin:12px 0 4px;width:max-content;max-width:100%">'+[[30,'30 días'],[90,'90 días'],[365,'1 año'],[0,'Todo']].map(([r,l])=>`<button type="button" class="${wRange===r?'active':''}" onclick="wRange=${r};renderWeight()">${l}</button>`).join('')+'</div>'}
 /* ===== PESO DIARIO + CELEBRACIONES ===== */
@@ -1709,6 +1778,10 @@ function renderProgWeight(body){
 
 init();
 initFirebase();
+
+/* ===== v43 · re-ajuste automático al girar o cambiar el tamaño de pantalla ===== */
+(function(){let w0=window.innerWidth,tm;function fit(){const w=window.innerWidth;if(Math.abs(w-w0)<2)return;w0=w;try{if(typeof jcEditing==='function'&&jcEditing())return;const a=document.querySelector('.section.active');if(!a)return;if(a.id==='comparar')renderCompare();else if(a.id==='peso')renderWeight();else if(a.id==='volumen')renderVolume()}catch(e){}}
+  const go=()=>{clearTimeout(tm);tm=setTimeout(fit,250)};window.addEventListener('resize',go);window.addEventListener('orientationchange',go)})();
 /* ===== ACTUALIZAR APP ===== */
 async function jcCurSW(){try{return (await caches.keys()).filter(k=>k.indexOf('jc-training-')===0)[0]||''}catch(e){return ''}}
 async function jcLatestSW(){const r=await fetch('./sw.js?'+Date.now(),{cache:'no-store'});const t=await r.text();const m=t.match(/CACHE\s*=\s*'([^']+)'/);return m?m[1]:''}
@@ -1745,7 +1818,7 @@ if('serviceWorker' in navigator && location.protocol.startsWith('http')){
   const hadController=!!navigator.serviceWorker.controller; let reloaded=false;
   navigator.serviceWorker.addEventListener('controllerchange',()=>{ if(!hadController||reloaded) return; reloaded=true; location.reload(); });
 }
-if('serviceWorker' in navigator && location.protocol.startsWith('http')) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(console.warn));
+if('serviceWorker' in navigator && location.protocol.startsWith('http')) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(r=>{document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')r.update().catch(()=>{})})}).catch(console.warn));
 </script>
 </body>
 </html>
