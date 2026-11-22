@@ -584,6 +584,7 @@
     .mmBtns .btn{padding:10px 6px;font-size:13px}
     .mmCustom{display:grid;grid-template-columns:70px 1fr auto;gap:7px;margin-top:8px}
     .mmCustom input,.mmCustom select{min-width:0;background:var(--inp);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px}
+    .mmCard.st-arch{--c:var(--grey);opacity:.92}
     #myMemCard .mmLeft{margin-top:8px}
   </style>
 </head>
@@ -881,7 +882,7 @@ async function loadAdminUsers(more){
     const q=await qq.limit(200).get(),rows=q.docs.map(d=>({id:d.id,...d.data()}));
     jcMembers=(more===true&&jcLast)?jcMembers.concat(rows):rows;if(q.docs.length)jcLast=q.docs[q.docs.length-1];jcMore=q.docs.length===200;
     renderAdmin();
-  }catch(e){console.error(e);box.innerHTML='<p class="notice" style="color:var(--red)">No se pudo leer la lista ('+escapeHtml((e&&e.code)||'error')+'). Revisa las reglas de Firestore.</p>'}
+  }catch(e){console.error(e);const msg='<p class="notice" style="color:var(--red)">No se pudo leer la lista ('+escapeHtml((e&&e.code)||'error')+'). Revisa las reglas de Firestore.</p>';box.innerHTML=msg;const ml=document.getElementById('memList');if(ml)ml.innerHTML=msg}
 }
 async function adminUpd(i,data,msg,local){
   const m=jcMembers[i];if(!m)return;const id=m.id,bak={...m};
@@ -2411,29 +2412,37 @@ function memInfo(m,now){const st=memState(m,now),u=memUntil(m);let main='',sub='
  if(st==='life'){main='De por vida';sub='Sin fecha de vencimiento';badge='Por vida'}
  else if(st==='pend'){main='Pendiente';sub='Aún no la activas';badge='Pendiente'}
  else if(st==='off'){main='Desactivada';sub=u?'Le quedaban '+(u>now?memSpan(now,u):'0 días'):'Sin acceso';badge='Desactivada'}
+ else if(st==='arch'){const ar=m.archivedAt&&m.archivedAt.toDate?m.archivedAt.toDate():null;main='Archivada';sub=ar?'Archivada el '+ar.toLocaleDateString('es'):'Cuenta archivada';badge='Archivada'}
+ else if(st!=='exp'&&!u){main='De por vida';sub='Sin fecha de vencimiento';badge='Por vida'}
  else if(st==='exp'){main='Venció hace '+memSpan(u,now);sub='Venció el '+u.toLocaleDateString('es');badge='Vencida'}
  else{main='Quedan '+memSpan(now,u);{const td=Math.floor((u-now)/864e5);sub='Vence el '+u.toLocaleDateString('es')+(td>=30?' · '+td+' días en total':'')}badge=st==='soon'?'Por vencer':'Activa';
   const g=m.grantedAt&&m.grantedAt.toDate?m.grantedAt.toDate():null;if(g&&u>g)pct=Math.max(2,Math.min(100,(u-now)/(u-g)*100))}
  if(m.plan&&(st==='ok'||st==='soon'||st==='life'))sub='Plan: '+m.plan+' · '+sub;
  return {st,main,sub,pct,badge}}
-function memOpen(){memMode=document.getElementById('memModeSel').value||'add';loadAdminUsers().then(renderMem);clearInterval(memTick);memTick=setInterval(()=>{const s=document.getElementById('membresias');if(s&&s.classList.contains('active')&&!document.hidden)renderMem()},60000)}
+function memOpen(){memMode=document.getElementById('memModeSel').value||'add';const ml=document.getElementById('memList');if(ml&&!jcMembers.length)ml.innerHTML='<p class="notice">Cargando usuarios…</p>';loadAdminUsers().then(renderMem);clearInterval(memTick);memTick=setInterval(()=>{const s=document.getElementById('membresias');if(s&&s.classList.contains('active')&&!document.hidden)renderMem()},60000)}
 function memSetFilter(f){memFilter=f;renderMem()}
 function memCustomSet(id,k,v){memCustom[id]=Object.assign(memCustom[id]||{n:1,u:'m'},{[k]:v})}
 function renderMem(){const box=document.getElementById('memList');if(!box||!isAdmin(currentUser))return;const now=new Date();
- const rows=jcMembers.map((m,i)=>({m,i,x:memInfo(m,now)})).filter(r=>r.x.st!=='arch'&&(r.m.email||'').toLowerCase()!==ADMIN_EMAIL);
+ const safe=(m)=>{try{return memInfo(m,now)}catch(e){console.warn('mem',e);return {st:'off',main:'Sin datos',sub:'',pct:null,badge:'?'}}};
+ const all=jcMembers.map((m,i)=>({m,i,x:safe(m)})).filter(r=>(r.m.email||'').toLowerCase()!==ADMIN_EMAIL);
+ const rows=all.filter(r=>r.x.st!=='arch'),arch=all.filter(r=>r.x.st==='arch');
  const C=k=>rows.filter(r=>r.x.st===k).length;
  document.getElementById('memSum').innerHTML=[['Con acceso',C('ok')+C('soon')+C('life')],['Por vencer',C('soon')],['Vencidas',C('exp')]].map(a=>`<div><b>${a[1]}</b><span>${a[0]}</span></div>`).join('');
- const F=[['all','Todas',rows.length],['soon','Por vencer',C('soon')],['exp','Vencidas',C('exp')],['ok','Activas',C('ok')],['life','Por vida',C('life')],['pend','Pendientes',C('pend')],['off','Desactivadas',C('off')]];
+ const F=[['all','Todas',rows.length],['soon','Por vencer',C('soon')],['exp','Vencidas',C('exp')],['ok','Activas',C('ok')],['life','Por vida',C('life')],['pend','Pendientes',C('pend')],['off','Desactivadas',C('off')],['arch','Archivadas',arch.length]];
  document.getElementById('memFilters').innerHTML=F.map(f=>`<button type="button" class="${memFilter===f[0]?'on':''}" onclick="memSetFilter('${f[0]}')">${f[1]} · ${f[2]}</button>`).join('');
- const rank={pend:0,exp:1,soon:2,ok:3,life:4,off:5};
- const list=rows.filter(r=>memFilter==='all'||r.x.st===memFilter).sort((a,b)=>rank[a.x.st]-rank[b.x.st]||((memUntil(a.m)||0)-(memUntil(b.m)||0))||String(a.m.name||'').localeCompare(String(b.m.name||'')));
+ const rank={pend:0,exp:1,soon:2,ok:3,life:4,off:5,arch:6};
+ const pool=memFilter==='arch'?arch:rows.filter(r=>memFilter==='all'||r.x.st===memFilter);
+ const list=pool.sort((a,b)=>rank[a.x.st]-rank[b.x.st]||((memUntil(a.m)||0)-(memUntil(b.m)||0))||String(a.m.name||'').localeCompare(String(b.m.name||'')));
  const lab=memMode==='add'?'+':'';const PRE=[[1,'m','1 mes'],[3,'m','3 meses'],[6,'m','6 meses'],[1,'y','1 año']];
- box.innerHTML=list.map(({m,i,x})=>{const c=memCustom[m.id]||{n:1,u:'m'};
-  return `<div class="mmCard st-${x.st}"><div class="mmTop"><div class="mmWho"><b>${escapeHtml(m.name||'Sin nombre')}</b><small>${escapeHtml(m.email||'')}</small></div><span class="mmBadge">${x.badge}</span></div>
-  <div class="mmLeft"><strong>${x.main}</strong><small>${escapeHtml(x.sub)}</small></div>${x.pct!=null?`<div class="mmBar"><i style="width:${x.pct.toFixed(1)}%"></i></div>`:''}
+ box.innerHTML=list.map(({m,i,x})=>{try{
+  const c=memCustom[m.id]||{n:1,u:'m'},ls=m.lastSeen&&m.lastSeen.toDate?m.lastSeen.toDate():null,online=ls&&now-ls.getTime()<360000;
+  const head=`<div class="mmTop"><div class="mmWho"><b><span class="${online?'dotOn':'dotOff'}"></span>${escapeHtml(m.name||'Sin nombre')}</b><small>${escapeHtml(m.email||'')}</small><small>${online?'En línea':(ls?'Visto '+ls.toLocaleString('es'):'Sin actividad')}</small></div><span class="mmBadge">${x.badge}</span></div>
+  <div class="mmLeft"><strong>${x.main}</strong><small>${escapeHtml(x.sub)}</small></div>${x.pct!=null?`<div class="mmBar"><i style="width:${x.pct.toFixed(1)}%"></i></div>`:''}`;
+  if(x.st==='arch')return `<div class="mmCard st-arch">${head}<div class="mmBtns"><button class="btn secondary smallbtn" type="button" onclick="adminRestore(${i})">♻️ RESTAURAR</button><button class="btn smallbtn" type="button" style="background:var(--red);border-color:var(--red);color:#fff" onclick="adminDelete(${i})">🗑️ ELIMINAR</button></div></div>`;
+  return `<div class="mmCard st-${x.st}">${head}
   <div class="mmBtns">${PRE.map(p=>`<button class="btn smallbtn" type="button" onclick="memGrant(${i},${p[0]},'${p[1]}')">${lab}${p[2]}</button>`).join('')}<button class="btn secondary smallbtn" type="button" onclick="memLife(${i})">♾ POR VIDA</button></div>
   <div class="mmCustom"><input type="number" min="1" inputmode="numeric" value="${c.n}" aria-label="Cantidad" onchange="memCustomSet('${m.id}','n',this.value)"><select aria-label="Unidad" onchange="memCustomSet('${m.id}','u',this.value)">${Object.entries(MEM_U).map(([k,v])=>`<option value="${k}" ${c.u===k?'selected':''}>${v[1]}</option>`).join('')}</select><button class="btn smallbtn" type="button" onclick="memGrantCustom(${i})">${memMode==='add'?'SUMAR':'DAR'}</button></div>
-  <div class="mmBtns"><button class="btn secondary smallbtn" type="button" onclick="adminToggle(${i})">${m.active===false?'ACTIVAR':'DESACTIVAR'}</button><button class="btn secondary smallbtn" type="button" onclick="adminView(${i})">👁️ VER</button></div></div>`}).join('')||'<p class="notice">No hay personas en este filtro.</p>';
+  <div class="mmBtns"><button class="btn secondary smallbtn" type="button" onclick="adminToggle(${i})">${m.active===false?'ACTIVAR':'DESACTIVAR'}</button><button class="btn secondary smallbtn" type="button" onclick="adminView(${i})">👁️ VER</button><button class="btn secondary smallbtn" type="button" onclick="adminReset(${i})">🔑 CONTRASEÑA</button><button class="btn secondary smallbtn" type="button" onclick="adminArchive(${i})">🗄️ ARCHIVAR</button></div></div>`}catch(e){console.warn('mem row',e);return ''}}).join('')||'<p class="notice">'+(jcMembers.length?'No hay personas en este filtro.':'Aún no hay usuarios cargados.')+'</p>';
  if(jcMore)box.innerHTML+='<div class="actions"><button class="btn secondary smallbtn" type="button" onclick="loadAdminUsers(true).then(renderMem)">VER MÁS USUARIOS</button></div>'}
 function memGrantCustom(i){const m=jcMembers[i];if(!m)return;const c=memCustom[m.id]||{n:1,u:'m'};memGrant(i,Math.max(1,parseInt(c.n)||1),c.u||'m')}
 function memGrant(i,n,u){const m=jcMembers[i];if(!m)return;n=Math.max(1,parseInt(n)||1);const now=new Date(),cur=memUntil(m),st=memState(m,now);
