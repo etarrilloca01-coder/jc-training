@@ -1,4 +1,4 @@
-const CACHE='jc-training-v46',IMGC='jc-eximg';
+const CACHE='jc-training-v47',IMGC='jc-eximg';
 const ASSETS=['./','./index.html','./alarma.mp3','./logo.png','./manifest.json','./icon-192.png','./icon-512.png','./apple-touch-icon.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).catch(()=>{}));self.skipWaiting()});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE&&k!==IMGC).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
